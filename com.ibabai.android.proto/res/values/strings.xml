@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Ibabai</string>
+    <string name="introduction">Introduction</string>
+    <string name="rules">Rules</string>
+    <string name="confirm">Accept rules</string>
+    <string name="tos">Terms of service</string>
+    <string name="reject">Reject</string>
+    <string name="signup">Create your account</string>
+    <string name="dialog_tos">Pressing OK your confirm that you fully aware of Ibabai terms of service and accept them. </string>
+    <string name="scan">Scan</string>
+    <string name="desc_item_icon">Item Icon</string>
+    <string-array name="core_menu">
+        <item >My promos</item>
+        <item > Market</item>
+        <item >Stop list</item>
+        <item >Profile</item>
+        <item>Log book</item>
+        <item >Settings</item>
+        <item>Feedback</item>
+        <item>Help</item>
+        <item>Share app</item>
+    </string-array>
+    <array name="core_menu_icons" >
+        <item>@drawable/ic_action_mypromos</item>
+        <item>@drawable/ic_action_market</item>
+        <item>@drawable/ic_action_stop</item>
+        <item>@drawable/ic_action_profile</item>
+        <item>@drawable/ic_action_log</item>
+        <item>@drawable/ic_action_settings</item>
+        <item>@drawable/ic_action_feedback</item>
+        <item>@drawable/ic_action_help</item>
+        <item>@drawable/ic_action_share</item>
+    </array>
+
+</resources>
