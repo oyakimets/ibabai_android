@@ -15,7 +15,7 @@
 	</FrameLayout>
 	<ListView 
 	    android:id="@+id/core_left"
-	    android:layout_width="320dp"
+	    android:layout_width="240dp"
 	    android:layout_height="match_parent"
 	    android:layout_gravity="start"
 	    android:choiceMode="singleChoice"

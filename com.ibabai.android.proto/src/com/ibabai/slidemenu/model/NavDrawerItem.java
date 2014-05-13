@@ -31,7 +31,7 @@ public class NavDrawerItem {
 		return this.count;
 	}
 	
-	public boolean getCounterVisible() {
+	public boolean getCounterVisibility() {
 		return this.isCounterVisible;
 	}
 	
@@ -47,7 +47,7 @@ public class NavDrawerItem {
 		this.count = count;
 	}
 	
-	public void setCounterVisible(boolean isCountVisible) {
+	public void setCounterVisibility(boolean isCountVisible) {
 		this.isCounterVisible = isCounterVisible;
 	}
 

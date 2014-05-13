@@ -1,7 +1,9 @@
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+   android:id="@+id/action_scan"
    android:layout_width="wrap_content"
    android:layout_height="wrap_content"
    android:layout_gravity="center"
-   android:textSize="20sp"
-   android:icon="@drawable/ic_action_scan1" />
+   android:onClick = "ScanAction"
+   android:contentDescription ="@string/desc_scan_icon"
+   android:src="@drawable/ic_action_scan1" />
