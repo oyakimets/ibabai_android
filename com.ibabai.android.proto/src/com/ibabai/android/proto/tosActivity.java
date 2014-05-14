@@ -21,10 +21,11 @@ public class tosActivity extends ActionBarActivity {
         
 		setContentView(R.layout.tos);
 		
-		ActionBar ab = getActionBar();
-        ab.setDisplayShowHomeEnabled(false);
-        ab.setCustomView(R.layout.ab_tos);
-        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);        
+		 ActionBar ab = getActionBar(); 
+	        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+	        ab.setCustomView(R.layout.ab_tos);
+	        ab.setDisplayShowHomeEnabled(true);
+	        ab.setDisplayShowTitleEnabled(false);            
         
 	}
 	

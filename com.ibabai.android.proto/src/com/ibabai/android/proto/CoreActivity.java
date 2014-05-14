@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
@@ -36,13 +38,14 @@ public class CoreActivity extends Activity {
         
         navMenuTitles = getResources().getStringArray(R.array.core_menu);
         navMenuIcons = getResources().obtainTypedArray(R.array.core_menu_icons);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.core);
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerList = (ListView)findViewById(R.id.core_left);
         navDrawerItems = new ArrayList<NavDrawerItem>();
         
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1), true, "5"));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1), true, "3"));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(6, -1)));
@@ -54,10 +57,18 @@ public class CoreActivity extends Activity {
         adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
         mDrawerList.setAdapter(adapter);
         
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        ActionBar ab = getActionBar(); 
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ab.setCustomView(R.layout.ab_balance);
+        ab.setDisplayShowHomeEnabled(false);
+        ab.setDisplayShowTitleEnabled(false);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeButtonEnabled(true);
+
         
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.menu, R.drawable.ic_action_scan1) {
+       
+        
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, 0, 0) {
         	public void onDrawerClosed(View view) {
         		getActionBar().setTitle(mTitle);
         		invalidateOptionsMenu();
@@ -70,17 +81,75 @@ public class CoreActivity extends Activity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         
         if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
-        	ActionBar ab = getActionBar();
-            ab.setCustomView(R.layout.ab_scan);
-            ab.setCustomView(R.layout.ab_balance);
-            ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);        	
+        	ActionBar abar = getActionBar();
+            abar.setCustomView(R.layout.ab_balance);
+                    	
         }
-        
+        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
        
+	}
+	private class SlideMenuClickListener implements ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			displayAction(position);
+		}
+	}
+	private void displayAction(int position) {
+		switch (position) {
+		case 0:
+			Intent i=new Intent(this, myPromoActivity.class);
+			startActivity(i);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 1:
+			Intent i1=new Intent(this, MarketActivity.class);
+			startActivity(i1);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 2:
+			Intent i2=new Intent(this, stopListActivity.class);
+			startActivity(i2);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 3:
+			Intent i3=new Intent(this, ProfileActivity.class);
+			startActivity(i3);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 4:
+			Intent i4=new Intent(this, LogActivity.class);
+			startActivity(i4);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 5:
+			Intent i5=new Intent(this, SettingsActivity.class);
+			startActivity(i5);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 6:
+			Intent i6=new Intent(this, FeedbackActivity.class);
+			startActivity(i6);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 7:
+			Intent i7=new Intent(this, HelpActivity.class);
+			startActivity(i7);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		case 8:
+			Intent i8=new Intent(this, ShareActivity.class);
+			startActivity(i8);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
+		default:
+			break;
+		}
+			
+		
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.core, menu);
 		return true;
 	}
 	@Override
@@ -88,8 +157,22 @@ public class CoreActivity extends Activity {
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
+		switch (item.getItemId()) {
+		case R.id.action_scan:
+			Intent in=new Intent(this, ScanActivity.class);
+			startActivity(in);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+			
+		}		
 		
-		return super.onOptionsItemSelected(item);
+	}
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean drawerOpen=mDrawerLayout.isDrawerOpen(mDrawerList);
+		menu.findItem(R.id.action_scan).setVisible(!drawerOpen);
+		return super.onPrepareOptionsMenu(menu);
 	}
 	@Override
 	public void setTitle(CharSequence title) {

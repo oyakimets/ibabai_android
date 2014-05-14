@@ -28,10 +28,11 @@ public class MainActivity extends FragmentActivity {
         pager.setAdapter(adapter);
         findViewById(R.id.pager).setVisibility(View.VISIBLE);
         
-        ActionBar ab = getActionBar();
-        ab.setDisplayShowHomeEnabled(false);
-        ab.setCustomView(R.layout.ab_intro);
+        ActionBar ab = getActionBar(); 
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ab.setCustomView(R.layout.ab_intro);
+        ab.setDisplayShowHomeEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);       
     }
     
     public void showTos(View view) {

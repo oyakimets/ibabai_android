@@ -35,5 +35,14 @@
         <item>@drawable/ic_action_share</item>
     </array>
     <string name="menu">Menu</string>
+    <string name="ab_promo">My promos</string>
+    <string name="ab_market">Marketplace</string>
+    <string name="ab_stoplist">Stop List</string>
+    <string name="ab_feedback">Feedback</string>
+    <string name="ab_help">Help</string>
+    <string name="ab_log">Log book</string>
+    <string name="ab_profile">Profile</string>
+    <string name="ab_settings">Settings</string>
+    <string name="ab_share">Share app</string>
 
 </resources>

@@ -3,4 +3,4 @@
    android:layout_height="wrap_content"
    android:layout_gravity="center"
    android:textSize="20sp"
-   android:text="100 bais" />
+   android:text="@string/ab_log" />

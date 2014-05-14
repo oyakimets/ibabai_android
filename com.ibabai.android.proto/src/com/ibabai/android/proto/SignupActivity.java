@@ -14,10 +14,11 @@ public class SignupActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.signup);
 		
-		ActionBar ab = getActionBar();
-        ab.setDisplayShowHomeEnabled(false);
-        ab.setCustomView(R.layout.ab_signup);
+		ActionBar ab = getActionBar(); 
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ab.setCustomView(R.layout.ab_signup);
+        ab.setDisplayShowHomeEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);     
         
         NumberPicker agePicker=(NumberPicker) findViewById(R.id.age_picker);
         agePicker.setMaxValue(60);

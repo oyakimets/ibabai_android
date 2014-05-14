@@ -25,6 +25,66 @@
         <activity android:name="tosActivity"></activity>
         <activity android:name="SignupActivity"></activity>
         <activity android:name="CoreActivity"></activity>
+        <activity android:name="myPromoActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="MarketActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="stopListActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="ProfileActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="LogActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="SettingsActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="FeedbackActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="HelpActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="ShareActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
+        <activity android:name="ScanActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />
+        </activity>
     </application>
 
 </manifest>
