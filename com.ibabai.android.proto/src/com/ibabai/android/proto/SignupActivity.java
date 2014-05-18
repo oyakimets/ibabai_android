@@ -1,14 +1,22 @@
 package com.ibabai.android.proto;
 
+
 import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 
-public class SignupActivity extends ActionBarActivity {
+
+public class SignupActivity extends Activity {
+	public static final String PREFERENCES = "MyPrefs";
+	public static final String status = "SignedUp";
+	SharedPreferences shared_prefs;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,8 +47,13 @@ public class SignupActivity extends ActionBarActivity {
 		String s_confirmation = password_confirmation.getText().toString();
 		
 		if ( s_email.length() >= 5 && s_phone.length() == 10 && s_password.length() >= 6 && s_password.equals(s_confirmation)) {
+			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			Editor editor = shared_prefs.edit();
+			editor.putBoolean(status, true);
+			editor.apply();
 			Intent i=new Intent(this, CoreActivity.class);
 			startActivity(i);
+			finish();
 		}
 		else {
 			if (s_email.length() < 5) {

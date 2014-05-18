@@ -3,10 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="My market"/>
+    
+    <ListView
+        android:id="@+id/vendors"
+        android:layout_marginTop="10dp" 
+        android:layout_marginRight="10dp" 
+        android:layout_marginLeft="10dp"     
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+	    android:dividerHeight="10dp" />  
 
 </LinearLayout>

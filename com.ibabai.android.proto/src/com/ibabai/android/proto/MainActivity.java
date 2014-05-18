@@ -1,7 +1,10 @@
 package com.ibabai.android.proto;
 
+
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -9,30 +12,43 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-
 public class MainActivity extends FragmentActivity {
 	private ViewPager pager=null;
 	private PresentationAdapter adapter=null;
+	public static final String PREFERENCES = "MyPrefs";
+	public static final String status = "SignedUp";
+	SharedPreferences shared_prefs;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         
-        if( getIntent().getBooleanExtra("EXIT", false)) {
-        	finish();
-        }
+        	setContentView(R.layout.activity_main);
+        
+        	if( getIntent().getBooleanExtra("EXIT", false)) {
+        		finish();
+        	}
                         
-        pager=(ViewPager)findViewById(R.id.pager);
-        adapter=new PresentationAdapter(getSupportFragmentManager());
-        pager.setAdapter(adapter);
-        findViewById(R.id.pager).setVisibility(View.VISIBLE);
+        	pager=(ViewPager)findViewById(R.id.pager);
+        	adapter=new PresentationAdapter(getSupportFragmentManager());
+        	pager.setAdapter(adapter);
+        	findViewById(R.id.pager).setVisibility(View.VISIBLE);
         
-        ActionBar ab = getActionBar(); 
-        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        ab.setCustomView(R.layout.ab_intro);
-        ab.setDisplayShowHomeEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);       
+        	ActionBar ab = getActionBar(); 
+        	ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        	ab.setCustomView(R.layout.ab_intro);
+        	ab.setDisplayShowHomeEnabled(true);
+        	ab.setDisplayShowTitleEnabled(false);
+    }
+    @Override
+    protected void onResume() {
+    	shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+    	if(shared_prefs.contains(status)) {
+    		Intent launchIntent = new Intent(this, CoreActivity.class);
+    		startActivity(launchIntent);
+    		finish();
+    	}
+    	super.onResume();
     }
     
     public void showTos(View view) {
@@ -62,6 +78,5 @@ public class MainActivity extends FragmentActivity {
         // as you specify a parent activity in AndroidManifest.xml.
        
         return super.onOptionsItemSelected(item);
-    }   
-
+    }        
 }
