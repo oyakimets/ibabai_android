@@ -5,11 +5,15 @@
     android:orientation="vertical" 
     android:paddingLeft="10dp"
     android:paddingRight="10dp" >
+    
 	<ExpandableListView
+	    android:paddingTop="10dp"
     	android:id="@+id/lvExp"
     	android:layout_width="match_parent"
     	android:layout_height="0dp"
-    	android:layout_weight="1" />      
+    	android:layout_weight="1"
+    	android:divider="@android:color/transparent"
+	    android:dividerHeight="10dp" />      
 
 	<RelativeLayout
         android:layout_width="match_parent"
@@ -23,7 +27,7 @@
          	android:layout_marginBottom="10dp"
          	android:background="@drawable/btn_rules"
          	android:onClick="callBack"                       
-         	android:text="@string/reject" />
+         	android:text="@string/call_back" />
      
      	<Button
          	android:id="@+id/btn_help_mail"
@@ -32,8 +36,8 @@
          	android:layout_width="150dp"
          	android:background="@drawable/btn_rules"         
          	android:layout_marginBottom="10dp"
-         	android:onClick="callBack"         
-         	android:text="@string/confirm" />    
+         	android:onClick="sendMail"         
+         	android:text="@string/send_mail" />    
 	
 	</RelativeLayout>
 </LinearLayout>

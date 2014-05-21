@@ -22,14 +22,18 @@
     <TextView         
     	android:textAppearance="?android:attr/textAppearanceLarge"     	    	
     	android:text="Phone#"
-    	android:layout_height="60dp"  />
+    	android:layout_height="60dp" />
+    
     	
     <EditText
         android:id="@+id/billing_phone"
         app:layout_gravity="fill_horizontal"
         android:inputType="phone"
         android:hint="(***)*******"
-        android:imeOptions="actionNext" />
+        android:imeOptions="actionNext">
+        
+        <requestFocus />
+    </EditText>
     
     <TextView         
     	android:textAppearance="?android:attr/textAppearanceLarge"     	    	

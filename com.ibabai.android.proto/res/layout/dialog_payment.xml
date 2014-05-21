@@ -62,7 +62,10 @@
         android:id="@+id/dialog_password"
         app:layout_gravity="fill_horizontal"
         android:inputType="textPassword"       
-        android:imeOptions="actionDone" /> 
+        android:imeOptions="actionDone">
+        
+        <requestFocus />
+    </EditText> 
    
    
 </android.support.v7.widget.GridLayout>

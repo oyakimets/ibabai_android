@@ -7,6 +7,7 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +23,8 @@
             </intent-filter>
         </activity>        
         <activity android:name="tosActivity"></activity>
-        <activity android:name="SignupActivity"></activity>
+        <activity android:name="SignupActivity"
+            android:windowSoftInputMode="stateVisible|adjustPan"></activity>            
         <activity android:name="CoreActivity"></activity>
         <activity android:name="myPromoActivity"
             android:parentActivityName="CoreActivity">
@@ -59,25 +61,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ibabai.android.proto.CoreActivity" />
-        </activity>
-        <activity android:name="FeedbackActivity"
-            android:parentActivityName="CoreActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ibabai.android.proto.CoreActivity" />
-        </activity>
+        </activity>       
         <activity android:name="HelpActivity"
             android:parentActivityName="CoreActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ibabai.android.proto.CoreActivity" />
-        </activity>
-        <activity android:name="ShareActivity"
-            android:parentActivityName="CoreActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ibabai.android.proto.CoreActivity" />
-        </activity>
+        </activity>        
         <activity android:name="ScanActivity"
             android:parentActivityName="CoreActivity">
             <meta-data
@@ -85,10 +75,23 @@
                 android:value="com.ibabai.android.proto.CoreActivity" />
         </activity>        
         <activity android:name="PaymentActivity"
+            android:windowSoftInputMode="stateVisible|adjustPan"
             android:parentActivityName="MarketActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ibabai.android.proto.MarketActivity" />            
+        </activity>
+        <activity android:name="PasswordChangeActivity"
+            android:parentActivityName="ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.ProfileActivity" />  
+        </activity>
+        <activity android:name="ProfileUpdateActivity"
+            android:parentActivityName="ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.ProfileActivity" /> 
         </activity>
     </application>
 

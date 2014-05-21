@@ -2,13 +2,23 @@ package com.ibabai.android.proto;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 public class ProfileActivity extends Activity {
+	public static final String PREFERENCES = "MyPrefs";	
+	public static final String username = "email";
+	public static final String telephone = "phone #";
+	public static final String age = "age";
+	public static final String gender="gender";	
+	SharedPreferences shared_prefs;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +30,22 @@ public class ProfileActivity extends Activity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
         ab.setDisplayShowHomeEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);        
+        ab.setDisplayShowTitleEnabled(false);
+        
+        shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        TextView tv_mail = (TextView)findViewById(R.id.pr_email);
+        String st_mail = shared_prefs.getString(username, "");
+        tv_mail.setText(st_mail);
+        TextView tv_phone = (TextView)findViewById(R.id.pr_phone);
+        String st_phone = shared_prefs.getString(telephone, "");
+        tv_phone.setText(st_phone);
+        TextView tv_age = (TextView)findViewById(R.id.pr_age);
+        String in_age = shared_prefs.getString(age, "");
+        tv_age.setText(in_age);
+        TextView tv_gender = (TextView)findViewById(R.id.pr_gender);
+        String st_gender = shared_prefs.getString(gender, "");
+        tv_gender.setText(st_gender);
+        
         
 	}
 	@Override
@@ -44,6 +69,14 @@ public class ProfileActivity extends Activity {
 			
 		}		
 		
+	}
+	public void ChangePassword(View view) {
+		Intent changeInt = new Intent(this, PasswordChangeActivity.class);
+		startActivity(changeInt);
+	}
+	public void UpdateProfile(View view) {
+		Intent updateInt = new Intent(this, ProfileUpdateActivity.class);
+		startActivity(updateInt);
 	}
 
 }

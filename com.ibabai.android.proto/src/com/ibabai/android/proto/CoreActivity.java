@@ -3,12 +3,13 @@ package com.ibabai.android.proto;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +20,7 @@ import android.widget.ListView;
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
 
-public class CoreActivity extends Activity {
+public class CoreActivity extends FragmentActivity {
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -113,9 +114,8 @@ public class CoreActivity extends Activity {
 			mDrawerLayout.closeDrawer(mDrawerList);
 			break;
 		case 3:
-			Intent i3=new Intent(this, ProfileActivity.class);
-			startActivity(i3);
-			mDrawerLayout.closeDrawer(mDrawerList);
+			new ProfileDialogFragment().show(getSupportFragmentManager(), "profile");
+			mDrawerLayout.closeDrawer(mDrawerList);			
 			break;
 		case 4:
 			Intent i4=new Intent(this, LogActivity.class);
@@ -128,8 +128,9 @@ public class CoreActivity extends Activity {
 			mDrawerLayout.closeDrawer(mDrawerList);
 			break;
 		case 6:
-			Intent i6=new Intent(this, FeedbackActivity.class);
-			startActivity(i6);
+			Intent emailInt = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "oleg.yakimets@gmail.com", null));
+			emailInt.putExtra(Intent.EXTRA_SUBJECT, "User feedback");
+			startActivity(Intent.createChooser(emailInt, "Share your feedback"));
 			mDrawerLayout.closeDrawer(mDrawerList);
 			break;
 		case 7:
@@ -138,16 +139,20 @@ public class CoreActivity extends Activity {
 			mDrawerLayout.closeDrawer(mDrawerList);
 			break;
 		case 8:
-			Intent i8=new Intent(this, ShareActivity.class);
-			startActivity(i8);
+			Intent sharingIntent=new Intent(Intent.ACTION_SEND);
+			sharingIntent.setType("text/plain");
+			String shareBody = "www.ibabai.com";
+			sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Cool App!");
+			sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+			startActivity(Intent.createChooser(sharingIntent, "Share through"));
 			mDrawerLayout.closeDrawer(mDrawerList);
 			break;
 		default:
 			break;
-		}
-			
+		}			
 		
-	}
+	}	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);

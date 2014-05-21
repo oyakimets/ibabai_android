@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class PaymentActivity extends FragmentActivity {
 	
@@ -38,6 +37,6 @@ public class PaymentActivity extends FragmentActivity {
 		PaymentDialogFragment pdf = new PaymentDialogFragment();
 		pdf.setArguments(bundle);
 		pdf.show(getSupportFragmentManager(), "payment"); 
-	}
+	}	
 
 }

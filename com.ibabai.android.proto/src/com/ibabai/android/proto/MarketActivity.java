@@ -95,5 +95,10 @@ public class MarketActivity extends Activity {
 		}		
 		
 	}
-
+	@Override
+	public void onBackPressed() {
+		Intent i = new Intent(this, CoreActivity.class);
+		startActivity(i);
+		super.onBackPressed();
+	}
 }
