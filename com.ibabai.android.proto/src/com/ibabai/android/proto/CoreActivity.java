@@ -3,7 +3,9 @@ package com.ibabai.android.proto;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.Uri;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
@@ -30,6 +33,9 @@ public class CoreActivity extends FragmentActivity {
 	private TypedArray navMenuIcons;
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
+	public static final String PREFERENCES = "MyPrefs";
+	public static final String balance = "Balance";
+	SharedPreferences shared_prefs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,8 @@ public class CoreActivity extends FragmentActivity {
         adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
         mDrawerList.setAdapter(adapter);
         
+        
+        
         ActionBar ab = getActionBar(); 
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setCustomView(R.layout.ab_balance);
@@ -66,10 +74,8 @@ public class CoreActivity extends FragmentActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
-
         
-       
-        
+               
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, 0, 0) {
         	public void onDrawerClosed(View view) {
         		getActionBar().setTitle(mTitle);
@@ -156,6 +162,11 @@ public class CoreActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);
+		
+		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        String b = shared_prefs.getString(balance, "0");
+        TextView tv_balance = (TextView) findViewById(R.id.balance);
+        tv_balance.setText("balance "+ b + " b");
 		return true;
 	}
 	@Override

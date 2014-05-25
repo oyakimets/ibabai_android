@@ -24,6 +24,7 @@ public class ProfileUpdateActivity extends Activity {
 	public static final String telephone = "phone #";
 	public static final String age = "age";
 	public static final String gender="gender";	
+	public static final String balance = "Balance";	
 	SharedPreferences shared_prefs;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class ProfileUpdateActivity extends Activity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.core, menu);
+		getMenuInflater().inflate(R.menu.core, menu);		
 		return true;
 	}
 	@Override

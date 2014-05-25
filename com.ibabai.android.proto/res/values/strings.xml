@@ -52,5 +52,6 @@
     <string name="desc_mts">mts</string>
     <string name="call_back">Call Back</string>
     <string name="send_mail">Send mail</string>
+    <string name="on_upgrade_error">This should not be called</string>
 
 </resources>

@@ -54,18 +54,21 @@ public class MarketActivity extends Activity {
 			displayAction(position);
 		}		
 	}
-	private void displayAction(int position) {
+	private void displayAction(int position) {		
 		switch (position) {
-		case 0:
+		case 0:			
 			Intent paymentIntent = new Intent(this, PaymentActivity.class);
+			paymentIntent.putExtra("d_agent", "MTS");
 			startActivity(paymentIntent);
 			break;
-		case 1:
+		case 1:			
 			Intent paymentIntent1 = new Intent(this, PaymentActivity.class);
+			paymentIntent1.putExtra("d_agent", "Kievstar");
 			startActivity(paymentIntent1);
 			break;
-		case 2:
+		case 2:			
 			Intent paymentIntent2 = new Intent(this, PaymentActivity.class);
+			paymentIntent2.putExtra("d_agent", "Life");
 			startActivity(paymentIntent2);
 			break;
 		default:

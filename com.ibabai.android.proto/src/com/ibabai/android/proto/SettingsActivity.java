@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -16,7 +17,10 @@ import android.widget.Toast;
 public class SettingsActivity extends Activity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String status = "SignedUp";
+	static final String TABLE="logbook";
+	
 	SharedPreferences shared_prefs;
+	DatabaseHelper dbh;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +32,7 @@ public class SettingsActivity extends Activity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
         ab.setDisplayShowHomeEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);        
+        ab.setDisplayShowTitleEnabled(false);         
         
 	}
 	@Override
@@ -61,5 +65,17 @@ public class SettingsActivity extends Activity {
 		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
 		t.show();
 	}
-
+	public void ClearDB(View view) {
+		dbh = DatabaseHelper.getInstance(getApplicationContext());
+		SQLiteDatabase sqldb = dbh.getWritableDatabase();
+		if (sqldb != null) {
+			sqldb.delete(TABLE, null, null);
+			Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
+			t.show();
+		}
+		else {
+			Toast t = Toast.makeText(this, "Error", Toast.LENGTH_SHORT );
+			t.show();
+		}
+	}
 }

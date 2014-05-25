@@ -21,7 +21,7 @@ public class HelpActivity extends Activity {
 	FaqListAdapter listAdapter;
 	ExpandableListView expListView;
 	List<String> listDataHeader;
-	HashMap<String, List<String>> listDataChild;
+	HashMap<String, List<String>> listDataChild;	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class HelpActivity extends Activity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.core, menu);
+		getMenuInflater().inflate(R.menu.core, menu);		
 		return true;
 	}
 	@Override
