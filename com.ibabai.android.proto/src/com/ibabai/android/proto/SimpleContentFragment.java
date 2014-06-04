@@ -2,11 +2,11 @@ package com.ibabai.android.proto;
 
 import android.os.Bundle;
 
-public class TosContentFragment extends AbstractContentFragment {
+public class SimpleContentFragment extends AbstractContentFragment {
 	private static final String KEY_FILE="file";
 	
-	protected static TosContentFragment newInstance(String file) {
-		TosContentFragment f=new TosContentFragment();
+	protected static SimpleContentFragment newInstance(String file) {
+		SimpleContentFragment f=new SimpleContentFragment();
 		
 		Bundle args=new Bundle();
 		args.putString(KEY_FILE, file);

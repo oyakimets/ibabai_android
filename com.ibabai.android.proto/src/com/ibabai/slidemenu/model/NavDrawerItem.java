@@ -3,7 +3,7 @@ package com.ibabai.slidemenu.model;
 public class NavDrawerItem {
 	private String title;
 	private int icon;
-	private String count="0";
+	private String count;
 	private boolean isCounterVisible = false;
 	public NavDrawerItem() {}
 	

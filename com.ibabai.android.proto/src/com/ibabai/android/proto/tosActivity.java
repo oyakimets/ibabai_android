@@ -15,7 +15,7 @@ public class tosActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		
 		if (getSupportFragmentManager().findFragmentById(R.id.tos_content)==null) {
-			Fragment f=TosContentFragment.newInstance("file:///android_asset/docs/tos.html");
+			Fragment f=SimpleContentFragment.newInstance("file:///android_asset/docs/tos.html");
 			getSupportFragmentManager().beginTransaction().add(R.id.tos_content, f).commit();
 		}		
         

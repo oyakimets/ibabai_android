@@ -1,6 +1,13 @@
 package com.ibabai.android.proto;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -8,7 +15,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
@@ -24,6 +33,10 @@ import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
 
 public class CoreActivity extends FragmentActivity {
+	public static final String EXTRA_NI="position";
+	private boolean bool=false;
+	private String str_sl_size="0";	
+	private int ni_position=-1;	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -35,6 +48,13 @@ public class CoreActivity extends FragmentActivity {
 	private NavDrawerListAdapter adapter;
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String balance = "Balance";
+	private static final String TAG_PACTS="pacts";	
+	private ListView PromoList;
+	private PromoListAdapter pl_adapter;
+	private ArrayList<Drawable> PromoListItems;
+	private GetPromos get_promos=null;
+	public static ArrayList<String> allDirs;	
+	JSONArray pactsJArr = null;
 	SharedPreferences shared_prefs;
 	
 	@Override
@@ -49,10 +69,17 @@ public class CoreActivity extends FragmentActivity {
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerList = (ListView)findViewById(R.id.core_left);
         navDrawerItems = new ArrayList<NavDrawerItem>();
+        if (stopListActivity.StopListItems == null) {
+        	str_sl_size=Integer.toString(0);
+        }
+        else {
+        	str_sl_size=Integer.toString(stopListActivity.StopListItems.size());
+        }
+        bool = setCountBoolean(str_sl_size);
         
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1), true, "5"));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1), true, "3"));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1), bool, str_sl_size));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
@@ -63,18 +90,7 @@ public class CoreActivity extends FragmentActivity {
         navMenuIcons.recycle();
         
         adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
-        mDrawerList.setAdapter(adapter);
-        
-        
-        
-        ActionBar ab = getActionBar(); 
-        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        ab.setCustomView(R.layout.ab_balance);
-        ab.setDisplayShowHomeEnabled(false);
-        ab.setDisplayShowTitleEnabled(false);
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeButtonEnabled(true);
-        
+        mDrawerList.setAdapter(adapter);        
                
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, 0, 0) {
         	public void onDrawerClosed(View view) {
@@ -94,7 +110,21 @@ public class CoreActivity extends FragmentActivity {
                     	
         }
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
-       
+        
+        ActionBar ab = getActionBar(); 
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ab.setCustomView(R.layout.ab_balance);
+        ab.setDisplayShowHomeEnabled(false);
+        ab.setDisplayShowTitleEnabled(false);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeButtonEnabled(true);
+        
+        allDirs=new ArrayList<String>();
+        PromoList=(ListView) findViewById(R.id.promo_list);
+        PromoListItems = new ArrayList<Drawable>();
+        get_promos=new GetPromos();
+        executeAsyncTask(get_promos, getApplicationContext());        
+        
 	}
 	private class SlideMenuClickListener implements ListView.OnItemClickListener {
 		@Override
@@ -158,6 +188,83 @@ public class CoreActivity extends FragmentActivity {
 		}			
 		
 	}	
+	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task, T... params) {
+		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+	}
+	private class GetPromos extends AsyncTask<Context, Void, Void> {
+		
+		 
+		 @Override
+		 protected Void doInBackground(Context... ctxt) {
+			 
+			 try {
+				 StringBuilder buf=new StringBuilder();
+				 InputStream json=ctxt[0].getAssets().open("promo_content/promos.json"); 	
+				 BufferedReader in = new BufferedReader(new InputStreamReader(json));
+				 String str;
+				 while((str=in.readLine()) != null ) {
+					buf.append(str);
+				}				
+				in.close();
+				
+				JSONArray ja=new JSONArray(buf.toString());				
+				JSONObject jo=(JSONObject)ja.getJSONObject(0);
+				pactsJArr=jo.getJSONArray(TAG_PACTS);				
+				for(int i=0; i<pactsJArr.length(); i++) {					
+					String pacts_str=(String)pactsJArr.get(i);					
+					allDirs.add(pacts_str);	
+				}
+				if (ni_position != -1) {
+					allDirs.remove(ni_position);
+				}
+				for (int j=0; j< allDirs.size(); j++) {
+				   try { 
+				       String dir=allDirs.get(j); 
+				       InputStream is = ctxt[0].getAssets().open("promo_content/"+dir+"/con_tag.jpg");
+				       Drawable d_promo=Drawable.createFromStream(is, null);
+				       PromoListItems.add(d_promo);
+				    }
+				    catch (IOException ex) {				        	      	
+				    }				        	
+				}			
+			 }
+		 	 catch(Exception e) {
+		 		 e.printStackTrace();
+		 	 }			 
+			 
+			 return null;
+		 }
+		 @Override 
+		 public void onPostExecute(Void result) {
+			 super.onPostExecute(result);		 
+		     
+			 pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);
+			 KillPromo();
+		     PromoList.setAdapter(pl_adapter);
+		     PromoList.setOnItemClickListener(new PromoListClickListener());		     
+			 
+		     return;  
+		 }
+	 }
+	private class PromoListClickListener implements ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			displayPromoAction(position);
+		}		
+	}
+	private void displayPromoAction(int position) {
+		Intent promo_intent=new Intent(this, PresentationDisplayActivity.class);
+		promo_intent.putExtra(PresentationDisplayActivity.EXTRA_POSITION, position);
+		startActivity(promo_intent);		
+	}
+	
+	private void KillPromo() {
+		ni_position=getIntent().getIntExtra(EXTRA_NI, -1);
+		if (PromoListItems.size() != 0 && ni_position != -1) {
+			PromoListItems.remove(ni_position);
+			pl_adapter.notifyDataSetChanged();
+		}
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -206,4 +313,22 @@ public class CoreActivity extends FragmentActivity {
 		super.onConfigurationChanged(newConfig);
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
+	@Override
+	public void onBackPressed() {
+		Intent e_int = new Intent(Intent.ACTION_MAIN);
+		e_int.addCategory(Intent.CATEGORY_HOME);
+		e_int.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(e_int);
+		
+	}
+	public boolean setCountBoolean(String counter) {
+		if (counter.equals("0")) {
+			return false;
+		}
+		else {
+			return true;
+		}
+			
+	}
+	
 }

@@ -8,11 +8,12 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class myPromoActivity extends Activity {
+public class myPromoActivity extends Activity {	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.my_promo); 
+        setContentView(R.layout.my_promo);         
         
         ActionBar ab=getActionBar();
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -21,8 +22,9 @@ public class myPromoActivity extends Activity {
         ab.setHomeButtonEnabled(true);
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false);        
-        
-	}
+       
+	}	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);
@@ -43,7 +45,5 @@ public class myPromoActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 			
 		}		
-		
-	}
-
+	}	
 }

@@ -93,6 +93,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ibabai.android.proto.ProfileActivity" /> 
         </activity>
+        <activity android:name="PresentationDisplayActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" />            
+        </activity>
+        <activity android:name="PromoRulesActivity"
+            android:parentActivityName="CoreActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ibabai.android.proto.CoreActivity" /> 
+        </activity>
     </application>
 
 </manifest>

@@ -13,7 +13,7 @@ public class PresentationAdapter extends FragmentStatePagerAdapter {
 	@Override
 	public Fragment getItem(int position) {
 		String path=presentation[position];
-		return (TosContentFragment.newInstance("file:///android_asset/intro/" + path));
+		return (SimpleContentFragment.newInstance("file:///android_asset/intro/" + path));
 	}
 
 	@Override

@@ -7,11 +7,18 @@
 	    android:id="@+id/core_frame"
 	    android:layout_width="match_parent"
     	android:layout_height="match_parent" >
-    	<TextView 
+    	 
+    	<ListView
+        	android:id="@+id/promo_list"
+        	android:layout_marginTop="10dp" 
+        	android:layout_marginRight="10dp" 
+        	android:layout_marginLeft="10dp"     
         	android:layout_width="match_parent"
-    		android:layout_height="match_parent"
-    		android:text="Hi Assholes!"
-    		android:textSize="30sp"/>	    
+        	android:layout_height="match_parent"
+        	android:choiceMode="singleChoice"
+        	android:divider="@android:color/transparent"
+	    	android:dividerHeight="10dp" /> 
+	    	    
 	</FrameLayout>
 	<ListView 
 	    android:id="@+id/core_left"
