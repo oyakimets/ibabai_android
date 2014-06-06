@@ -8,6 +8,9 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />T
 
     <application
         android:allowBackup="true"
@@ -105,6 +108,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ibabai.android.proto.CoreActivity" /> 
         </activity>
+        <activity 
+            android:name="com.google.zxing.client.android.CaptureActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" >            
+            <intent-filter>
+                <action android:name="com.google.zxing.client.android.SCAN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>            
     </application>
 
 </manifest>

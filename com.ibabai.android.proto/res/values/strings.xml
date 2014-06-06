@@ -60,6 +60,7 @@
     <string name="desc_stoplist_tag">stop_list_tag</string>
     <string name="dialog_ni">Do you really want to delete this promo?</string>
     <string name="dialog_sl">Do you really want to block all the promos from this company?</string>
-    <string name="dialog_unblock">I agree to recieve promos from this company again.</string>
+    <string name="dialog_unblock">I agree to receive promos from this company again.</string>
+    
 
 </resources>
