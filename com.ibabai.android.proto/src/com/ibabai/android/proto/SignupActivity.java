@@ -83,7 +83,8 @@ public class SignupActivity extends Activity {
 			else {
 				editor.putString(gender, "Female").apply();
 			}
-			
+			Intent s_intent = new Intent(this, LocationService.class);
+			startService(s_intent);
 			Intent i=new Intent(this, CoreActivity.class);
 			startActivity(i);
 			finish();

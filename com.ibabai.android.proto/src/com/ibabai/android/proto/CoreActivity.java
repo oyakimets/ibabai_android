@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
@@ -47,7 +48,7 @@ public class CoreActivity extends FragmentActivity {
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
 	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
+	public static final String balance = "Balance";	
 	private static final String TAG_PACTS="pacts";	
 	private ListView PromoList;
 	private PromoListAdapter pl_adapter;
@@ -55,7 +56,7 @@ public class CoreActivity extends FragmentActivity {
 	private GetPromos get_promos=null;
 	public static ArrayList<String> allDirs;	
 	JSONArray pactsJArr = null;
-	SharedPreferences shared_prefs;
+	SharedPreferences shared_prefs;	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +124,8 @@ public class CoreActivity extends FragmentActivity {
         PromoList=(ListView) findViewById(R.id.promo_list);
         PromoListItems = new ArrayList<Drawable>();
         get_promos=new GetPromos();
-        executeAsyncTask(get_promos, getApplicationContext());        
+        executeAsyncTask(get_promos, getApplicationContext()); 
+        
         
 	}
 	private class SlideMenuClickListener implements ListView.OnItemClickListener {
@@ -246,6 +248,22 @@ public class CoreActivity extends FragmentActivity {
 		     return;  
 		 }
 	 }
+	@Override
+	protected void onResume() {
+		GPSTracker gps = new GPSTracker(this);
+        if(!gps.canGetLocation()) {
+        	LocDialogFragment ldf = new LocDialogFragment();
+        	ldf.show(getSupportFragmentManager(), "location");
+        }
+        else {        	
+        	String lat=Double.toString(gps.getLatitude());
+        	String lon=Double.toString(gps.getLongitude());
+        	Toast t = Toast.makeText(this, "Latitude: "+lat+"/Longitude: "+lon, Toast.LENGTH_LONG);
+        	t.show();      	
+        	
+        }
+        super.onResume();		
+	}
 	private class PromoListClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

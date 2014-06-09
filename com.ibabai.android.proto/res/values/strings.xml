@@ -61,6 +61,8 @@
     <string name="dialog_ni">Do you really want to delete this promo?</string>
     <string name="dialog_sl">Do you really want to block all the promos from this company?</string>
     <string name="dialog_unblock">I agree to receive promos from this company again.</string>
+    <string name="dialog_loc_title">Location service is disabled. </string>
+    <string name="dialog_loc">You are unable to use IBABAI without GPS. Turn on?</string>
     
 
 </resources>

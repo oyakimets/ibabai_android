@@ -25,11 +25,8 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        	setContentView(R.layout.activity_main);
-        
-        	if( getIntent().getBooleanExtra("EXIT", false)) {
-        		finish();
-        	}
+        	setContentView(R.layout.activity_main);        
+        	
                         
         	pager=(ViewPager)findViewById(R.id.pager);
         	adapter=new PresentationAdapter(getSupportFragmentManager());
@@ -50,6 +47,9 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
     	shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+    	if( getIntent().getBooleanExtra("EXIT", false)) {
+    		finish();
+    	}
     	if(shared_prefs.contains(status)) {
     		Intent launchIntent = new Intent(this, CoreActivity.class);
     		startActivity(launchIntent);
