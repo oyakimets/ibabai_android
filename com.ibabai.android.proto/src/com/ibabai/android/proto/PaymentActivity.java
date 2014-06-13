@@ -30,6 +30,7 @@ public class PaymentActivity extends FragmentActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
+               
 	}
 	
 	@Override
@@ -69,27 +70,43 @@ public class PaymentActivity extends FragmentActivity {
 		EditText et_amount = (EditText) findViewById(R.id.billing_amount);
 		String amount_input = et_amount.getText().toString();
 		
+		String s_agent = getIntent().getExtras().getString("d_agent");		
 		
-		String s_agent = getIntent().getExtras().getString("d_agent");
+		if (amount_input.length() == 0) {
+			et_amount.setError("Please enter amount");
+		}
+		else {
+			int int_amount = Integer.parseInt(amount_input);
+			shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			String b = shared_prefs.getString(balance, "0");
+			int int_b = Integer.parseInt(b);
 			
-				
-		int int_amount = Integer.parseInt(amount_input);
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String b = shared_prefs.getString(balance, "0");
-        int int_b = Integer.parseInt(b);
-        if (int_amount <= int_b) {
-        	Bundle bundle = new Bundle();
-        	bundle.putString("dialog_acc", account_input);
-        	bundle.putString("dialog_phn", phone_input);
-        	bundle.putString("dialog_amnt", amount_input);
-        	bundle.putString("dialog_agent", s_agent);
-        	PaymentDialogFragment pdf = new PaymentDialogFragment();
-        	pdf.setArguments(bundle);
-        	pdf.show(getSupportFragmentManager(), "payment");
-        	
-        }
-        else {
-        	et_amount.setError("Amount excedes balance");
-        }
+			if ((phone_input.length()==10 || account_input.length() >=6) && int_amount != 0 && int_amount<=int_b) { 
+					
+				Bundle bundle = new Bundle();
+				bundle.putString("dialog_acc", account_input);
+				bundle.putString("dialog_phn", phone_input);
+				bundle.putString("dialog_amnt", amount_input);
+				bundle.putString("dialog_agent", s_agent);
+				PaymentDialogFragment pdf = new PaymentDialogFragment();
+				pdf.setArguments(bundle);
+				pdf.show(getSupportFragmentManager(), "payment");
+			}
+			else if (phone_input.length()==0 && account_input.length()==0 ) {
+				et_phone.setError("Enter your phone or account number");
+			}
+			else if (phone_input.length() !=10 && phone_input.length() >0 && account_input.length() == 0 ) {
+				et_phone.setError("Phone number input error");
+			}
+			else if (account_input.length() < 6 && account_input.length() > 0 && phone_input.length()==0 ) {
+				et_phone.setError("Account number input error");
+			}
+			else if (int_amount == 0) {
+				et_amount.setError("Amount can not be 0");
+			}
+			else if (int_amount > int_b) {
+				et_amount.setError("Error! Amount exceeds balance");
+			}
+		}
 	}
 }

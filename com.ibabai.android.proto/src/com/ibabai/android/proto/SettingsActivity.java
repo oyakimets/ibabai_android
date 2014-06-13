@@ -12,13 +12,14 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String status = "SignedUp";
 	static final String TABLE="logbook";
-	
+	public static final String city="city";
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;
 	@Override
@@ -32,7 +33,12 @@ public class SettingsActivity extends Activity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
         ab.setDisplayShowHomeEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);         
+        ab.setDisplayShowTitleEnabled(false); 
+        
+        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        int c_id = shared_prefs.getInt("city", 0);
+        TextView tv = (TextView)findViewById(R.id.city_id);
+        tv.setText(Integer.toString(c_id));
         
 	}
 	@Override

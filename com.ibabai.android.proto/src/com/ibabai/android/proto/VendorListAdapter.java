@@ -1,8 +1,10 @@
 package com.ibabai.android.proto;
 
 import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,20 +13,20 @@ import android.widget.ImageView;
 
 public class VendorListAdapter extends BaseAdapter {
 	private Context context;
-	private ArrayList<VendorListItem> VendorListItems;
+	private ArrayList<Drawable> vendor_list;
 	
-	public VendorListAdapter(Context context, ArrayList<VendorListItem> VendorListItems ) {
+	public VendorListAdapter(Context context, ArrayList<Drawable> vendor_list ) {
 		this.context=context;
-		this.VendorListItems=VendorListItems;
+		this.vendor_list=vendor_list;
 	}
 	@Override
 	public int getCount() {
-		return VendorListItems.size();
+		return vendor_list.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return VendorListItems.get(position);
+		return vendor_list.get(position);
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class VendorListAdapter extends BaseAdapter {
           
         ImageView tagIcon = (ImageView) convertView.findViewById(R.id.vendor_tag);
                   
-        tagIcon.setImageResource(VendorListItems.get(position).getVendorTag());        
+        tagIcon.setImageDrawable(vendor_list.get(position));        
         
          
         return convertView;

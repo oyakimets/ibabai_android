@@ -6,8 +6,7 @@
     <ImageView 
         android:id="@+id/vendor_tag"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="100dp"
         android:scaleType="fitXY"        
-        android:contentDescription="@string/desc_mts"
-        android:src="@drawable/mts_tag" />        
+        android:contentDescription="@string/desc_mts" />        
 </RelativeLayout>
