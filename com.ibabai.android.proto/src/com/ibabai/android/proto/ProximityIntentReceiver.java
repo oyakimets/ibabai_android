@@ -24,18 +24,18 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 	public void onReceive(Context ctxt, Intent intent) {
 		
 		String key = LocationManager.KEY_PROXIMITY_ENTERING;
-		
+		int s_id = intent.getIntExtra("store_id", 0);
 		Boolean entering = intent.getBooleanExtra(key, false);
 		shared_prefs = ctxt.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 		Editor editor = shared_prefs.edit();
 		if (entering) {			
-			editor.putString(store_id, "1");
+			editor.putInt(store_id, s_id);
 			editor.apply();	
 			Log.d(getClass().getSimpleName(), "entering");
 			raiseNotification(ctxt, null);
 		}
 		else {
-			editor.putString(store_id, "0");
+			editor.putInt(store_id, 0);
 			editor.apply();	
 			Log.d(getClass().getSimpleName(), "exiting");
 		}

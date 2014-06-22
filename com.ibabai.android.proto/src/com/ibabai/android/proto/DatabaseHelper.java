@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	static final String TABLE_S="stores";
 	static final String TABLE_P="promoacts";
 	static final String TABLE_V="vendors";
+	static final String TABLE_SP="promo_stores";
 	private static DatabaseHelper singleton=null;
 	private Context ctxt=null;
 	
@@ -57,6 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE promoacts (_id INTEGER PRIMARY KEY, promoact_id INTEGER, client_id INTEGER, client_name STRING, barcode STRING, delivery INTEGER DEFAULT 0, view INTEGER DEFAULT 0, purchase INTEGER DEFAULT 0, rew1 INTEGER DEFAULT 0,  rew2 INTEGER DEFAULT 0, multiple INTEGER, stopped INTEGER DEFAULT 0);");
 		db.execSQL("CREATE TABLE vendors (_id INTEGER PRIMARY KEY, vendor_id INTEGER, vendor_name STRING);");
 		db.execSQL("CREATE TABLE cities (_id INTEGER PRIMARY KEY, city_id INTEGER, latitude REAL, longitude REAL, radius INTEGER);");
+		db.execSQL("CREATE TABLE promo_stores (_id INTEGER PRIMARY KEY, store_id INTEGER, promoact_id INTEGER);");
 				
 	}
 
@@ -82,5 +84,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.insert(DatabaseHelper.TABLE_V, DatabaseHelper.V_ID, ven_cv);
 		db.close();
 	}
-
+	public void AddStore(Store s) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues s_cv = new ContentValues();
+		s_cv.put(DatabaseHelper.S_ID, s.getStoreId());
+		s_cv.put(DatabaseHelper.LAT, s.getLat());
+		s_cv.put(DatabaseHelper.LON, s.getLon());
+		db.insert(DatabaseHelper.TABLE_S, DatabaseHelper.S_ID, s_cv);
+		db.close();
+	}
+	public void AddPromo(Promoact p) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues p_cv = new ContentValues();
+		p_cv.put(DatabaseHelper.P_ID, p.getPromoId());
+		p_cv.put(DatabaseHelper.CL_ID, p.getClientId());
+		p_cv.put(DatabaseHelper.CL_NAME, p.getClientName());
+		p_cv.put(DatabaseHelper.CODE, p.getBarcode());
+		p_cv.put(DatabaseHelper.REW1, p.getRew1());
+		p_cv.put(DatabaseHelper.REW2, p.getRew2());
+		p_cv.put(DatabaseHelper.MULT, p.getMult());
+		db.insert(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID, p_cv);
+		db.close();
+	}
+	public void deletePromo(int id) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+"=?", new String[] {Integer.toString(id)});
+		db.close();
+	}
+	public void deleteHomePromo() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+"=0", null);
+		db.close();
+	}
+	public void addPromoStores(int store_id, int promoact_id) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues ps_cv = new ContentValues();
+		ps_cv.put(DatabaseHelper.S_ID, store_id);
+		ps_cv.put(DatabaseHelper.P_ID, promoact_id);
+		db.insert(DatabaseHelper.TABLE_SP, DatabaseHelper.S_ID, ps_cv);
+		db.close();
+	}
+	public void ClearStores() {
+		 SQLiteDatabase db = this.getWritableDatabase();
+		 if (db != null) {
+			db.delete(DatabaseHelper.TABLE_S, null, null);
+			db.close();			 
+		}		
+	 }
 }

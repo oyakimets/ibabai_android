@@ -39,9 +39,9 @@ public class NiDialogFragment extends DialogFragment implements DialogInterface.
 			dismiss();
 			break;
 		case AlertDialog.BUTTON_POSITIVE:
-			int position=getArguments().getInt("position");		
+			String pa_id=getArguments().getString("promoact");		
 			Intent ni_yes=new Intent(getActivity(), CoreActivity.class);
-			ni_yes.putExtra(CoreActivity.EXTRA_NI, position);
+			ni_yes.putExtra(CoreActivity.EXTRA_NI, pa_id);
 			startActivity(ni_yes);
 			/* Launch async task: 1)delete promo directory2)update promos.json
 			 * 3) send data to server with promo id

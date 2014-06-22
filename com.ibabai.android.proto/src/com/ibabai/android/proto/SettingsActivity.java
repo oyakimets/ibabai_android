@@ -1,5 +1,7 @@
 package com.ibabai.android.proto;
 
+import java.io.File;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -35,10 +37,17 @@ public class SettingsActivity extends Activity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false); 
         
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        int c_id = shared_prefs.getInt("city", 0);
-        TextView tv = (TextView)findViewById(R.id.city_id);
-        tv.setText(Integer.toString(c_id));
+        File i_folder=new File(getConDir(this), "0");       
+        File[] f_lst = i_folder.listFiles();
+        String path = f_lst[5].getAbsolutePath();
+        File f = new File(path);
+        TextView tv = (TextView)findViewById(R.id.cl_name);
+        if (f.exists()) {        	
+        	tv.setText(path);
+        }
+        else {
+        	tv.setText("Fuck");
+        }
         
 	}
 	@Override
@@ -84,4 +93,12 @@ public class SettingsActivity extends Activity {
 			t.show();
 		}
 	}
+	public void updateData(View view) {
+		Intent i = new Intent(this, DataUpdateService.class);
+		startService(i);
+		
+	}
+	static File getConDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+	 }
 }

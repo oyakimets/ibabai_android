@@ -361,7 +361,7 @@ int id center_horizontal 0x7f0a0011
 int id center_vertical 0x7f0a000f
 int id change_password 0x7f0a0092
 int id checkbox 0x7f0a0047
-int id city_id 0x7f0a00ac
+int id cl_name 0x7f0a00ac
 int id clip_horizontal 0x7f0a0016
 int id clip_vertical 0x7f0a0015
 int id collapseActionView 0x7f0a0026

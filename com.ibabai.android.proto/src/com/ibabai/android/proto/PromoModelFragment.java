@@ -1,19 +1,21 @@
 package com.ibabai.android.proto;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.json.JSONObject;
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 public class PromoModelFragment extends Fragment {
 	private PromoPresentation presentation=null;
-	private PresLoadTask presTask=null;
-	private static String pc_folder;	
+	private PresLoadTask presTask=null;	
+	
 	
 	@Override 
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -38,17 +40,24 @@ public class PromoModelFragment extends Fragment {
 	}
 	private class PresLoadTask extends AsyncTask<Context, Void, Void> {		
 		private PromoPresentation localPresentation=null;		
-		private Exception e=null;
-		private String path;		
-		int position=getActivity().getIntent().getIntExtra(PresentationDisplayActivity.EXTRA_POSITION, -1);
+		private Exception e=null;		
+		private File pa_dir;
+		private String pa_id;		
+		private File map;		
+		
 		@Override 
-		protected Void doInBackground(Context... ctxt) {
-			pc_folder= PresentationDisplayActivity.getPromoDir(position); 
-			path="promo_content/"+pc_folder+"/cp.json";
+		protected Void doInBackground(Context... ctxt) {			
+			pa_id=getActivity().getIntent().getStringExtra(PresentationDisplayActivity.EXTRA_PA);			
+			pa_dir = new File(getConDir(getActivity()), pa_id);			
+			if (pa_dir.exists()) {
+				map = new File(pa_dir, "promoact_map.txt");
+				Log.v("MAP", map.getAbsolutePath());
+			}
 			try {
 				StringBuilder buf=new StringBuilder();
-				InputStream json=ctxt[0].getAssets().open(path); 	
-				BufferedReader in = new BufferedReader(new InputStreamReader(json));
+				InputStream json=null; 	
+				json = new FileInputStream(map);
+				BufferedReader in = new BufferedReader(new InputStreamReader(json));				 
 				String str;
 				while((str=in.readLine()) != null ) {
 					buf.append(str);
@@ -71,7 +80,9 @@ public class PromoModelFragment extends Fragment {
 			else {
 				Log.e(getClass().getSimpleName(), "Exception loading presentation", e);
 			}
-		}
-		
+		}		
 	}
+	static File getConDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+	 }
 }

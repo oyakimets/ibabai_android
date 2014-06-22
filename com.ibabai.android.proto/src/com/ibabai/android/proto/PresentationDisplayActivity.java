@@ -1,5 +1,7 @@
 package com.ibabai.android.proto;
 
+import java.io.File;
+
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +18,12 @@ import android.widget.TextView;
 public class PresentationDisplayActivity extends FragmentActivity {
 	
 	public static final String EXTRA_POSITION="position";
+	public static final String EXTRA_PA="pa_id";
 	SharedPreferences shared_prefs;
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String balance = "Balance";
 	public static final String MODEL="promo_model";
+	private String pa_folder_path=null;
 	private ViewPager pres_pager=null;
 	private PromoPresAdapter adapter=null;
 	
@@ -73,36 +77,41 @@ public class PresentationDisplayActivity extends FragmentActivity {
 		
 	}
 	void setupPager(PromoPresentation presentation) {		
-		int position=getIntent().getIntExtra(EXTRA_POSITION, -1);
-		String promo_folder= getPromoDir(position); 
-		adapter = new PromoPresAdapter(this, presentation, promo_folder);
+		String pa_id=getIntent().getStringExtra(EXTRA_PA);
+		File pa_folder = new File(getConDir(this), pa_id);
+		if (pa_folder.exists()) {
+			pa_folder_path = pa_folder.getAbsoluteFile()+"/";
+		}	
+		
+		adapter = new PromoPresAdapter(this, presentation, pa_folder_path);
 		pres_pager.setAdapter(adapter);
 	}
 	public static String getPromoDir(int position) {			   
 	    return CoreActivity.allDirs.get(position);
 	}
 	public void showPromoRules(View v) {
-		int position=getIntent().getIntExtra(EXTRA_POSITION, -1);
-		String promo_folder= getPromoDir(position); 
+		String pa_id=getIntent().getStringExtra(EXTRA_PA);		
 		Intent promo_rules_intent=new Intent(this, PromoRulesActivity.class);
-		promo_rules_intent.putExtra(PromoRulesActivity.EXTRA_DIR, promo_folder);
+		promo_rules_intent.putExtra(PromoRulesActivity.EXTRA_DIR, pa_id);
 		startActivity(promo_rules_intent); 
 	}
 	public void notInterested(View v) {
-		int position=getIntent().getIntExtra(EXTRA_POSITION, -1);
+		String pa_id=getIntent().getStringExtra(EXTRA_PA);
 		Bundle bundle = new Bundle();
-    	bundle.putInt("position", position);
+    	bundle.putString("promoact", pa_id);
     	NiDialogFragment nidf = new NiDialogFragment();
     	nidf.setArguments(bundle);
     	nidf.show(getSupportFragmentManager(), "ni");
 	}
 	public void sendToStoplist(View v) {
-		int position=getIntent().getIntExtra(EXTRA_POSITION, -1);
+		String pa_id=getIntent().getStringExtra(EXTRA_PA);
 		Bundle bundle = new Bundle();
-    	bundle.putInt("position", position);
+    	bundle.putString("promoact", pa_id);
     	StopDialogFragment nidf = new StopDialogFragment();
     	nidf.setArguments(bundle);
     	nidf.show(getSupportFragmentManager(), "sl");		
 	}
-	
+	static File getConDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+	 }
 }

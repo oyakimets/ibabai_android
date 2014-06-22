@@ -1,6 +1,8 @@
 package com.ibabai.android.proto;
 
+
 import android.os.Bundle;
+
 
 public class SimpleContentFragment extends AbstractContentFragment {
 	private static final String KEY_FILE="file";
@@ -17,6 +19,5 @@ public class SimpleContentFragment extends AbstractContentFragment {
 	@Override
 	String getPage() {
 		return(getArguments().getString(KEY_FILE));
-	}
-
+	}	
 }

@@ -1,5 +1,7 @@
 package com.ibabai.android.proto;
 
+import java.io.File;
+
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +23,12 @@ public class PromoRulesActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String dir = getIntent().getStringExtra(EXTRA_DIR); 
+        File pa_folder = new File(getConDir(this), dir);
         if (getSupportFragmentManager().findFragmentById(R.id.promo_rules)==null) {
-			Fragment f=SimpleContentFragment.newInstance("file:///android_asset/promo_content/"+dir+"/rules.html");
-			getSupportFragmentManager().beginTransaction().add(R.id.promo_rules, f).commit();
+        	if (pa_folder.exists()) {
+        		Fragment f=SimpleContentFragment.newInstance("file:///"+pa_folder+"/rules.html");
+        		getSupportFragmentManager().beginTransaction().add(R.id.promo_rules, f).commit();
+        	}
 		}		
         
         setContentView(R.layout.promo_rules);        
@@ -61,7 +66,9 @@ public class PromoRulesActivity extends FragmentActivity {
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);			
-		}
-		
+		}		
 	}
+	static File getConDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+	 }
 }

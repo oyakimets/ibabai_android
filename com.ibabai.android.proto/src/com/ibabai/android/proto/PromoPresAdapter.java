@@ -1,5 +1,6 @@
 package com.ibabai.android.proto;
 
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -11,16 +12,17 @@ public class PromoPresAdapter extends FragmentStatePagerAdapter {
 	public PromoPresAdapter(FragmentActivity ctxt, PromoPresentation presentation, String promo_folder) {
 		super(ctxt.getSupportFragmentManager());
 		this.presentation=presentation;
-		this.promo_folder=promo_folder;
+		this.promo_folder=promo_folder;		
 	}
 	@Override
-	public Fragment getItem(int position) {
+	public Fragment getItem(int position) {		
 		String path=presentation.getSlideFile(position);
-		return (SimpleContentFragment.newInstance("file:///android_asset/promo_content/"+promo_folder+"/"+path));
+		return (SimpleContentFragment.newInstance("file:///"+promo_folder+path));
 	}
 
 	@Override
 	public int getCount() {
 		return (presentation.getSlidesCount());
 	}
+	
 }

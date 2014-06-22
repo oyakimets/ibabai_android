@@ -3,11 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    
     <TextView 
-        android:id="@+id/city_id"
+        android:id="@+id/cl_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp" />
+        android:textSize="30sp" />    
+    
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,6 +24,12 @@
         android:textSize="30sp"
         android:onClick="ClearDB"
         android:text="Clear DB"/>
-    
+    <Button 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:textSize="30sp"
+        android:onClick="updateData"
+        android:text="Update Data"/>
 
 </LinearLayout>

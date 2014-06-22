@@ -40,9 +40,9 @@ public class StopDialogFragment extends DialogFragment implements DialogInterfac
 			dismiss();
 			break;
 		case AlertDialog.BUTTON_POSITIVE:
-			int position=getArguments().getInt("position");		
+			String pa_id=getArguments().getString("promoact");		
 			Intent sl_yes=new Intent(getActivity(), CoreActivity.class);
-			sl_yes.putExtra(CoreActivity.EXTRA_NI, position);
+			sl_yes.putExtra(CoreActivity.EXTRA_NI, pa_id);
 			startActivity(sl_yes);
 			Toast.makeText(getActivity().getBaseContext(), "All promos of the company are blocked", Toast.LENGTH_LONG).show();
 			/*launch async task: 1) copy cl.jpg from promo to sl folder 2) update sl.json file 

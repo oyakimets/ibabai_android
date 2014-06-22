@@ -32,9 +32,12 @@ public class SignupActivity extends Activity {
 	public static final String age = "age";
 	public static final String gender="gender";
 	public static final String city="city";
+	public static final String store_id="store_id";
+	public static final String user_id="user_id";
 	private DbLoadTask db_load = null;	
 	Location current_loc;
 	DatabaseHelper dbh;
+	Editor editor;
 	SharedPreferences shared_prefs;		
 	
 	@Override
@@ -56,6 +59,12 @@ public class SignupActivity extends Activity {
         agePicker.setValue(0); 
         agePicker.setDisplayedValues(ap_str);
         agePicker.setWrapSelectorWheel(false);
+        
+        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+ 		Editor editor=shared_prefs.edit();
+ 		editor.putInt(city, 0);
+ 		editor.putInt(store_id, 0);
+ 		editor.apply();
         
         GPSTracker gps = new GPSTracker(this);
         current_loc = gps.getLocation();             
@@ -87,8 +96,7 @@ public class SignupActivity extends Activity {
 			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 			Editor editor = shared_prefs.edit();
 			editor.putBoolean(status, true);
-			editor.apply();	
-			
+			editor.putInt(user_id, 1);		
 			editor.putString(username, s_email).apply();			
 			editor.putString(telephone, s_phone).apply();			
 			editor.putString(age, str_age).apply();
@@ -99,9 +107,7 @@ public class SignupActivity extends Activity {
 			}
 			else {
 				editor.putString(gender, "Female").apply();
-			}
-			Intent s_intent = new Intent(this, LocationService.class);
-			startService(s_intent);
+			}			
 			Intent i=new Intent(this, CoreActivity.class);
 			startActivity(i);
 			finish();
@@ -217,16 +223,17 @@ public class SignupActivity extends Activity {
 				 	 float distance=current_loc.distanceTo(location);
 				 	 if (distance <= radius) {
 				 		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-				 		Editor editor=shared_prefs.edit();
-				 		editor.putInt(city, city_id);
-				 		editor.apply();
+				  		Editor edit=shared_prefs.edit();
+				 		edit.putInt(city, city_id);
+				 		edit.apply();
 				 		break;
 				 	 }
 				 	 new_city_c.moveToNext();
 			 	}
 			 }
-			 dbh.close();
+			 startService(new Intent(SignupActivity.this, StoresUploadService.class));
 			 new_city_c.close();
+			 dbh.close();			 
 		     return;  
 		 }
 		 private Cursor cityCursor() {
