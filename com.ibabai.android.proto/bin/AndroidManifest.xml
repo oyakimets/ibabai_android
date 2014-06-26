@@ -129,6 +129,7 @@
         <service android:name="DataUpdateService"></service>
         <service android:name="ConUpdateService"></service>
         <service android:name="conInstallService"></service>
+        <service android:name="StopListService"></service>
         <receiver android:name="DownloadCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />                    

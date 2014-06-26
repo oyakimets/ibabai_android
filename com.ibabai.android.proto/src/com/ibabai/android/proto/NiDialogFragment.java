@@ -12,8 +12,10 @@ import android.widget.Button;
 public class NiDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 	private View form=null;
 	private AlertDialog ni_dialog=null;
+	DatabaseHelper dbh;
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		dbh=DatabaseHelper.getInstance(getActivity().getApplicationContext());
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog_ni, null);
 		AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
 		AlertDialog dialog = builder.setView(form).setPositiveButton("Yes", this).setNegativeButton("No", null).create(); 
@@ -39,9 +41,9 @@ public class NiDialogFragment extends DialogFragment implements DialogInterface.
 			dismiss();
 			break;
 		case AlertDialog.BUTTON_POSITIVE:
-			String pa_id=getArguments().getString("promoact");		
-			Intent ni_yes=new Intent(getActivity(), CoreActivity.class);
-			ni_yes.putExtra(CoreActivity.EXTRA_NI, pa_id);
+			String pa_id=getArguments().getString("promoact");
+			dbh.paStopUpdate(pa_id, 1);
+			Intent ni_yes=new Intent(getActivity(), CoreActivity.class);			
 			startActivity(ni_yes);
 			/* Launch async task: 1)delete promo directory2)update promos.json
 			 * 3) send data to server with promo id

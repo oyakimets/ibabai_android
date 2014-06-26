@@ -37,17 +37,16 @@ public class SettingsActivity extends Activity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false); 
         
-        File i_folder=new File(getConDir(this), "0");       
-        File[] f_lst = i_folder.listFiles();
-        String path = f_lst[5].getAbsolutePath();
-        File f = new File(path);
+        File i_file= new File(getStopDir(this), "3_client.jpg");
+        String path = i_file.getAbsolutePath();
         TextView tv = (TextView)findViewById(R.id.cl_name);
-        if (f.exists()) {        	
+        if (i_file.exists()) { 	
+        	       	
         	tv.setText(path);
         }
         else {
         	tv.setText("Fuck");
-        }
+        }        
         
 	}
 	@Override
@@ -100,5 +99,8 @@ public class SettingsActivity extends Activity {
 	}
 	static File getConDir(Context ctxt) {
 		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+	 }
+	static File getStopDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
 	 }
 }

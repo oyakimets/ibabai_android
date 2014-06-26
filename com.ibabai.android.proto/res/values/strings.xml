@@ -34,11 +34,7 @@
         <item>@drawable/ic_action_help</item>
         <item>@drawable/ic_action_share</item>
     </array>
-    <array name="market_tags">
-        <item>@drawable/mts_tag</item>
-        <item>@drawable/ks_tag</item>
-        <item>@drawable/life_tag</item>
-    </array>
+    
     <string name="menu">Menu</string>
     <string name="ab_promo">My promos</string>
     <string name="ab_market">Marketplace</string>

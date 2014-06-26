@@ -77,7 +77,7 @@ public class psUploadService extends IntentService {
 				while ((line=reader.readLine()) != null) {
 					buf.append(line+"\n");
 				}
-				loadPromoStores(buf.toString(), city_id);
+				loadPromoStores(buf.toString());
 			}
 			catch (Exception e) {
 				Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
@@ -93,10 +93,12 @@ public class psUploadService extends IntentService {
 				}
 			}				
 		}
-		Intent con_intent = new Intent(this, ConUploadService.class);
+		Intent con_intent = new Intent(this, ConUpdateService.class);
 		startService(con_intent);
+		Intent loc_intent = new Intent(this, LocationService.class);
+		startService(loc_intent);
 	}
-	private void loadPromoStores(String st, int id) throws JSONException {
+	private void loadPromoStores(String st) throws JSONException {
 		JSONArray jsa = new JSONArray(st);
 		for (int i=0; i<jsa.length(); i++) {
 			JSONObject store_item = jsa.optJSONObject(i);
@@ -111,7 +113,7 @@ public class psUploadService extends IntentService {
 	
 	private void loadPromos(String st) throws JSONException {
 		JSONObject jso = new JSONObject(st);
-		JSONArray promoacts = jso.optJSONArray("add");
+		JSONArray promoacts = jso.optJSONArray("promos");
 		if (promoacts.length() > 0) {
 			for (int i=0; i<promoacts.length(); i++) {
 				JSONObject promoact = promoacts.optJSONObject(i);

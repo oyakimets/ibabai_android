@@ -65,7 +65,7 @@ public class LogbookFragment extends ListFragment {
 					else {
 						if (i==amnt_col) {
 							tv.setText(amnt);
-							tv.setTextColor(Color.GREEN);
+							tv.setTextColor(Color.parseColor("#43910f"));
 							return true;
 						}
 						return false;

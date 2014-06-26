@@ -1,12 +1,10 @@
 package com.ibabai.android.proto;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.util.ArrayList;
+
 import org.json.JSONArray;
-import org.json.JSONObject;
+
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -21,22 +19,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import com.ibabai.android.proto.UnblockDialogFragment.UnblockDialogListener;
+import com.ibabai.android.proto.UnblockDialogFragment.ReloadDataListener;
 
-public class stopListActivity extends FragmentActivity implements UnblockDialogListener  {
+
+public class stopListActivity extends FragmentActivity implements ReloadDataListener  {
+	
+		
 	private Bundle bundle;
 	public static int sl_size=0;	
 	public static final String EXTRA_POS="position";
+	public static final String EXTRA_CL="client_id";
 	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
-	private static final String TAG_STOPS="stops";	
+	public static final String balance = "Balance";	
+	public static final String SL_BASEDIR="stop_list";
 	private ListView StopList;
 	private StopListAdapter sl_adapter;
 	public static ArrayList<Drawable> StopListItems;
 	private GetStops get_stops=null;
-	public static ArrayList<String> allDirs;	
+	public static ArrayList<String> StopListIds;
+	private File stop_dir;
 	JSONArray stopJArr = null;
 	SharedPreferences shared_prefs;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +52,9 @@ public class stopListActivity extends FragmentActivity implements UnblockDialogL
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
         ab.setDisplayShowHomeEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);
-        
-        allDirs=new ArrayList<String>();
-        StopList=(ListView) findViewById(R.id.stop_list);
-        StopListItems = new ArrayList<Drawable>();
-        get_stops=new GetStops();
-        executeAsyncTask(get_stops, getApplicationContext());
-        
+        ab.setDisplayShowTitleEnabled(false);        
+             
+       
 	}
 	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task, T... params) {
 		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
@@ -64,38 +63,19 @@ public class stopListActivity extends FragmentActivity implements UnblockDialogL
 		 
 		 @Override
 		 protected Void doInBackground(Context... ctxt) {
-			 try {
-				 StringBuilder buf=new StringBuilder();
-				 InputStream json=ctxt[0].getAssets().open("promo_content/sl.json"); 	
-				 BufferedReader in = new BufferedReader(new InputStreamReader(json));
-				 String str;
-				 while((str=in.readLine()) != null ) {
-					buf.append(str);
-				}				
-				in.close();
-				
-				JSONArray ja=new JSONArray(buf.toString());				
-				JSONObject jo=(JSONObject)ja.getJSONObject(0);
-				stopJArr=jo.getJSONArray(TAG_STOPS);				
-				for(int i=0; i<stopJArr.length(); i++) {					
-					String stop_str=(String)stopJArr.get(i);					
-					allDirs.add(stop_str);	
-				}
-				for (int j=0; j< allDirs.size(); j++) {
-				   try { 
-				       String file_name=allDirs.get(j); 
-				       InputStream is = ctxt[0].getAssets().open("promo_content/stop_list/"+file_name);
-				       Drawable d_stop=Drawable.createFromStream(is, null);
-				       StopListItems.add(d_stop);
-				    }
-				    catch (IOException ex) {				        	      	
-				    }				        	
-				}			
-			 }
-		 	 catch(Exception e) {
-		 		 e.printStackTrace();
-		 	 }			 
 			 
+			 if (stop_dir.exists() && stop_dir.isDirectory()) {				 
+				 File[] f_lst = stop_dir.listFiles();
+				 String[] f_names = stop_dir.list();
+				 for (File f:f_lst) {
+					 Drawable d_stop = Drawable.createFromPath(f.getAbsolutePath());
+					 StopListItems.add(d_stop);
+				 }
+				 for (String s:f_names) {
+					 StopListIds.add(s);
+				 }
+		 	 
+			 }
 			 return null;
 		 }
 		 @Override 
@@ -120,23 +100,20 @@ public class stopListActivity extends FragmentActivity implements UnblockDialogL
 			displayStopAction(position);
 		}		
 	}
-	private void displayStopAction(int pos) {		
+	private void displayStopAction(int pos) {
+		bundle.putString("vend_f", StopListIds.get(pos));
     	bundle.putInt("position", pos);
+    	bundle.putInt("size", StopListItems.size());
     	UnblockDialogFragment unbl = new UnblockDialogFragment();
     	unbl.setArguments(bundle);
     	unbl.show(getSupportFragmentManager(), "unblock");		
 	}
 	
-	public void KillBlock(int ub_pos) {		
-		if (StopListItems.size() != 0 && ub_pos != -1) {
-			StopListItems.remove(ub_pos);
-			bundle.putInt("size", StopListItems.size());
-	    	UnblockDialogFragment ub_fr = new UnblockDialogFragment();
-	    	ub_fr.setArguments(bundle);
-			sl_adapter.notifyDataSetChanged();
-			
-		}
+	protected void onResume() {
+		ReloadData();
+        super.onResume();
 	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);
@@ -159,5 +136,18 @@ public class stopListActivity extends FragmentActivity implements UnblockDialogL
 		}		
 		
 	}
-
+	public void ReloadData() {		
+        StopList=(ListView) findViewById(R.id.stop_list);
+        StopListIds = new ArrayList<String>();
+        StopListItems = new ArrayList<Drawable>();
+        stop_dir = getStopDir(this);
+        get_stops=new GetStops();
+        executeAsyncTask(get_stops, getApplicationContext());
+        if(sl_adapter != null) {
+        	sl_adapter.notifyDataSetChanged();
+        }
+	}
+	static File getStopDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), SL_BASEDIR));
+	 }	
 }

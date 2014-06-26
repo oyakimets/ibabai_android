@@ -24,15 +24,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
 
 public class CoreActivity extends FragmentActivity {
 	public static final String EXTRA_NI="position";
-	private boolean bool=false;
-	private String str_sl_size="0";	
+	private String sl_count = null;
+	private boolean bool=false;	
 	private String ni_position = null;	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -71,18 +69,11 @@ public class CoreActivity extends FragmentActivity {
         navMenuIcons = getResources().obtainTypedArray(R.array.core_menu_icons);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerList = (ListView)findViewById(R.id.core_left);
-        navDrawerItems = new ArrayList<NavDrawerItem>();
-        if (stopListActivity.StopListItems == null) {
-        	str_sl_size=Integer.toString(0);
-        }
-        else {
-        	str_sl_size=Integer.toString(stopListActivity.StopListItems.size());
-        }
-        bool = setCountBoolean(str_sl_size);
-        
+        navDrawerItems = new ArrayList<NavDrawerItem>();       
+        updateStoplistCount();
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1), true, "5"));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1), bool, str_sl_size));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1), bool, sl_count));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
@@ -121,18 +112,11 @@ public class CoreActivity extends FragmentActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
-        
-        dbh=DatabaseHelper.getInstance(getApplicationContext());
-        
+                    
         shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        store_id=shared_prefs.getInt("store_id", 0);       
+        store_id=shared_prefs.getInt("store_id", 0);  
         
-		dbPromos=new ArrayList<String>();
-        allDirs=new ArrayList<String>();
-        PromoList=(ListView) findViewById(R.id.promo_list);
-        PromoListItems = new ArrayList<Drawable>();
-        get_promos=new GetPromos();
-        executeAsyncTask(get_promos, getApplicationContext()); 
+        
         
         DataUpdateReceiver.scheduleAlarm(this);
 	}
@@ -241,12 +225,12 @@ public class CoreActivity extends FragmentActivity {
 				if (ni_position != null) {
 					allDirs.remove(ni_position);
 				}
-				allDirs.add("0");
+				
 				for (int j=0; j< allDirs.size(); j++) {					
 					String dir=allDirs.get(j);
 					File pa_folder = new File(getConDir(CoreActivity.this), dir);
 					if (pa_folder.exists()) {
-						File tag_file = new File(pa_folder, "con_tag.JPG");
+						File tag_file = new File(pa_folder, "con_tag.jpg");
 						String tag_path = tag_file.getAbsolutePath();												
 						Drawable d_promo = Drawable.createFromPath(tag_path);
 						PromoListItems.add(d_promo);								
@@ -262,10 +246,8 @@ public class CoreActivity extends FragmentActivity {
 		 }
 		 @Override 
 		 public void onPostExecute(Void result) {
-			 super.onPostExecute(result);		 
-		     
-			 pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);
-			 KillPromo();
+			 super.onPostExecute(result);		     
+			 pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);			 
 		     PromoList.setAdapter(pl_adapter);
 		     PromoList.setOnItemClickListener(new PromoListClickListener());		     
 			 
@@ -274,18 +256,25 @@ public class CoreActivity extends FragmentActivity {
 	 }
 	@Override
 	protected void onResume() {
+		
+		dbh=DatabaseHelper.getInstance(getApplicationContext());
+		dbPromos=new ArrayList<String>();
+        allDirs=new ArrayList<String>();
+        PromoList=(ListView) findViewById(R.id.promo_list);
+        PromoListItems = new ArrayList<Drawable>();
+        get_promos=new GetPromos();
+        executeAsyncTask(get_promos, getApplicationContext()); 
+        if (pl_adapter != null) {
+        	pl_adapter.notifyDataSetChanged();
+        }
 		GPSTracker gps = new GPSTracker(this);
         if(!gps.canGetLocation()) {
         	LocDialogFragment ldf = new LocDialogFragment();
         	ldf.show(getSupportFragmentManager(), "location");
         }
-        else {        	
-        	String lat=Double.toString(gps.getLatitude());
-        	String lon=Double.toString(gps.getLongitude());
-        	Toast t = Toast.makeText(this, "Latitude: "+lat+"/Longitude: "+lon, Toast.LENGTH_LONG);
-        	t.show();      	
-        	
-        }
+       
+        updateStoplistCount();
+        
         super.onResume();		
 	}
 	@Override
@@ -305,15 +294,7 @@ public class CoreActivity extends FragmentActivity {
 		String pa_id = allDirs.get(position);
 		promo_intent.putExtra(PresentationDisplayActivity.EXTRA_PA, pa_id);
 		startActivity(promo_intent);		
-	}
-	
-	private void KillPromo() {
-		ni_position=getIntent().getStringExtra(EXTRA_NI);
-		if (PromoListItems.size() != 0 && ni_position != null) {
-			PromoListItems.remove(ni_position);
-			pl_adapter.notifyDataSetChanged();
-		}
-	}
+	}	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -368,15 +349,7 @@ public class CoreActivity extends FragmentActivity {
 		e_int.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(e_int);
 		
-	}
-	public boolean setCountBoolean(String counter) {
-		if (counter.equals("0")) {
-			return false;
-		}
-		else {
-			return true;
-		}			
-	}
+	}	
 	
 	private Cursor promoactCursor() {
 		 String p_query = String.format("SELECT * FROM %s WHERE stopped=0", DatabaseHelper.TABLE_P);
@@ -407,4 +380,27 @@ public class CoreActivity extends FragmentActivity {
 			}			
 		}
 	}
+	private String getStoplistCount() {
+		String sl = null;
+		File sl_dir = getStopDir(this);
+		if (sl_dir.exists()) {
+			int count = sl_dir.list().length;
+			if (count>0) {
+				sl = Integer.toString(count);
+			}			
+		}
+		return sl;		
+	}
+	static File getStopDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+	 }
+	private void updateStoplistCount() {
+		sl_count = getStoplistCount();
+		if (sl_count == null) {
+			bool = false;
+		}
+		else {
+			bool = true;
+		}		
+	}	
 }

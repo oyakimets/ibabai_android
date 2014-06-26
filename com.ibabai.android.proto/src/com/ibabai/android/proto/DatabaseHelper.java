@@ -1,5 +1,8 @@
 package com.ibabai.android.proto;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -106,16 +109,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.insert(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID, p_cv);
 		db.close();
 	}
+	public void addLogEntry(String name, int amount, String type) {
+		String date = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues l_cv = new ContentValues();
+		l_cv.put(DatabaseHelper.AGENT, name);
+		l_cv.put(DatabaseHelper.DATE, date);
+		l_cv.put(DatabaseHelper.AMOUNT, amount);
+		l_cv.put(DatabaseHelper.TYPE, type);
+		db.insert(DatabaseHelper.TABLE, DatabaseHelper.AGENT, l_cv);
+		db.close();
+	}
 	public void deletePromo(int id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+"=?", new String[] {Integer.toString(id)});
 		db.close();
 	}
+	
 	public void deleteHomePromo() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+"=0", null);
 		db.close();
 	}
+	
 	public void addPromoStores(int store_id, int promoact_id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues ps_cv = new ContentValues();
@@ -131,4 +147,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			db.close();			 
 		}		
 	 }
+	public void ClearPromoStores() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		 if (db != null) {
+			db.delete(DatabaseHelper.TABLE_SP, null, null);
+			db.close();			 
+		}		
+	}
+	public void updateStatus(String cl_id, int code) {		
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put(DatabaseHelper.STOP, code);
+		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.CL_ID+"="+cl_id, null);
+		db.close();
+	}
+	public void paStopUpdate(String pa_id, int code) {		
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put(DatabaseHelper.STOP, code);
+		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.P_ID+"="+pa_id, null);
+		db.close();
+	}
+	public void updateDelivery(String pa_id, int n) {		
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put(DatabaseHelper.DEL, n);
+		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.P_ID+"="+pa_id, null);
+		db.close();
+	}
+	public void updateView(String pa_id) {		
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put(DatabaseHelper.VIEW, 1);
+		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.P_ID+"="+pa_id, null);
+		db.close();
+	}
+	public void updatePurch(int pa_id) {
+		String id = Integer.toString(pa_id);
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put(DatabaseHelper.PURCH, 1);
+		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.P_ID+"="+id, null);
+		db.close();
+	}
 }

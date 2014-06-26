@@ -37,6 +37,9 @@ public class conInstallService extends IntentService {
 				Log.e(getClass().getSimpleName(), "Exception unzipping update");
 			}
 			update.delete();
+			Intent intent = new Intent(this, ConUpdateService.class);
+			startService(intent);
+			
 		}
 		else {
 			Log.e(getClass().getSimpleName(), "null content dir path");

@@ -2,8 +2,6 @@ package com.ibabai.android.proto;
 
 import java.util.Calendar;
 
-import com.commonsware.cwac.wakeful.WakefulIntentService;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -18,7 +16,7 @@ public class DataUpdateReceiver extends BroadcastReceiver {
 			scheduleAlarm(ctxt);
 		}
 		else {
-			WakefulIntentService.sendWakefulWork(ctxt, DataUpdateService.class);
+			
 		}
 
 	}
