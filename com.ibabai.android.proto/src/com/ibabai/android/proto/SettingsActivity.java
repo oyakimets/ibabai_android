@@ -2,6 +2,8 @@ package com.ibabai.android.proto;
 
 import java.io.File;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -37,16 +39,11 @@ public class SettingsActivity extends Activity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false); 
         
-        File i_file= new File(getStopDir(this), "3_client.jpg");
-        String path = i_file.getAbsolutePath();
+        shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        String u_id = shared_prefs.getString("user_id", null);
         TextView tv = (TextView)findViewById(R.id.cl_name);
-        if (i_file.exists()) { 	
-        	       	
-        	tv.setText(path);
-        }
-        else {
-        	tv.setText("Fuck");
-        }        
+        tv.setText(u_id);
+       
         
 	}
 	@Override
@@ -93,12 +90,11 @@ public class SettingsActivity extends Activity {
 		}
 	}
 	public void updateData(View view) {
-		Intent i = new Intent(this, DataUpdateService.class);
-		startService(i);
+		WakefulIntentService.sendWakefulWork(this, DataUpdateService.class);
 		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
 	 }
 	static File getStopDir(Context ctxt) {
 		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));

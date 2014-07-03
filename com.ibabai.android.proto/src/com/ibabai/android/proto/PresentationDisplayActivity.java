@@ -52,13 +52,8 @@ public class PresentationDisplayActivity extends FragmentActivity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
         
-        dbh = DatabaseHelper.getInstance(this);
+        dbh = DatabaseHelper.getInstance(this);       
         
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        bal_value = shared_prefs.getString(balance, "0");
-        viewRewCheck();
-        TextView tv_balance = (TextView) findViewById(R.id.balance);
-        tv_balance.setText(bal_value + " bais"); 
                 
 	}
 	@Override
@@ -82,7 +77,16 @@ public class PresentationDisplayActivity extends FragmentActivity {
 			return super.onOptionsItemSelected(item);
 			
 		}		
-		
+	}
+	@Override
+	protected void onResume() {
+		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		bal_value = shared_prefs.getString(balance, "0");
+		viewRewCheck();
+		TextView tv_balance = (TextView) findViewById(R.id.balance);
+        tv_balance.setText(bal_value + " bais"); 
+        
+        super.onResume();		
 	}
 	void setupPager(PromoPresentation presentation) {		
 		String pa_id=getIntent().getStringExtra(EXTRA_PA);
@@ -120,7 +124,7 @@ public class PresentationDisplayActivity extends FragmentActivity {
     	nidf.show(getSupportFragmentManager(), "sl");		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
 	 }
 	public void viewRewCheck() {
 		String pa_id=getIntent().getStringExtra(EXTRA_PA);
@@ -135,7 +139,7 @@ public class PresentationDisplayActivity extends FragmentActivity {
 				int rew1 = pa_cursor.getInt(rew1_ind);
 				pa_cursor.close();				
 				dbh.updateView(pa_id);
-				dbh.addLogEntry(c_name, rew1, "C");
+				dbh.addLogEntry(c_name, Integer.toString(rew1), "C");
 				dbh.close();
 				int bal_amnt = Integer.parseInt(bal_value);
 				int new_amnt = bal_amnt + rew1;
@@ -143,6 +147,9 @@ public class PresentationDisplayActivity extends FragmentActivity {
 				Editor editor = shared_prefs.edit();
 				editor.putString(balance, bal_value);
 				editor.apply();
+				
+				SoundEffects.playSound(this, SoundEffects.coin);
+				
 				Toast t = Toast.makeText(this, Integer.toString(rew1) + " bais were credited to your balance.", Toast.LENGTH_LONG );
 				t.show();
 			}

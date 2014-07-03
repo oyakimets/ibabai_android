@@ -5,17 +5,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.util.Log;
+
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 public class psUploadService extends IntentService {
 	private static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
+	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
 	private static final String PA_URL = "http://ibabai.picrunner.net/promo_users/ibabai_promoacts.txt";
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String city="city";
@@ -92,11 +98,39 @@ public class psUploadService extends IntentService {
 					}
 				}
 			}				
+		}		
+		try {
+			URL sp_url=new URL(VEN_BASE_URL);
+			HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
+			con.setRequestMethod("GET");
+			con.setReadTimeout(15000);
+			con.connect();
+			
+			reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+			StringBuilder buf = new StringBuilder();
+			String line = null;
+			
+			while ((line=reader.readLine()) != null) {
+				buf.append(line+"\n");
+			}
+			loadVendors(buf.toString());
 		}
-		Intent con_intent = new Intent(this, ConUpdateService.class);
-		startService(con_intent);
-		Intent loc_intent = new Intent(this, LocationService.class);
-		startService(loc_intent);
+		catch (Exception e) {
+			Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
+		}
+		finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				}
+				catch (IOException e) {
+					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+				}
+			}
+		}				
+		
+		WakefulIntentService.sendWakefulWork(this, ConUpdateService.class);
+				
 	}
 	private void loadPromoStores(String st) throws JSONException {
 		JSONArray jsa = new JSONArray(st);
@@ -114,12 +148,29 @@ public class psUploadService extends IntentService {
 	private void loadPromos(String st) throws JSONException {
 		JSONObject jso = new JSONObject(st);
 		JSONArray promoacts = jso.optJSONArray("promos");
-		if (promoacts.length() > 0) {
+		Cursor c = getHomePromos(); 
+		int count = c.getCount();
+		c.close();
+		if (promoacts.length() > 0 && count==0) {
 			for (int i=0; i<promoacts.length(); i++) {
 				JSONObject promoact = promoacts.optJSONObject(i);
 				Promoact p = new Promoact(promoact);
 				dbh.AddPromo(p);				
 			}			
 		}
+	}
+	private void loadVendors(String st) throws JSONException {
+		JSONArray jsa = new JSONArray(st);		
+		if (jsa.length() > 0) {
+			for (int i=0; i<jsa.length(); i++) {
+				JSONObject ven = jsa.optJSONObject(i);
+				Vendor v = new Vendor(ven);
+				dbh.AddVendor(v);				
+			}			
+		}
+	}
+	private Cursor getHomePromos() {
+		String p_query = String.format("SELECT * FROM %s ", DatabaseHelper.TABLE_P);
+		return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	}
 }

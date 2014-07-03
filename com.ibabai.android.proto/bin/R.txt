@@ -603,6 +603,7 @@ int menu encode 0x7f0f0002
 int menu history 0x7f0f0003
 int menu main 0x7f0f0004
 int raw beep 0x7f060000
+int raw coin1 0x7f060001
 int string ab_feedback 0x7f0b0098
 int string ab_help 0x7f0b0099
 int string ab_log 0x7f0b009a

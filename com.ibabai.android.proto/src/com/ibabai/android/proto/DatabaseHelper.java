@@ -109,7 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.insert(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID, p_cv);
 		db.close();
 	}
-	public void addLogEntry(String name, int amount, String type) {
+	public void addLogEntry(String name, String amount, String type) {
 		String date = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues l_cv = new ContentValues();
@@ -154,6 +154,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			db.close();			 
 		}		
 	}
+	public void ClearVendors() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		 if (db != null) {
+			db.delete(DatabaseHelper.TABLE_V, null, null);
+			db.close();			 
+		}		
+	}
 	public void updateStatus(String cl_id, int code) {		
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
@@ -187,6 +194,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(DatabaseHelper.PURCH, 1);
+		cv.put(DatabaseHelper.STOP, 1);
 		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.P_ID+"="+id, null);
 		db.close();
 	}

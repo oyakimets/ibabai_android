@@ -4,15 +4,20 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.app.DownloadManager;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-public class ConUpdateService extends IntentService {
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
+public class ConUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {
+	public static final String PREFERENCES = "MyPrefs";
+	public static final String LOAD_TOGGLE = "load_toggle";
 	private static final String CON_BASE_URL = "http://ibabai.picrunner.net/promo_content/";
 	public static final String CON_EXT="con_ext.zip";
 	public static final String CON_BASEDIR="promo_content";
@@ -23,13 +28,14 @@ public class ConUpdateService extends IntentService {
 	private ArrayList<Integer> con_to_load;
 	private File promos_folder;
 	DatabaseHelper dbh;
+	SharedPreferences shared_prefs;
 	public ConUpdateService() {
 		super("ConUpdateService");
 		
 		
 	}
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	protected void doWakefulWork(Intent intent) {
 		dbh = DatabaseHelper.getInstance(getApplicationContext());
 		pa_cursor=promoactCursor();
 		promos_folder = getConDir(this);
@@ -87,6 +93,11 @@ public class ConUpdateService extends IntentService {
 			}
 		}
 		else {
+			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			Editor editor = shared_prefs.edit();
+			editor.putString(LOAD_TOGGLE, "ven");
+			editor.apply();
+			WakefulIntentService.sendWakefulWork(this, VenUpdateService.class);			
 			stopSelf();
 		}
 	}

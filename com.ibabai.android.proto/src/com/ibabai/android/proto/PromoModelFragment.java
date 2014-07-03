@@ -83,6 +83,6 @@ public class PromoModelFragment extends Fragment {
 		}		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
 	 }
 }

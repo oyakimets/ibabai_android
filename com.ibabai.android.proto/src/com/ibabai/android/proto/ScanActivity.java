@@ -1,6 +1,7 @@
 package com.ibabai.android.proto;
 
 import java.io.File;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
@@ -83,14 +84,23 @@ public class ScanActivity extends Activity implements OnClickListener {
 						scanResult.setText("Success! This product participate in a promo.");						
 					}
 					else {
-						purchRewCheck(pa_cursor);
-						scanResult.setText("Success! Your balance is credited with "+rew_2+" bais.");
+						int purch_ind = pa_cursor.getColumnIndex(DatabaseHelper.PURCH);
+						int purch = pa_cursor.getInt(purch_ind);
+						if (purch == 0) {
+							purchRewCheck(pa_cursor);
+							scanResult.setText("Success! Your balance is credited with "+rew_2+" bais.");
+						}
+						else {
+							scanResult.setBackgroundResource(R.drawable.scan_res_f);
+							scanResult.setText("No credit! This product was registered. Check your logbook.");
+						}
 					}
 				}
 				else {
 					Cursor home_c = getHomeCursor();
 					if (home_c != null && home_c.moveToFirst()) {
 						handleHomePromo(home_c);
+						scanResult.setBackgroundResource(R.drawable.scan_res_s);
 						scanResult.setText("Success! Your balance is credited with "+rew_2+" bais.");
 					}
 					else {
@@ -106,7 +116,7 @@ public class ScanActivity extends Activity implements OnClickListener {
 		}		
 	}
 	private Cursor getPromoCursor(String b_code) {
-		 String p_query = String.format("SELECT * FROM %s WHERE stopped = 0 AND barcode = " + b_code, DatabaseHelper.TABLE_P);
+		 String p_query = String.format("SELECT * FROM %s WHERE barcode = " + b_code, DatabaseHelper.TABLE_P);
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
 	private Cursor getHomeCursor() {
@@ -126,14 +136,16 @@ public class ScanActivity extends Activity implements OnClickListener {
 			int pa_id = c.getInt(id_ind);
 			c.close();				
 			dbh.updatePurch(pa_id);
-			dbh.addLogEntry(c_name, rew2, "C");
+			dbh.addLogEntry(c_name, Integer.toString(rew2), "C");
 			dbh.close();
 			int bal_amnt = Integer.parseInt(bal_value);
 			int new_amnt = bal_amnt + rew2;
 			bal_value = Integer.toString(new_amnt);
 			Editor editor = shared_prefs.edit();
 			editor.putString(balance, bal_value);
-			editor.apply();			
+			editor.apply();	
+			
+			SoundEffects.playSound(this, SoundEffects.coin);
 		}
 		else {
 			c.close();
@@ -153,15 +165,17 @@ public class ScanActivity extends Activity implements OnClickListener {
 			int pa_id = c.getInt(id_ind);
 			c.close();				
 			dbh.updatePurch(pa_id);
-			dbh.addLogEntry(c_name, rew2, "C");
+			dbh.addLogEntry(c_name, Integer.toString(rew2), "C");
 			dbh.deleteHomePromo();
 			dbh.close();
 			int bal_amnt = Integer.parseInt(bal_value);
 			int new_amnt = bal_amnt + rew2;
-			bal_value = Integer.toString(new_amnt);
+			String new_bal_value = Integer.toString(new_amnt);
 			Editor editor = shared_prefs.edit();
-			editor.putString(balance, bal_value);
+			editor.putString(balance, new_bal_value);
 			editor.apply();
+			
+			SoundEffects.playSound(this, SoundEffects.coin);
 			
 			File home_dir = new File(getConDir(this), "0");
 			if (home_dir.exists()) {

@@ -54,6 +54,7 @@ public class CoreActivity extends FragmentActivity {
 	private Cursor ps_cursor;
 	private Cursor home_cursor;
 	SharedPreferences shared_prefs;
+	private String bal_value;
 	DatabaseHelper dbh;
 	FileInputStream is;
 	BufferedInputStream buf;
@@ -115,8 +116,6 @@ public class CoreActivity extends FragmentActivity {
                     
         shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         store_id=shared_prefs.getInt("store_id", 0);  
-        
-        
         
         DataUpdateReceiver.scheduleAlarm(this);
 	}
@@ -256,7 +255,10 @@ public class CoreActivity extends FragmentActivity {
 	 }
 	@Override
 	protected void onResume() {
-		
+		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        bal_value = shared_prefs.getString(balance, "0");
+        TextView tv_balance = (TextView) findViewById(R.id.balance);
+        tv_balance.setText("balance "+ bal_value + " b");
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		dbPromos=new ArrayList<String>();
         allDirs=new ArrayList<String>();
@@ -299,10 +301,7 @@ public class CoreActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);		
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String b = shared_prefs.getString(balance, "0");
-        TextView tv_balance = (TextView) findViewById(R.id.balance);
-        tv_balance.setText("balance "+ b + " b");
+        
 		return true;
 	}
 	@Override
@@ -356,7 +355,7 @@ public class CoreActivity extends FragmentActivity {
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
 	 }
 	private Cursor storePromosCursor(int store_id) {		
 		String ps_query= "SELECT * FROM promo_stores WHERE store_id="+Integer.toString(store_id);

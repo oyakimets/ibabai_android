@@ -1,10 +1,18 @@
 package com.ibabai.android.proto;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ActionBar;
@@ -18,26 +26,35 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.savagelook.android.UrlJsonAsyncTask;
 
 public class SignupActivity extends Activity {
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String status = "SignedUp";
-	public static final String username = "email";
-	public static final String telephone = "phone #";
+	private final static String REGISTER_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/registrations";
+	public static final String PREFERENCES = "MyPrefs";	
+	public static final String email = "email";
+	public static final String phone = "phone";
 	public static final String age = "age";
 	public static final String gender="gender";
 	public static final String city="city";
 	public static final String store_id="store_id";
-	public static final String user_id="user_id";
+	public static final String user_id="user_id";	
 	private DbLoadTask db_load = null;	
 	Location current_loc;
-	DatabaseHelper dbh;
-	Editor editor;
+	private String s_email;
+	private String s_password;
+	private String s_confirmation;
+	private String s_phone;
+	private String s_gender;
+	private String s_age;
+	DatabaseHelper dbh;	
 	SharedPreferences shared_prefs;		
 	
 	@Override
@@ -81,36 +98,30 @@ public class SignupActivity extends Activity {
 		EditText password_confirmation=(EditText)findViewById(R.id.password_confirmation);
 		TextView genderLabel = (TextView) findViewById(R.id.gender_label);
 		TextView ageLabel = (TextView) findViewById(R.id.age_label);
-		String s_email = email.getText().toString();
-		String s_phone = phone.getText().toString();
-		String s_password = password.getText().toString();
-		String s_confirmation = password_confirmation.getText().toString();
+		s_email = email.getText().toString();
+		s_phone = phone.getText().toString();
+		s_password = password.getText().toString();
+		s_confirmation = password_confirmation.getText().toString();
 		NumberPicker np_age = (NumberPicker) findViewById(R.id.age_picker);
 		String[] ap_str = this.setNumPick();		
 		int in_age = np_age.getValue();
-		String str_age = ap_str[in_age]; 
+		s_age = ap_str[in_age]; 
 		RadioGroup genderSelector = (RadioGroup) findViewById(R.id.radioGender);
 		int selected_id = genderSelector.getCheckedRadioButtonId();
 		
-		if ( s_email.length() >= 5 && s_phone.length() == 10 && s_password.length() >= 6 && s_password.equals(s_confirmation) && selected_id != -1 && str_age != "spin") {
-			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-			Editor editor = shared_prefs.edit();
-			editor.putBoolean(status, true);
-			editor.putInt(user_id, 1);		
-			editor.putString(username, s_email).apply();			
-			editor.putString(telephone, s_phone).apply();			
-			editor.putString(age, str_age).apply();
-			
+		if ( s_email.length() >= 5 && s_phone.length() == 10 && s_password.length() >= 6 && s_password.equals(s_confirmation) && selected_id != -1 && s_age != "spin") {
 			
 			if (selected_id == R.id.radioMale) {
-				editor.putString(gender, "Male").apply();
+				s_gender = "male";
 			}
 			else {
-				editor.putString(gender, "Female").apply();
-			}			
-			Intent i=new Intent(this, CoreActivity.class);
-			startActivity(i);
-			finish();
+				s_gender = "female";
+			}					
+			 
+			RegisterTask register = new RegisterTask(this);
+			register.setMessageLoading("Creating account...");
+			register.execute(REGISTER_API_ENDPOINT_URL);			
+			
 		}
 		else {
 			if (s_email.length() < 5) {
@@ -128,7 +139,7 @@ public class SignupActivity extends Activity {
 			if (selected_id == -1) {
 				genderLabel.setError("Please select your gender");
 			}
-			if (str_age == "spin") {
+			if (s_age == "spin") {
 				ageLabel.setError("Please set your age");
 			}
 		}
@@ -176,27 +187,7 @@ public class SignupActivity extends Activity {
 			}				 
 			catch(Exception e) {
 				e.printStackTrace();
-			}
-			try {
-				StringBuilder v_buf=new StringBuilder();
-				InputStream v_json=getAssets().open("data/vendors/vendors.json"); 	
-				BufferedReader v_in = new BufferedReader(new InputStreamReader(v_json));
-				String v_str;
-				while((v_str=v_in.readLine()) != null ) {
-					v_buf.append(v_str);
-				}				
-				v_in.close();				
-				JSONArray vja=new JSONArray(v_buf.toString());				
-				for(int j=0; j<vja.length(); j++) {					
-					JSONObject v_jo = vja.optJSONObject(j);
-					Vendor v = new Vendor(v_jo);
-					dbh.AddVendor(v);					 
-				}					
-				 
-			}			
-			catch(Exception e) {
-				e.printStackTrace();
-			}			
+			}	
 			 
 			 return null;
 		 }		 
@@ -240,5 +231,80 @@ public class SignupActivity extends Activity {
 			 String c_query = String.format("SELECT * FROM %s", DatabaseHelper.TABLE_C);
 			 return(dbh.getReadableDatabase().rawQuery(c_query, null));
 		 }
-	 }	
+	 }
+	private class RegisterTask extends UrlJsonAsyncTask {
+		public RegisterTask(Context ctxt) {
+			super(ctxt);
+		}
+		@Override
+		protected JSONObject doInBackground(String... urls) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost(urls[0]);
+			JSONObject holder = new JSONObject();
+			JSONObject cust_json = new JSONObject();
+			String response = null;
+			JSONObject json = new JSONObject();
+			try {
+				try {
+					json.put("success", false);
+					json.put("info", "Something went wrong. Try again!");
+					
+					cust_json.put(email, s_email);
+					cust_json.put(phone, s_phone);
+					cust_json.put("password", s_password);
+					cust_json.put("password_confirmation", s_confirmation);
+					cust_json.put(age, s_age);
+					cust_json.put(gender, s_gender);
+					holder.put("customer", cust_json);
+					StringEntity se = new StringEntity(holder.toString());
+					post.setEntity(se);
+					
+					post.setHeader("Accept", "application/json");
+					post.addHeader("Content-Type", "application/json");
+					
+					ResponseHandler<String> r_handler = new BasicResponseHandler();
+					response = client.execute(post, r_handler);
+					json = new JSONObject(response);					
+				}
+				catch (HttpResponseException ex) {
+					ex.printStackTrace();
+					Log.e("ClientProtocol", ""+ex);
+				}
+				catch (IOException ex) {
+					ex.printStackTrace();
+					Log.e("IO", ""+ex);
+				}
+			}
+			catch (JSONException ex) {
+				ex.printStackTrace();
+				Log.e("JSON", ""+ex);
+			}
+			return json;
+		}
+		@Override
+		protected void onPostExecute(JSONObject json) {
+			try {
+				if (json.getBoolean("success")) {
+					shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+					Editor e = shared_prefs.edit();
+					e.putString("AuthToken", json.getJSONObject("data").getString("auth_token"));
+					e.putString(user_id, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("id")));
+					e.putString("email", json.getJSONObject("data").getJSONObject("customer").getString("email"));
+					e.putString("phone", json.getJSONObject("data").getJSONObject("customer").getString("phone"));
+					e.apply();
+					
+					Intent i=new Intent(getApplicationContext(), CoreActivity.class);
+					startActivity(i);
+					finish();
+				}
+				Toast.makeText(SignupActivity.this, json.getString("info"), Toast.LENGTH_LONG).show();
+			}
+			catch(Exception e) {
+				Toast.makeText(SignupActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+			}
+			finally {
+				super.onPostExecute(json);
+			}
+		}
+	}
 }

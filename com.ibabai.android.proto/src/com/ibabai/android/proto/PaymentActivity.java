@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -17,6 +18,7 @@ public class PaymentActivity extends FragmentActivity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String balance = "Balance";
 	SharedPreferences shared_prefs;
+	DatabaseHelper dbh;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,8 @@ public class PaymentActivity extends FragmentActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
+        
+        dbh = DatabaseHelper.getInstance(getApplicationContext());
                
 	}
 	
@@ -70,7 +74,9 @@ public class PaymentActivity extends FragmentActivity {
 		EditText et_amount = (EditText) findViewById(R.id.billing_amount);
 		String amount_input = et_amount.getText().toString();
 		
-		String s_agent = getIntent().getExtras().getString("d_agent");		
+		int ven_id = getIntent().getExtras().getInt("v_id");
+		
+		String s_agent = getVendorName(ven_id);
 		
 		if (amount_input.length() == 0) {
 			et_amount.setError("Please enter amount");
@@ -87,6 +93,7 @@ public class PaymentActivity extends FragmentActivity {
 				bundle.putString("dialog_acc", account_input);
 				bundle.putString("dialog_phn", phone_input);
 				bundle.putString("dialog_amnt", amount_input);
+				bundle.putInt("dialog_id", ven_id);
 				bundle.putString("dialog_agent", s_agent);
 				PaymentDialogFragment pdf = new PaymentDialogFragment();
 				pdf.setArguments(bundle);
@@ -108,5 +115,15 @@ public class PaymentActivity extends FragmentActivity {
 				et_amount.setError("Error! Amount exceeds balance");
 			}
 		}
+	}
+	private String getVendorName(int id) {
+		String v_name=null;
+		String p_query = String.format("SELECT * FROM %s WHERE vendor_id="+Integer.toString(id), DatabaseHelper.TABLE_V);
+		Cursor c = dbh.getReadableDatabase().rawQuery(p_query, null);
+		if (c!=null && c.moveToFirst()) {
+			int name_ind = c.getColumnIndex("vendor_name");
+			v_name = c.getString(name_ind);			
+		}
+		return v_name;		
 	}
 }

@@ -2,6 +2,8 @@ package com.ibabai.android.proto;
 
 import java.util.Calendar;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -16,9 +18,8 @@ public class DataUpdateReceiver extends BroadcastReceiver {
 			scheduleAlarm(ctxt);
 		}
 		else {
-			
+			WakefulIntentService.sendWakefulWork(ctxt, DataUpdateService.class);
 		}
-
 	}
 	static void scheduleAlarm(Context ctxt) {
 		AlarmManager mgr=(AlarmManager)ctxt.getSystemService(Context.ALARM_SERVICE);
@@ -26,7 +27,7 @@ public class DataUpdateReceiver extends BroadcastReceiver {
 		PendingIntent pi=PendingIntent.getBroadcast(ctxt, 0, i, 0);
 		Calendar cal=Calendar.getInstance();
 		
-		cal.set(Calendar.HOUR_OF_DAY, 4);
+		cal.set(Calendar.HOUR_OF_DAY, 19);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);

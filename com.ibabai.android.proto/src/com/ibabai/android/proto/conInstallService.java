@@ -24,10 +24,10 @@ public class conInstallService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent i) {
 		SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
-		String con_dir_path=prefs.getString(ConUploadService.PREF_CON_DIR, null);
+		String con_dir_path=prefs.getString(ConUpdateService.PREF_CON_DIR, null);
 		if (con_dir_path != null) {
 			File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-			File update=new File(root, ConUploadService.CON_EXT);
+			File update=new File(root, ConUpdateService.CON_EXT);
 			try {
 				if (!(new File(con_dir_path)).exists()) {
 					unzip(update, new File(con_dir_path));

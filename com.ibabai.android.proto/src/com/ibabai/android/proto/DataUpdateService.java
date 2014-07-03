@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,11 +19,14 @@ import android.database.Cursor;
 import android.location.Location;
 import android.util.Log;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 
-public class DataUpdateService extends IntentService {
+
+public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {
 	private static final String STORE_BASE_URL = "http://ibabai.picrunner.net/city_stores/";
 	private static final String PROMO_BASE_URL = "http://ibabai.picrunner.net/promo_users/";
 	private static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
+	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String city="city";
 	public static final String user_id="user_id";
@@ -36,7 +38,7 @@ public class DataUpdateService extends IntentService {
 	private JSONArray promoacts = null;
 	private StringBuilder buf;
 	private String PROMO_URL;
-	private int u_id;
+	private String u_id;
 	private int city_id;
 	private int c_id;	
 	BufferedReader reader=null;
@@ -50,14 +52,14 @@ public class DataUpdateService extends IntentService {
 	}
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	protected void doWakefulWork(Intent intent) {
 		
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		GPSTracker gps = new GPSTracker(this);
 	    current_loc = gps.getLocation();
 	    shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 	    c_id=shared_prefs.getInt(city, 0);
-	    u_id=shared_prefs.getInt(user_id, 0);
+	    u_id=shared_prefs.getString(user_id, null);
 	    
 		
 		Cursor new_city_c = cityCursor();
@@ -198,8 +200,40 @@ public class DataUpdateService extends IntentService {
 				}
 			}
 		}
-		Intent con_int = new Intent(this, ConUpdateService.class);
-		startService(con_int);
+		
+		dbh.ClearVendors();		
+		try {
+			URL ven_url=new URL(VEN_BASE_URL);
+			HttpURLConnection con=(HttpURLConnection)ven_url.openConnection();
+			con.setRequestMethod("GET");
+			con.setReadTimeout(15000);
+			con.connect();
+			
+			reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+			StringBuilder buf = new StringBuilder();
+			String line = null;
+			
+			while ((line=reader.readLine()) != null) {
+				buf.append(line+"\n");
+			}
+			loadVendors(buf.toString());
+		}
+		catch (Exception e) {
+			Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
+		}
+		finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				}
+				catch (IOException e) {
+					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+				}
+			}
+		}		
+		
+		WakefulIntentService.sendWakefulWork(this, ConUpdateService.class);
+		
 	}
 
 	private boolean StoresAvailability() {		
@@ -241,9 +275,9 @@ public class DataUpdateService extends IntentService {
 			}			
 		}		
 	}	
-	 private void loadPromos(String str, int us_id ) throws JSONException {
+	 private void loadPromos(String str, String us_id ) throws JSONException {
 		current_pa = CurrentPromos();
-		update_pa = UpdatePromos(str, us_id);
+		update_pa = UpdatePromos(str, Integer.parseInt(us_id));
 		JSONObject jso = new JSONObject(str);
 		promoacts = jso.optJSONArray("promos");
 		if (promoacts.length() > 0) {
@@ -256,9 +290,9 @@ public class DataUpdateService extends IntentService {
 			}
 		}		
 	 }
-	 private void killPromos(String str, int us_id) throws JSONException {
+	 private void killPromos(String str, String us_id) throws JSONException {
 		 current_pa = CurrentPromos();
-		 update_pa = UpdatePromos(str, us_id);		
+		 update_pa = UpdatePromos(str, Integer.parseInt(us_id));		
 		 if (current_pa.size() > 0) {
 			 for (int i=0; i<current_pa.size(); i++) {
 				 if (!update_pa.contains(current_pa.get(i))) {
@@ -309,5 +343,15 @@ public class DataUpdateService extends IntentService {
 				dbh.addPromoStores(store_id, promoact_id);
 			}
 		}
-	}	
+	}
+	private void loadVendors(String st) throws JSONException {
+		JSONArray jsa = new JSONArray(st);		
+		if (jsa.length() > 0) {
+			for (int i=0; i<jsa.length(); i++) {
+				JSONObject ven = jsa.optJSONObject(i);
+				Vendor v = new Vendor(ven);
+				dbh.AddVendor(v);				
+			}			
+		}
+	}
 }

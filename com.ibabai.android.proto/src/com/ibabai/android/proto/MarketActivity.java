@@ -1,10 +1,10 @@
 package com.ibabai.android.proto;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -57,11 +57,11 @@ public class MarketActivity extends Activity {
 	private void displayAction(int position) {		
 		int vend_id = id_list.get(position);		
 		Cursor vend = getVendor(vend_id);
-		int name_ind = vend.getColumnIndex(DatabaseHelper.V_NAME);
+		int id_ind = vend.getColumnIndex(DatabaseHelper.V_ID);
 		if (vend != null && vend.moveToFirst() ) {						
-			String v_name = vend.getString(name_ind);			
+			int v_id = vend.getInt(id_ind);			
 			Intent paymentIntent = new Intent(this, PaymentActivity.class);
-			paymentIntent.putExtra("d_agent", v_name);
+			paymentIntent.putExtra("v_id", v_id);
 			startActivity(paymentIntent);
 		}
 		vend.close();
@@ -105,13 +105,15 @@ public class MarketActivity extends Activity {
 				try {
 					int vendor_id=vendor_c.getInt(ven_id_ind);
 					id_list.add(vendor_id);
-					String f_name = Integer.toString(vendor_id)+".jpg";
-					InputStream is = getAssets().open("data/vendors/"+f_name);
-					Drawable ven_tag = Drawable.createFromStream(is, null);
-					vendor_list.add(ven_tag);
+					File tag = new File(getVenDir(this), Integer.toString(vendor_id)+".jpg");
+					String tag_path = tag.getAbsolutePath();
+					if (tag_path != null) {
+						Drawable ven_tag = Drawable.createFromPath(tag_path);
+						vendor_list.add(ven_tag);
+					}
 				}
-				catch (IOException ex) {
-						 
+				catch (Exception ex) {
+					ex.printStackTrace();	 
 				}
 				vendor_c.moveToNext();
 			}
@@ -133,4 +135,7 @@ public class MarketActivity extends Activity {
 		dbh.close();
 		super.onDestroy();
 	}
+	static File getVenDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), VenUpdateService.VEN_BASEDIR));
+	 }
 }

@@ -69,6 +69,6 @@ public class PromoRulesActivity extends FragmentActivity {
 		}		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUploadService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
 	 }
 }

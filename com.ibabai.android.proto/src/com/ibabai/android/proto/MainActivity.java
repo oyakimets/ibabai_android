@@ -17,7 +17,7 @@ public class MainActivity extends FragmentActivity {
 	private ViewPager pager=null;
 	private PresentationAdapter adapter=null;
 	public static final String PREFERENCES = "MyPrefs";
-	public static final String status = "SignedUp";
+	public static final String auth_token = "AuthToken";
 	public static final String balance = "Balance";
 	SharedPreferences shared_prefs;
 	
@@ -41,7 +41,10 @@ public class MainActivity extends FragmentActivity {
         	
         	shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         	Editor editor = shared_prefs.edit();
-        	editor.putString(balance, "100").apply();
+        	editor.putString(balance, "0").apply();
+        	
+        	SoundEffects.initSounds(this);
+        	
         	
     }
     @Override
@@ -50,7 +53,7 @@ public class MainActivity extends FragmentActivity {
     	if( getIntent().getBooleanExtra("EXIT", false)) {
     		finish();
     	}
-    	if(shared_prefs.contains(status)) {
+    	if(shared_prefs.contains(auth_token)) {
     		Intent launchIntent = new Intent(this, CoreActivity.class);
     		startActivity(launchIntent);
     		finish();
