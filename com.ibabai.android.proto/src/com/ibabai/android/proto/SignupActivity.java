@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -14,7 +13,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentValues;
@@ -33,11 +31,10 @@ import android.widget.NumberPicker;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.savagelook.android.UrlJsonAsyncTask;
 
 public class SignupActivity extends Activity {
-	private final static String REGISTER_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/registrations";
+	public final static String REGISTER_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/registrations";
 	public static final String PREFERENCES = "MyPrefs";	
 	public static final String email = "email";
 	public static final String phone = "phone";
@@ -291,6 +288,8 @@ public class SignupActivity extends Activity {
 					e.putString(user_id, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("id")));
 					e.putString("email", json.getJSONObject("data").getJSONObject("customer").getString("email"));
 					e.putString("phone", json.getJSONObject("data").getJSONObject("customer").getString("phone"));
+					e.putString("gender", json.getJSONObject("data").getJSONObject("customer").getString("gender"));
+					e.putString("age", Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("age")));
 					e.apply();
 					
 					Intent i=new Intent(getApplicationContext(), CoreActivity.class);

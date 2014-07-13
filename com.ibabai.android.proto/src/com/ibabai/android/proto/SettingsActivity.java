@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -24,6 +23,7 @@ public class SettingsActivity extends Activity {
 	public static final String status = "SignedUp";
 	static final String TABLE="logbook";
 	public static final String city="city";
+	GPSTracker gps_t;
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;
 	@Override
@@ -39,10 +39,21 @@ public class SettingsActivity extends Activity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false); 
         
-        shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String u_id = shared_prefs.getString("user_id", null);
-        TextView tv = (TextView)findViewById(R.id.cl_name);
-        tv.setText(u_id);
+        gps_t = new GPSTracker(this);
+        String lat = Double.toString(gps_t.getLatitude());
+        String lon = Double.toString(gps_t.getLongitude());
+        TextView tv1 = (TextView)findViewById(R.id.tv_1);
+        tv1.setText( lat+"/"+lon);
+        
+        shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        String at = shared_prefs.getString("AuthToken", null);
+        TextView tv2 = (TextView)findViewById(R.id.tv_2);
+        tv2.setText(at);
+        String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));
+        TextView tv3 = (TextView)findViewById(R.id.tv_3);
+        tv3.setText(s_id);
+        
+        
        
         
 	}
@@ -68,11 +79,9 @@ public class SettingsActivity extends Activity {
 		}		
 		
 	}
-	public void ClearPrefs(View view) {
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		Editor editor = shared_prefs.edit();
-		editor.clear();
-		editor.apply();
+	public void RegisterDelivery(View view) {
+		Intent i = new Intent(this, DelRegService.class);
+		startService(i);
 		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
 		t.show();
 	}

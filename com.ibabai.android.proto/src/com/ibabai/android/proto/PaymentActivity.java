@@ -17,6 +17,8 @@ import android.widget.TextView;
 public class PaymentActivity extends FragmentActivity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String balance = "Balance";
+	private String account_input = "";
+	private String phone_input = "";
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;
 	
@@ -66,10 +68,10 @@ public class PaymentActivity extends FragmentActivity {
 	
 	public void confirmBill(View view) {
 		EditText et_account = (EditText) findViewById(R.id.billing_account);
-		String account_input = et_account.getText().toString();
+		account_input = et_account.getText().toString();
 		
 		EditText et_phone = (EditText) findViewById(R.id.billing_phone);
-		String phone_input = et_phone.getText().toString();
+		phone_input = et_phone.getText().toString();
 		
 		EditText et_amount = (EditText) findViewById(R.id.billing_amount);
 		String amount_input = et_amount.getText().toString();
@@ -95,6 +97,7 @@ public class PaymentActivity extends FragmentActivity {
 				bundle.putString("dialog_amnt", amount_input);
 				bundle.putInt("dialog_id", ven_id);
 				bundle.putString("dialog_agent", s_agent);
+				
 				PaymentDialogFragment pdf = new PaymentDialogFragment();
 				pdf.setArguments(bundle);
 				pdf.show(getSupportFragmentManager(), "payment");

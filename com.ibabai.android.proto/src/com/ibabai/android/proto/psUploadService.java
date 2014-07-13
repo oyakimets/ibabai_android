@@ -38,36 +38,38 @@ public class psUploadService extends IntentService {
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 		city_id = shared_prefs.getInt(city, 0);
-		try {
-			URL s_url=new URL(PA_URL);
-			HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
-			con.setRequestMethod("GET");
-			con.setReadTimeout(15000);
-			con.connect();
+		if (TableEmpty(DatabaseHelper.TABLE_P)) {
+			try {
+				URL s_url=new URL(PA_URL);
+				HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
+				con.setRequestMethod("GET");
+				con.setReadTimeout(15000);
+				con.connect();
 					
-			reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-			StringBuilder buf = new StringBuilder();
-			String line = null;
+				reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+				StringBuilder buf = new StringBuilder();
+				String line = null;
 					
-			while ((line=reader.readLine()) != null) {
-				buf.append(line+"\n");
+				while ((line=reader.readLine()) != null) {
+					buf.append(line+"\n");
+				}
+				loadPromos(buf.toString());							
 			}
-			loadPromos(buf.toString());							
+			catch (Exception e) {
+				Log.e(getClass().getSimpleName(), "Exception retrieving promo data", e);
+			}
+			finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					}
+					catch (IOException e) {
+						Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);						
+					}
+				}			 			
+			}
 		}
-		catch (Exception e) {
-			Log.e(getClass().getSimpleName(), "Exception retrieving promo data", e);
-		}
-		finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				}
-				catch (IOException e) {
-					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);						
-				}
-			}			 			
-		}
-		if (city_id != 0) {
+		if (city_id != 0 && TableEmpty(DatabaseHelper.TABLE_SP)) {
 			String SP_URL= SP_BASE_URL + Integer.toString(city_id) +".txt";
 			try {
 				URL sp_url=new URL(SP_URL);
@@ -98,33 +100,35 @@ public class psUploadService extends IntentService {
 					}
 				}
 			}				
-		}		
-		try {
-			URL sp_url=new URL(VEN_BASE_URL);
-			HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
-			con.setRequestMethod("GET");
-			con.setReadTimeout(15000);
-			con.connect();
-			
-			reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-			StringBuilder buf = new StringBuilder();
-			String line = null;
-			
-			while ((line=reader.readLine()) != null) {
-				buf.append(line+"\n");
-			}
-			loadVendors(buf.toString());
 		}
-		catch (Exception e) {
-			Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
-		}
-		finally {
-			if (reader != null) {
-				try {
-					reader.close();
+		if (TableEmpty(DatabaseHelper.TABLE_V)) {
+			try {
+				URL sp_url=new URL(VEN_BASE_URL);
+				HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
+				con.setRequestMethod("GET");
+				con.setReadTimeout(15000);
+				con.connect();
+			
+				reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+				StringBuilder buf = new StringBuilder();
+				String line = null;
+			
+				while ((line=reader.readLine()) != null) {
+					buf.append(line+"\n");
 				}
-				catch (IOException e) {
-					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+				loadVendors(buf.toString());
+			}
+			catch (Exception e) {
+				Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
+			}
+			finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					}
+					catch (IOException e) {
+						Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+					}
 				}
 			}
 		}				
@@ -172,5 +176,14 @@ public class psUploadService extends IntentService {
 	private Cursor getHomePromos() {
 		String p_query = String.format("SELECT * FROM %s ", DatabaseHelper.TABLE_P);
 		return(dbh.getReadableDatabase().rawQuery(p_query, null));
+	}
+	private boolean TableEmpty(String table) {
+		 String p_query = String.format("SELECT * FROM %s", table);
+		 if (dbh.getReadableDatabase().rawQuery(p_query, null).getCount() == 0) {
+			 return true;
+		 }
+		 else {
+			 return false;
+		 }
 	}
 }

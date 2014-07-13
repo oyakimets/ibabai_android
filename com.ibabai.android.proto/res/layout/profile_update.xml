@@ -74,21 +74,9 @@
     <EditText
         android:id="@+id/phone_update"
         app:layout_gravity="fill_horizontal"
-        android:inputType="phone"
-        android:hint="(***)*******"
-        android:imeOptions="actionNext" />
+        android:inputType="phone"        
+        android:imeOptions="actionDone" />    
     
-    <TextView         
-    	android:textAppearance="?android:attr/textAppearanceLarge"     	    	
-    	android:text="Password" 
-    	android:layout_height="60dp" />
-    	
-    <EditText
-        android:id="@+id/password_update"
-        app:layout_gravity="fill_horizontal"
-        android:inputType="textPassword"
-        android:hint="min 6 characters"
-        android:imeOptions="actionDone" />
     
         
     <Button 

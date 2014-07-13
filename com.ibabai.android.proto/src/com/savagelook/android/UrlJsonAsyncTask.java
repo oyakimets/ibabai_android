@@ -20,10 +20,9 @@ public class UrlJsonAsyncTask extends AsyncTask<String, Void, JSONObject> {
 	private static final String MESSAGE_ERROR = "There was an error processing your request. Please try again.";
 	private static final int TIMEOUT_CONNECT = 0;
 	private static final int TIMEOUT_READ = 0;
-	private static final int RETRY_COUNT = 0;
+	private static final int RETRY_COUNT = 0;	
 	private static final String JSON_SUCCESS = "success";
-	private static final String JSON_INFO = "info";
-	
+	private static final String JSON_INFO = "info";	
 	private ProgressDialog progressDialog = null;
 	protected Context context = null;
 	private String loadingTitle;
@@ -34,7 +33,7 @@ public class UrlJsonAsyncTask extends AsyncTask<String, Void, JSONObject> {
 	private int timeoutRead;
 	private int retryCount;
 	private String jsonSuccess;
-	private String jsonInfo;
+	private String jsonInfo;	
 	
 	public UrlJsonAsyncTask(Context context) {
 		this.context = context;	
@@ -47,6 +46,7 @@ public class UrlJsonAsyncTask extends AsyncTask<String, Void, JSONObject> {
 		this.retryCount = RETRY_COUNT;
 		this.jsonSuccess = JSON_SUCCESS;
 		this.jsonInfo = JSON_INFO;
+		
 	} 
 	
 	@Override
@@ -100,7 +100,7 @@ public class UrlJsonAsyncTask extends AsyncTask<String, Void, JSONObject> {
 		    	try {
 		    		json.put(this.jsonSuccess, false);
 		    		json = JsonHelper.getJsonObjectFromUrl(url, this.timeoutConnect, this.timeoutRead);
-		    	} catch (SocketTimeoutException e) {
+		    	} catch (SocketTimeoutException e) {                                                   
 		    		if (retries-- > 0) {
 			    		json = queryUrlForJson(url);	
 		    		} else {

@@ -255,10 +255,12 @@ public class CoreActivity extends FragmentActivity {
 	 }
 	@Override
 	protected void onResume() {
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        bal_value = shared_prefs.getString(balance, "0");
+		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);       
         TextView tv_balance = (TextView) findViewById(R.id.balance);
-        tv_balance.setText("balance "+ bal_value + " b");
+        
+        bal_value = shared_prefs.getString(balance, "0");
+        tv_balance.setText("balance "+ bal_value + " bais");
+        
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		dbPromos=new ArrayList<String>();
         allDirs=new ArrayList<String>();
@@ -362,7 +364,7 @@ public class CoreActivity extends FragmentActivity {
 		return (dbh.getReadableDatabase().rawQuery(ps_query, null));
 	}
 	private Cursor homePromoCursor() {
-		String p_query = String.format("SELECT * FROM %s WHERE promoact_id=0", DatabaseHelper.TABLE_P);
+		String p_query = String.format("SELECT * FROM %s WHERE promoact_id=7", DatabaseHelper.TABLE_P);
 		return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	}
 	private void checkHomePromo() {
@@ -372,7 +374,7 @@ public class CoreActivity extends FragmentActivity {
 			int stopped = home_cursor.getInt(stop_ind);	
 			home_cursor.close();
 			if (stopped == 1) {			
-				File home_folder = new File(getConDir(CoreActivity.this), "0");
+				File home_folder = new File(getConDir(CoreActivity.this), "7");
 				if (home_folder.exists()) {
 					home_folder.delete();
 				}

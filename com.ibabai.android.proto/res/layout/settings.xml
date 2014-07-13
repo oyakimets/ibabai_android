@@ -5,17 +5,28 @@
     android:orientation="vertical" >
     
     <TextView 
-        android:id="@+id/cl_name"
+        android:id="@+id/tv_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp" />    
+        android:textSize="30sp" /> 
+        
+    <TextView 
+        android:id="@+id/tv_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp" /> 
+    <TextView 
+        android:id="@+id/tv_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp" /> 
     
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:onClick="ClearPrefs"
-        android:text="Clear preferences"/>
+        android:onClick="RegisterDelivery"
+        android:text="Register Delivery"/>
     
     <Button 
         android:layout_width="wrap_content"

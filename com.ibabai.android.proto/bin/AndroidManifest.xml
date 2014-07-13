@@ -87,14 +87,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ibabai.android.proto.MarketActivity" />            
-        </activity>
-        <activity android:name="PasswordChangeActivity"
+        </activity>        
+        <activity android:name="ProfileUpdateActivity"           
             android:parentActivityName="ProfileActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ibabai.android.proto.ProfileActivity" />  
+                android:value="com.ibabai.android.proto.ProfileActivity" /> 
         </activity>
-        <activity android:name="ProfileUpdateActivity"
+        <activity android:name="PasswordActivity"
+            android:windowSoftInputMode="stateVisible|adjustPan"
             android:parentActivityName="ProfileActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -132,6 +133,9 @@
         <service android:name="StopListService"></service>
         <service android:name="VenUpdateService"></service>
         <service android:name="venInstallService"></service>
+        <service android:name="DelRegService"></service>
+        <service android:name="ViewRegService"></service>
+        <service android:name="TransacDebitService"></service>
         <receiver android:name="DownloadCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />                    

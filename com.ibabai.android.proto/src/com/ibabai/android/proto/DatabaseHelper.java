@@ -128,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public void deleteHomePromo() {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+"=0", null);
+		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+ScanActivity.HP_ID, null);
 		db.close();
 	}
 	
@@ -175,7 +175,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.P_ID+"="+pa_id, null);
 		db.close();
 	}
-	public void updateDelivery(String pa_id, int n) {		
+	public void updateDeliveryCount(String pa_id, int n) {		
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(DatabaseHelper.DEL, n);

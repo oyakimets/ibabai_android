@@ -5,7 +5,6 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -17,8 +16,7 @@ public class MainActivity extends FragmentActivity {
 	private ViewPager pager=null;
 	private PresentationAdapter adapter=null;
 	public static final String PREFERENCES = "MyPrefs";
-	public static final String auth_token = "AuthToken";
-	public static final String balance = "Balance";
+	public static final String auth_token = "AuthToken";	
 	SharedPreferences shared_prefs;
 	
     @Override
@@ -37,11 +35,7 @@ public class MainActivity extends FragmentActivity {
         	ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         	ab.setCustomView(R.layout.ab_intro);
         	ab.setDisplayShowHomeEnabled(true);
-        	ab.setDisplayShowTitleEnabled(false);
-        	
-        	shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        	Editor editor = shared_prefs.edit();
-        	editor.putString(balance, "0").apply();
+        	ab.setDisplayShowTitleEnabled(false);        	
         	
         	SoundEffects.initSounds(this);
         	

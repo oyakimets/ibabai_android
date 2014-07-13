@@ -20,7 +20,7 @@ public class LocationService extends Service {
 	private LocationManager locationManager;
 	private static final long MIN_TIME = 1000*60*30;
 	private static final long MIN_DISTANCE = 5;
-	private static final long POINT_RADIUS = 100;
+	private static final long POINT_RADIUS = 500;
 	private static final long PROX_ALERT_EXPIRATION = -1;	
 	private static final String PROX_ALERT_INTENT = "com.ibabai.android.proto.ProximityAlert";	
 	private Cursor s_cursor;

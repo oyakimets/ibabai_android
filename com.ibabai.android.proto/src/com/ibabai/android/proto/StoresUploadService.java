@@ -33,7 +33,7 @@ public class StoresUploadService extends IntentService {
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 		city_id = shared_prefs.getInt(city, 0);		
-		if (city_id != 0) {
+		if (city_id != 0 && StoresEmpty()) {
 			String STORES_URL = STORE_BASE_URL + Integer.toString(city_id) +".txt";
 			try {
 				URL s_url=new URL(STORES_URL);
@@ -83,5 +83,14 @@ public class StoresUploadService extends IntentService {
 			}
 			dbh.close();
 		}		
-	}	
+	}
+	private boolean StoresEmpty() {
+		 String p_query = String.format("SELECT * FROM %s", DatabaseHelper.TABLE_S);
+		 if (dbh.getReadableDatabase().rawQuery(p_query, null).getCount() == 0) {
+			 return true;
+		 }
+		 else {
+			 return false;
+		 }
+	}
 }

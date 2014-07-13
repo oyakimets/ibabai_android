@@ -15,7 +15,7 @@ import android.widget.TextView;
 public class ProfileActivity extends Activity {
 	public static final String PREFERENCES = "MyPrefs";	
 	public static final String username = "email";
-	public static final String telephone = "phone #";
+	public static final String telephone = "phone";
 	public static final String age = "age";
 	public static final String gender="gender";	
 	SharedPreferences shared_prefs;
@@ -71,12 +71,11 @@ public class ProfileActivity extends Activity {
 		
 	}
 	public void ChangePassword(View view) {
-		Intent changeInt = new Intent(this, PasswordChangeActivity.class);
+		Intent changeInt = new Intent(this, PasswordActivity.class);
 		startActivity(changeInt);
 	}
 	public void UpdateProfile(View view) {
 		Intent updateInt = new Intent(this, ProfileUpdateActivity.class);
 		startActivity(updateInt);
 	}
-
 }

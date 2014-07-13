@@ -254,7 +254,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 		 return(dbh.getReadableDatabase().rawQuery(c_query, null));
 	 }
 	 private Cursor promoactCursor() {
-		 String p_query = String.format("SELECT * FROM %s WHERE promoact_id != 0", DatabaseHelper.TABLE_P);
+		 String p_query = String.format("SELECT * FROM %s WHERE promoact_id != 7", DatabaseHelper.TABLE_P);
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
 	 private Cursor promostoreCursor() {
