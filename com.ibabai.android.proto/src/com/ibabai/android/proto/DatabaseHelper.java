@@ -161,11 +161,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			db.close();			 
 		}		
 	}
-	public void updateStatus(String cl_id, int code) {		
+	public void updateStatusBlock(String cl_id) {		
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
-		cv.put(DatabaseHelper.STOP, code);
+		cv.put(DatabaseHelper.STOP, 1);
 		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.CL_ID+"="+cl_id, null);
+		db.close();
+	}
+	public void updateStatusUnblock(String cl_id) {		
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put(DatabaseHelper.STOP, 0);
+		db.update(DatabaseHelper.TABLE_P, cv, DatabaseHelper.CL_ID+"="+cl_id+" AND "+DatabaseHelper.PURCH+"= 0", null);
 		db.close();
 	}
 	public void paStopUpdate(String pa_id, int code) {		

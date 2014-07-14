@@ -1,20 +1,15 @@
 package com.ibabai.android.proto;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
-
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import com.ibabai.android.proto.UnblockDialogFragment.ReloadDataListener;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -27,58 +22,44 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-public class StopListService extends IntentService {
+public class ClientUnblockService extends IntentService {
 	public static final String PREFERENCES = "MyPrefs";	
 	private static final String STOPLIST_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/stoplists.json";
-	private static final int NOTIFY_ID = 1020;
-	public static final String CL_ID = "client_id";	
-	private int client_id;
-	private String cl_id;
-	private String pa_id;
+	private static final int NOTIFY_ID = 1030;
+	public static final String CL_ID = "client_id";		
+	private int position;
+	private File sl_f;
+	private String client_id;
+	private int cl_id;
 	SharedPreferences shared_prefs;
-	DatabaseHelper dbh;	
-	public StopListService() {
-		super("StopListService");
+	DatabaseHelper dbh;
+	public ClientUnblockService() {
+		super("ClientUnblockService");
 	}
+
 	@Override
-	protected void onHandleIntent(Intent i) {
+	protected void onHandleIntent(Intent intent) {
 		dbh=DatabaseHelper.getInstance(this.getApplicationContext());
 		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE); 
-		pa_id = (String) i.getExtras().get(CoreActivity.EXTRA_NI);
-		cl_id = (String) i.getExtras().get(stopListActivity.EXTRA_CL);
-		client_id = Integer.parseInt(cl_id);
-		File dir_src = new File(getPromoDir(this), pa_id);			
-		File src = new File(dir_src, "client.jpg");
-		Log.v("CLIENT", src.getAbsolutePath());
+		position = (Integer) intent.getExtras().get("position");
 		
-		ClientBlockAction(STOPLIST_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
+		File sl_dir = getStopDir(this); 
+		if (sl_dir.exists() && sl_dir.isDirectory()) {
+			File[] sl_lst = sl_dir.listFiles();
+			sl_f = sl_lst[position];
+			String path = sl_f.getAbsolutePath();			
+			int s_ind = path.lastIndexOf("/");
+			int f_ind = path.lastIndexOf("_");
+			client_id = path.substring(s_ind+1, f_ind);
+			cl_id = Integer.parseInt(client_id);
+		}
+		ClientUnblockAction(STOPLIST_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
 
 	}
-	public void CopyClient(File src, File dst) throws IOException {
-		FileChannel in = null;
-		FileChannel out=null;
-		try {
-			in = new FileInputStream(src).getChannel();
-			out = new FileOutputStream(dst).getChannel();
-			out.transferFrom(in, 0, in.size());
-			
-		} finally {
-			in.close();
-			out.close();
-		}
-	}
-	
-	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
-	 }
-	
-	static File getPromoDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
-	 }
-	private void ClientBlockAction(String url) {
+	private void ClientUnblockAction(String url) {
 		
 		DefaultHttpClient client = new DefaultHttpClient();
-		HttpPost post = new HttpPost(url);
+		DeleteWithBody delete = new DeleteWithBody(url);
 		JSONObject holder = new JSONObject();
 		JSONObject pay_json = new JSONObject();
 		String response = null;
@@ -88,16 +69,16 @@ public class StopListService extends IntentService {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");					
 										
-				pay_json.put(CL_ID, client_id);				
+				pay_json.put(CL_ID, cl_id);				
 				holder.put("stoplist", pay_json);
 				StringEntity se = new StringEntity(holder.toString());
-				post.setEntity(se);
+				delete.setEntity(se);
 					
-				post.setHeader("Accept", "application/json");
-				post.addHeader("Content-Type", "application/json");
+				delete.setHeader("Accept", "application/json");
+				delete.addHeader("Content-Type", "application/json");
 					
 				ResponseHandler<String> r_handler = new BasicResponseHandler();
-				response = client.execute(post, r_handler);
+				response = client.execute(delete, r_handler);
 				json = new JSONObject(response);					
 			}
 			catch (HttpResponseException ex) {
@@ -118,26 +99,12 @@ public class StopListService extends IntentService {
 			
 			try {
 				if (json.getBoolean("success")) {
-					Log.v("DEBIT", "Account deited");
-					dbh.updateStatusBlock(cl_id);
-					File dir_src = new File(getPromoDir(this), pa_id);			
-					File src = new File(dir_src, "client.jpg");
-					Log.v("CLIENT", src.getAbsolutePath());
-					File sl_dir = getStopDir(this);
-					if (!sl_dir.exists()) {
-						sl_dir.mkdirs();
-					}
-					String path = cl_id+"_client.jpg";
-					File dst= new File(sl_dir, path);		
-					Log.v("CLIENT", dst.getAbsolutePath());
-					try {
-						dst.createNewFile();
-						CopyClient(src, dst);
-					}
-					catch (IOException ex) {
-							Log.e("STOP", ex.toString());
-							
-					}					
+					Log.v("UNBLOCK", "Client unblocked");					
+					dbh.updateStatusUnblock(client_id);
+					dbh.close();
+					sl_f.delete();
+					ReloadDataListener activity = (ReloadDataListener) this;
+					activity.ReloadData();
 					
 				}
 				else {
@@ -159,7 +126,7 @@ public class StopListService extends IntentService {
 		b.setAutoCancel(true).setDefaults(Notification.DEFAULT_ALL).setWhen(System.currentTimeMillis());
 		Bitmap bm = BitmapFactory.decodeResource(ctxt.getResources(), R.drawable.ic_launcher);
 		if (e == null) {
-			b.setContentTitle("Error warning!").setContentText("Client block failed. Try again!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
+			b.setContentTitle("Error warning!").setContentText("Client unblock failed. Try again!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
 
 			Intent outbound=new Intent(ctxt, stopListActivity.class);			
 
@@ -172,5 +139,8 @@ public class StopListService extends IntentService {
 		NotificationManager mgr=(NotificationManager)ctxt.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		mgr.notify(NOTIFY_ID, b.build());
-	}	
+	}
+	static File getStopDir(Context ctxt) {
+		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+	 }	
 }

@@ -12,15 +12,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.TextView;
 
 
 public class TransacDebitService extends IntentService {
+	private static final int NOTIFY_ID = 1010;
 	public static final String PREFERENCES = "MyPrefs";
 	private static final String EXTRA_CODE = "dc_flag";
 	private static final String PHONE = "phone";
@@ -105,6 +112,7 @@ public class TransacDebitService extends IntentService {
 					
 				}
 				else {
+					raiseNotification(this, null);	
 					Log.e("DEBIT", json.getString("info"));
 					/* launch "payment failed" sms/email
 					 * 
@@ -115,6 +123,26 @@ public class TransacDebitService extends IntentService {
 				Log.e("SCAN", "Post execute exception");
 			}			
 		}
+	}
+	private void raiseNotification(Context ctxt, Exception e) {
+		NotificationCompat.Builder b=new NotificationCompat.Builder(ctxt);
+
+		b.setAutoCancel(true).setDefaults(Notification.DEFAULT_ALL).setWhen(System.currentTimeMillis());
+		Bitmap bm = BitmapFactory.decodeResource(ctxt.getResources(), R.drawable.ic_launcher);
+		if (e == null) {
+			b.setContentTitle("Error warning!").setContentText("You payment order was not executed. try again!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
+
+			Intent outbound=new Intent(ctxt, PaymentActivity.class);			
+
+			b.setContentIntent(PendingIntent.getActivity(ctxt, 0, outbound, 0));
+		}
+		else {
+			b.setContentTitle("Sorry").setContentText(e.getMessage()).setSmallIcon(android.R.drawable.stat_notify_error).setTicker("ibabai");
+		}
+
+		NotificationManager mgr=(NotificationManager)ctxt.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		mgr.notify(NOTIFY_ID, b.build());
 	}	
 }
 

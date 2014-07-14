@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class UnblockDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
-	private String client_id;
+	
 	private View form=null;
 	private AlertDialog ub_dialog=null;
 	DatabaseHelper dbh;
@@ -49,32 +49,16 @@ public class UnblockDialogFragment extends DialogFragment implements DialogInter
 			break;
 		case AlertDialog.BUTTON_POSITIVE:			
 			int position=getArguments().getInt("position");
-			File sl_dir = getStopDir(getActivity()); 
-			if (sl_dir.exists() && sl_dir.isDirectory()) {
-				File[] sl_lst = sl_dir.listFiles();
-				File sl_f = sl_lst[position];
-				String path = sl_f.getAbsolutePath();
-				sl_f.delete();
-				int s_ind = path.lastIndexOf("/");
-				int f_ind = path.lastIndexOf("_");
-				client_id= path.substring(s_ind+1, f_ind);
-				dbh.updateStatus(client_id, 0);
-				dbh.close();
-				ReloadDataListener activity = (ReloadDataListener) getActivity();
-				activity.ReloadData();
-			}
+			Intent intent = new Intent(getActivity(), ClientUnblockService.class);
+			intent.putExtra("position", position);					
 			int size=getArguments().getInt("size");
 			if (size > 1) {				
-				/*launch async task: 1) delete file from stoplist folder 2) send data to server
-				 *  3)update sl.json file 
-				 */
+				getActivity().startService(intent);	
 			}
-			else {				
+			else {
+				getActivity().startService(intent);	
 				Intent ub_yes=new Intent(getActivity(), CoreActivity.class);				
-				startActivity(ub_yes);
-				/*launch async task: 1) delete file from stoplist folder 2) send data to server
-				 *  3)update sl.json file 
-				 */
+				startActivity(ub_yes);				
 			}
 			break;
 		default:

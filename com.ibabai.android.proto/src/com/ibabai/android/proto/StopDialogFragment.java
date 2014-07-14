@@ -47,8 +47,8 @@ public class StopDialogFragment extends DialogFragment implements DialogInterfac
 			String pa_id=getArguments().getString("promoact");			
 			Cursor to_sl_cursor = getPromoact(pa_id);
 			client_id = getClientId(to_sl_cursor);
-			to_sl_cursor.close();
-			dbh.updateStatus(client_id, 1);
+				to_sl_cursor.close();
+			
 			Intent ser_int=new Intent(getActivity(), StopListService.class);
 			ser_int.putExtra(CoreActivity.EXTRA_NI, pa_id);
 			ser_int.putExtra(stopListActivity.EXTRA_CL, client_id);
@@ -57,9 +57,7 @@ public class StopDialogFragment extends DialogFragment implements DialogInterfac
 			sl_yes.putExtra(CoreActivity.EXTRA_NI, pa_id);
 			startActivity(sl_yes);
 			Toast.makeText(getActivity().getBaseContext(), "All promos of the company are blocked", Toast.LENGTH_LONG).show();
-			/*launch async task: 1) copy cl.jpg from promo to sl folder 2) update sl.json file 
-			 * 3) update promos.json file 4)delete promo folder 5)send promo id to server 
-			 */
+			
 			break;
 		default:
 			break;			
