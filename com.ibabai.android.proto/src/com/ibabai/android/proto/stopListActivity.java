@@ -2,15 +2,12 @@ package com.ibabai.android.proto;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -22,8 +19,7 @@ import android.widget.ListView;
 import com.ibabai.android.proto.UnblockDialogFragment.ReloadDataListener;
 
 
-public class stopListActivity extends FragmentActivity implements ReloadDataListener  {
-	
+public class stopListActivity extends FragmentActivity implements ReloadDataListener  {	
 		
 	private Bundle bundle;
 	public static int sl_size=0;	
@@ -34,8 +30,7 @@ public class stopListActivity extends FragmentActivity implements ReloadDataList
 	public static final String SL_BASEDIR="stop_list";
 	private ListView StopList;
 	private StopListAdapter sl_adapter;
-	public static ArrayList<Drawable> StopListItems;
-	private GetStops get_stops=null;
+	public static ArrayList<Drawable> StopListItems;	
 	public static ArrayList<String> StopListIds;
 	private File stop_dir;
 	JSONArray stopJArr = null;
@@ -56,43 +51,26 @@ public class stopListActivity extends FragmentActivity implements ReloadDataList
              
        
 	}
-	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task, T... params) {
-		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
-	}
-	private class GetStops extends AsyncTask<Context, Void, Void> {		 
+	
+	private void LoadBlockTags() {
+			 
+		if (stop_dir.exists() && stop_dir.isDirectory()) {				 
+			File[] f_lst = stop_dir.listFiles();
+			String[] f_names = stop_dir.list();
+			for (File f:f_lst) {
+				Drawable d_stop = Drawable.createFromPath(f.getAbsolutePath());
+				StopListItems.add(d_stop);
+			}
+			for (String s:f_names) {
+				StopListIds.add(s);
+			}			 
+		 }
+			 
+		 sl_adapter = new StopListAdapter(getApplicationContext(), StopListItems);
+		 sl_size=sl_adapter.getCount();			 
+		 StopList.setAdapter(sl_adapter);
+		 StopList.setOnItemClickListener(new StopListClickListener());		     
 		 
-		 @Override
-		 protected Void doInBackground(Context... ctxt) {
-			 
-			 if (stop_dir.exists() && stop_dir.isDirectory()) {				 
-				 File[] f_lst = stop_dir.listFiles();
-				 String[] f_names = stop_dir.list();
-				 for (File f:f_lst) {
-					 Drawable d_stop = Drawable.createFromPath(f.getAbsolutePath());
-					 StopListItems.add(d_stop);
-				 }
-				 for (String s:f_names) {
-					 StopListIds.add(s);
-				 }
-		 	 
-			 }
-			 return null;
-		 }
-		 @Override 
-		 public void onPostExecute(Void result) {
-			 super.onPostExecute(result);		 
-		     
-			 sl_adapter = new StopListAdapter(getApplicationContext(), StopListItems);
-			 sl_size=sl_adapter.getCount();			 
-		     StopList.setAdapter(sl_adapter);
-		     bundle = new Bundle();
-		     bundle.putInt("size", sl_size);
-		     UnblockDialogFragment unbl = new UnblockDialogFragment();
-		     unbl.setArguments(bundle);
-		     StopList.setOnItemClickListener(new StopListClickListener());
-			 
-		     return;  
-		 }
 	 }
 	private class StopListClickListener implements ListView.OnItemClickListener {
 		@Override
@@ -101,6 +79,7 @@ public class stopListActivity extends FragmentActivity implements ReloadDataList
 		}		
 	}
 	private void displayStopAction(int pos) {
+		bundle = new Bundle();
 		bundle.putString("vend_f", StopListIds.get(pos));
     	bundle.putInt("position", pos);
     	bundle.putInt("size", StopListItems.size());
@@ -141,8 +120,7 @@ public class stopListActivity extends FragmentActivity implements ReloadDataList
         StopListIds = new ArrayList<String>();
         StopListItems = new ArrayList<Drawable>();
         stop_dir = getStopDir(this);
-        get_stops=new GetStops();
-        executeAsyncTask(get_stops, getApplicationContext());
+        LoadBlockTags();
         if(sl_adapter != null) {
         	sl_adapter.notifyDataSetChanged();
         }

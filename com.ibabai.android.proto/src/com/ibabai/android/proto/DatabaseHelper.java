@@ -128,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public void deleteHomePromo() {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+ScanActivity.HP_ID, null);
+		db.delete(DatabaseHelper.TABLE_P, DatabaseHelper.P_ID+"="+ScanActivity.HP_ID, null);
 		db.close();
 	}
 	

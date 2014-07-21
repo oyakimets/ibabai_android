@@ -25,7 +25,9 @@ public class DelRegService extends IntentService {
 	SharedPreferences shared_prefs;
 	private static final String P_CODE = "fc_1";	
 	private int s_id;
-	private int pa_id;	
+	private int pa_id;
+	private int multiple;
+	private int count;
 	public static ArrayList<String> dbPromos;
 	public static ArrayList<String> storePromos;
 	private Cursor pa_cursor;
@@ -40,11 +42,8 @@ public class DelRegService extends IntentService {
 	protected void onHandleIntent(Intent i) {
 		dbh = DatabaseHelper.getInstance(getApplicationContext());
 		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		if (shared_prefs.contains(ScanActivity.user_id)) {			
-			s_id = shared_prefs.getInt(LAST_STORE, 0);
-			if (s_id == 0) {
-				s_id = 101;
-			}		
+		if (shared_prefs.contains("AuthToken")) {			
+			s_id = shared_prefs.getInt(LAST_STORE, 0);			
 			updateDelivery(s_id);
 		}
 		else {
@@ -84,19 +83,12 @@ public class DelRegService extends IntentService {
 			if (pa_update_cursor != null && pa_update_cursor.moveToFirst()) {
 				int mult_ind = pa_update_cursor.getColumnIndex(DatabaseHelper.MULT);
 				int del_ind = pa_update_cursor.getColumnIndex(DatabaseHelper.DEL);
-				int multiple = pa_update_cursor.getInt(mult_ind);
+				multiple = pa_update_cursor.getInt(mult_ind);
 				int delivery = pa_update_cursor.getInt(del_ind);
 				pa_update_cursor.close();
-				int count = delivery+1;
-				/*http patch request to server
-				 * 
-				 */
-				dbh.updateDeliveryCount(promoact_id, count);
-				if (count == multiple) {
-					dbh.paStopUpdate(promoact_id, 1);
-				}
+				count = delivery+1;				
 			}
-			RegisterDelivery(ViewRegService.LOGS_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
+			RegisterDelivery(ViewRegService.LOGS_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""), promoact_id, count, multiple);
 		}
 		dbh.close();
 	}
@@ -112,7 +104,7 @@ public class DelRegService extends IntentService {
 		 String p_query = String.format("SELECT * FROM %s WHERE promoact_id =" + id, DatabaseHelper.TABLE_P);
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
-	private void RegisterDelivery(String url) {		
+	private void RegisterDelivery(String url, String pa, int cnt, int mlt) {		
 		
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(url);
@@ -156,6 +148,10 @@ public class DelRegService extends IntentService {
 			try {
 				if (json.getBoolean("success")) {										
 					Log.v("DELIVERY", "Delivery registered");
+					dbh.updateDeliveryCount(pa, cnt);
+					if (cnt == mlt) {
+						dbh.paStopUpdate(pa, 1);
+					}
 				}
 				else {
 					Log.e("DELIVERY", json.getString("info"));
@@ -165,5 +161,10 @@ public class DelRegService extends IntentService {
 				Log.e("DELIVERY", e.getMessage());
 			}
 		}		
-	}	
+	}
+	@Override
+	public void onDestroy() {
+		dbh.close();
+		super.onDestroy();
+	}
 }

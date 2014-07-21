@@ -19,7 +19,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 public class ViewRegService extends IntentService {
-	public static final String LOGS_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/cust_logs.json";
+	public static final String LOGS_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/cust_logs.json";
 	public static final String PREFERENCES = "MyPrefs";	
 	public static final String PASS = "password";
 	public static final String LAST_STORE = "last_store";

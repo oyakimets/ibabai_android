@@ -26,7 +26,7 @@ import android.widget.Toast;
 import com.savagelook.android.UrlJsonAsyncTask;
 
 public class ProfileDialogFragment extends DialogFragment {
-	public final static String VALID_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/validations.json";
+	public final static String VALID_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/validations.json";
 	public static final String C_ID = "customer_id";
 	private View form=null;
 	private AlertDialog profile_dialog=null;

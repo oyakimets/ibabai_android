@@ -32,7 +32,7 @@ import com.savagelook.android.UrlJsonAsyncTask;
 
 
 public class PaymentDialogFragment extends DialogFragment {	
-	public final static String VALID_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/debits.json";
+	public final static String VALID_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/debits.json";
 	private View form=null;
 	private AlertDialog payment_dialog=null;
 	public static final String PREFERENCES = "MyPrefs";

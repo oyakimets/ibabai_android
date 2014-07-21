@@ -47,8 +47,8 @@ public class StopDialogFragment extends DialogFragment implements DialogInterfac
 			String pa_id=getArguments().getString("promoact");			
 			Cursor to_sl_cursor = getPromoact(pa_id);
 			client_id = getClientId(to_sl_cursor);
-				to_sl_cursor.close();
-			
+			to_sl_cursor.close();
+			dbh.updateStatusBlock(client_id);
 			Intent ser_int=new Intent(getActivity(), StopListService.class);
 			ser_int.putExtra(CoreActivity.EXTRA_NI, pa_id);
 			ser_int.putExtra(stopListActivity.EXTRA_CL, client_id);

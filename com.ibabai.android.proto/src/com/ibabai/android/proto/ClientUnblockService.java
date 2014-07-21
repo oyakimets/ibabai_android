@@ -24,7 +24,7 @@ import android.util.Log;
 
 public class ClientUnblockService extends IntentService {
 	public static final String PREFERENCES = "MyPrefs";	
-	private static final String STOPLIST_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/stoplists.json";
+	private static final String STOPLIST_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/stoplists.json";
 	private static final int NOTIFY_ID = 1030;
 	public static final String CL_ID = "client_id";		
 	private int position;

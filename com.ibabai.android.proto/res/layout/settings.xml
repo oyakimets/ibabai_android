@@ -33,8 +33,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:textSize="30sp"
-        android:onClick="ClearDB"
-        android:text="Clear DB"/>
+        android:onClick="LoadData"
+        android:text="Load Data"/>
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

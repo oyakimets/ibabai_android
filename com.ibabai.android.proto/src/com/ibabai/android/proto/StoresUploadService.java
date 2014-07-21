@@ -67,8 +67,7 @@ public class StoresUploadService extends IntentService {
 		}
 		Intent ps_intent = new Intent(this, psUploadService.class);
 		startService(ps_intent);
-		Intent loc_intent = new Intent(this, LocationService.class);
-		startService(loc_intent);
+		
 	}	
 	
 	private void loadStores(String st, int id) throws JSONException {

@@ -13,7 +13,6 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
@@ -24,14 +23,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+
+
+
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
 
 public class CoreActivity extends FragmentActivity {
 	public static final String EXTRA_NI="position";
 	private String sl_count = null;
-	private boolean bool=false;	
-	private String ni_position = null;	
+	private boolean bool=false;		
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -45,8 +47,7 @@ public class CoreActivity extends FragmentActivity {
 	public static final String balance = "Balance";	
 	private ListView PromoList;
 	private PromoListAdapter pl_adapter;
-	private ArrayList<Drawable> PromoListItems;
-	private GetPromos get_promos=null;
+	private ArrayList<Drawable> PromoListItems;	
 	public static ArrayList<String> allDirs;
 	public static ArrayList<String> dbPromos;
 	private static int store_id;	
@@ -115,9 +116,13 @@ public class CoreActivity extends FragmentActivity {
         ab.setHomeButtonEnabled(true);
                     
         shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        store_id=shared_prefs.getInt("store_id", 0);  
+        store_id=shared_prefs.getInt("store_id", 0);
         
-        DataUpdateReceiver.scheduleAlarm(this);
+        DataUpdateReceiver.scheduleAlarm(this); 
+        
+        Intent start_i = new Intent(this, LocationService.class);
+	    startService(start_i);
+       
 	}
 	private class SlideMenuClickListener implements ListView.OnItemClickListener {
 		@Override
@@ -140,7 +145,7 @@ public class CoreActivity extends FragmentActivity {
 		case 2:
 			Intent i2=new Intent(this, stopListActivity.class);
 			startActivity(i2);
-			mDrawerLayout.closeDrawer(mDrawerList);
+			mDrawerLayout.closeDrawer(mDrawerList);			
 			break;
 		case 3:
 			new ProfileDialogFragment().show(getSupportFragmentManager(), "profile");
@@ -181,80 +186,60 @@ public class CoreActivity extends FragmentActivity {
 		}			
 		
 	}	
-	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task, T... params) {
-		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
-	}
-	private class GetPromos extends AsyncTask<Context, Void, Void> {
-		
-		 
-		 @Override
-		 protected Void doInBackground(Context... ctxt) {
+	private void LoadPromoTags() {
 			 
-			 try {
-				 checkHomePromo();
-				 pa_cursor=promoactCursor();
-				 if (pa_cursor != null && pa_cursor.moveToFirst()) {
-					 int id_ind = pa_cursor.getColumnIndex("promoact_id");
-					 while (!pa_cursor.isAfterLast()) {
-						 String pa_id = Integer.toString(pa_cursor.getInt(id_ind));						
-						 dbPromos.add(pa_id);
-						 pa_cursor.moveToNext();
-					 }
-					 pa_cursor.close();
-					 if (store_id == 0) {
-						 allDirs=dbPromos;						 
-					 }
-					 else {
-						 ps_cursor = storePromosCursor(store_id);
-						 if(ps_cursor != null && ps_cursor.moveToFirst()) {
-							 int paid_ind = ps_cursor.getColumnIndex("promoact_id");
-							 while (!ps_cursor.isAfterLast()) {
-								 String promoact_id=Integer.toString(ps_cursor.getInt(paid_ind));
-								 if (dbPromos.contains(promoact_id)) {
-									 allDirs.add(promoact_id);
-								 }
-								 ps_cursor.moveToNext();
-							 }
-							 ps_cursor.close();
-						 }						
-					 }
-				 }
-				 			
-				
-				if (ni_position != null) {
-					allDirs.remove(ni_position);
+		try {
+			checkHomePromo();
+			pa_cursor=promoactCursor();
+			if (pa_cursor != null && pa_cursor.moveToFirst()) {
+				int id_ind = pa_cursor.getColumnIndex("promoact_id");
+				while (!pa_cursor.isAfterLast()) {
+					String pa_id = Integer.toString(pa_cursor.getInt(id_ind));						
+					dbPromos.add(pa_id);
+					pa_cursor.moveToNext();
 				}
+				pa_cursor.close();
+			}
+			if (store_id == 0) {
+				allDirs=dbPromos;						 
+			}
+			else {
+				ps_cursor = storePromosCursor(store_id);
+				if(ps_cursor != null && ps_cursor.moveToFirst()) {
+					int paid_ind = ps_cursor.getColumnIndex("promoact_id");
+					while (!ps_cursor.isAfterLast()) {
+						String promoact_id=Integer.toString(ps_cursor.getInt(paid_ind));
+						if (dbPromos.contains(promoact_id)) {
+							allDirs.add(promoact_id);
+						}
+						ps_cursor.moveToNext();
+					}
+					ps_cursor.close();						 						
+				}
+			}				
 				
-				for (int j=0; j< allDirs.size(); j++) {					
-					String dir=allDirs.get(j);
-					File pa_folder = new File(getConDir(CoreActivity.this), dir);
-					if (pa_folder.exists()) {
-						File tag_file = new File(pa_folder, "con_tag.jpg");
-						String tag_path = tag_file.getAbsolutePath();												
-						Drawable d_promo = Drawable.createFromPath(tag_path);
-						PromoListItems.add(d_promo);								
-					}			
-						
-				}			
+			for (int j=0; j< allDirs.size(); j++) {					
+				String dir=allDirs.get(j);
+				File pa_folder = new File(getConDir(CoreActivity.this), dir);
+				if (pa_folder.exists()) {
+					File tag_file = new File(pa_folder, "con_tag.jpg");
+					String tag_path = tag_file.getAbsolutePath();												
+					Drawable d_promo = Drawable.createFromPath(tag_path);
+					PromoListItems.add(d_promo);								
+				}							
 			 }
-		 	 catch(Exception e) {
-		 		 e.printStackTrace();
-		 	 }			 
-			 
-			 return null;
-		 }
-		 @Override 
-		 public void onPostExecute(Void result) {
-			 super.onPostExecute(result);		     
-			 pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);			 
-		     PromoList.setAdapter(pl_adapter);
-		     PromoList.setOnItemClickListener(new PromoListClickListener());		     
-			 
-		     return;  
-		 }
-	 }
+			pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);			
+		    PromoList.setAdapter(pl_adapter);
+		    PromoList.setOnItemClickListener(new PromoListClickListener());
+		}
+		catch(Exception e) {
+		 	e.printStackTrace();
+		 }			
+	}
+		 
 	@Override
 	protected void onResume() {
+		
 		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);       
         TextView tv_balance = (TextView) findViewById(R.id.balance);
         
@@ -266,11 +251,8 @@ public class CoreActivity extends FragmentActivity {
         allDirs=new ArrayList<String>();
         PromoList=(ListView) findViewById(R.id.promo_list);
         PromoListItems = new ArrayList<Drawable>();
-        get_promos=new GetPromos();
-        executeAsyncTask(get_promos, getApplicationContext()); 
-        if (pl_adapter != null) {
-        	pl_adapter.notifyDataSetChanged();
-        }
+        LoadPromoTags();        
+        
 		GPSTracker gps = new GPSTracker(this);
         if(!gps.canGetLocation()) {
         	LocDialogFragment ldf = new LocDialogFragment();
@@ -364,7 +346,7 @@ public class CoreActivity extends FragmentActivity {
 		return (dbh.getReadableDatabase().rawQuery(ps_query, null));
 	}
 	private Cursor homePromoCursor() {
-		String p_query = String.format("SELECT * FROM %s WHERE promoact_id=7", DatabaseHelper.TABLE_P);
+		String p_query = String.format("SELECT * FROM %s WHERE promoact_id="+ScanActivity.HP_ID, DatabaseHelper.TABLE_P);
 		return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	}
 	private void checkHomePromo() {
@@ -374,10 +356,11 @@ public class CoreActivity extends FragmentActivity {
 			int stopped = home_cursor.getInt(stop_ind);	
 			home_cursor.close();
 			if (stopped == 1) {			
-				File home_folder = new File(getConDir(CoreActivity.this), "7");
+				File home_folder = new File(getConDir(CoreActivity.this), ScanActivity.HP_ID);
 				if (home_folder.exists()) {
 					home_folder.delete();
 				}
+				dbh.deleteHomePromo();
 			}			
 		}
 	}

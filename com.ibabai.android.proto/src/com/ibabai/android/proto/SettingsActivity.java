@@ -2,14 +2,11 @@ package com.ibabai.android.proto;
 
 import java.io.File;
 
-import com.commonsware.cwac.wakeful.WakefulIntentService;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -18,11 +15,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 public class SettingsActivity extends Activity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String status = "SignedUp";
 	static final String TABLE="logbook";
-	public static final String city="city";
+	public static final String city="city";	
 	GPSTracker gps_t;
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;
@@ -30,7 +29,7 @@ public class SettingsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        
+        dbh = DatabaseHelper.getInstance(getApplicationContext());
         ActionBar ab=getActionBar();
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setCustomView(R.layout.ab_settings);
@@ -45,18 +44,26 @@ public class SettingsActivity extends Activity {
         TextView tv1 = (TextView)findViewById(R.id.tv_1);
         tv1.setText( lat+"/"+lon);
         
+     
+        
         shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String at = shared_prefs.getString("AuthToken", null);
-        TextView tv2 = (TextView)findViewById(R.id.tv_2);
-        tv2.setText(at);
-        String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));
-        TextView tv3 = (TextView)findViewById(R.id.tv_3);
-        tv3.setText(s_id);
         
         
        
-        
 	}
+	@Override
+	protected void onResume() {
+		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));        
+        TextView tv2 = (TextView)findViewById(R.id.tv_2);
+        tv2.setText(s_id);       
+        
+		String last_s = Integer.toString(shared_prefs.getInt("last_store", 0));
+	    TextView tv3 = (TextView)findViewById(R.id.tv_3);
+	    tv3.setText(last_s);
+	     
+	     super.onResume();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);
@@ -85,18 +92,11 @@ public class SettingsActivity extends Activity {
 		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
 		t.show();
 	}
-	public void ClearDB(View view) {
-		dbh = DatabaseHelper.getInstance(getApplicationContext());
-		SQLiteDatabase sqldb = dbh.getWritableDatabase();
-		if (sqldb != null) {
-			sqldb.delete(TABLE, null, null);
-			Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
-			t.show();
-		}
-		else {
-			Toast t = Toast.makeText(this, "Error", Toast.LENGTH_SHORT );
-			t.show();
-		}
+	public void LoadData(View view) {
+		Intent i = new Intent(this, psUploadService.class);
+		startService(i);
+		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
+		t.show();		
 	}
 	public void updateData(View view) {
 		WakefulIntentService.sendWakefulWork(this, DataUpdateService.class);
@@ -107,5 +107,6 @@ public class SettingsActivity extends Activity {
 	 }
 	static File getStopDir(Context ctxt) {
 		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
-	 }
+	 }	
+	
 }

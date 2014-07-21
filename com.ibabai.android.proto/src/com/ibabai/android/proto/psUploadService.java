@@ -14,7 +14,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
@@ -38,37 +37,7 @@ public class psUploadService extends IntentService {
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 		city_id = shared_prefs.getInt(city, 0);
-		if (TableEmpty(DatabaseHelper.TABLE_P)) {
-			try {
-				URL s_url=new URL(PA_URL);
-				HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
-				con.setRequestMethod("GET");
-				con.setReadTimeout(15000);
-				con.connect();
-					
-				reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-				StringBuilder buf = new StringBuilder();
-				String line = null;
-					
-				while ((line=reader.readLine()) != null) {
-					buf.append(line+"\n");
-				}
-				loadPromos(buf.toString());							
-			}
-			catch (Exception e) {
-				Log.e(getClass().getSimpleName(), "Exception retrieving promo data", e);
-			}
-			finally {
-				if (reader != null) {
-					try {
-						reader.close();
-					}
-					catch (IOException e) {
-						Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);						
-					}
-				}			 			
-			}
-		}
+		
 		if (city_id != 0 && TableEmpty(DatabaseHelper.TABLE_SP)) {
 			String SP_URL= SP_BASE_URL + Integer.toString(city_id) +".txt";
 			try {
@@ -101,6 +70,39 @@ public class psUploadService extends IntentService {
 				}
 			}				
 		}
+		if (TableEmpty(DatabaseHelper.TABLE_P)) {
+			try {
+				URL pa_url=new URL(PA_URL);
+				HttpURLConnection con=(HttpURLConnection)pa_url.openConnection();
+				con.setRequestMethod("GET");
+				con.setReadTimeout(15000);
+				con.connect();
+					
+				reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+				StringBuilder buf = new StringBuilder();
+				String line = null;
+					
+				while ((line=reader.readLine()) != null) {
+					buf.append(line+"\n");
+				}
+				Log.d("HP", buf.toString());
+				loadPromos(buf.toString());							
+			}
+			catch (Exception e) {
+				Log.e(getClass().getSimpleName(), "Exception retrieving promo data", e);
+			}
+			finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					}
+					catch (IOException e) {
+						Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);						
+					}
+				}			 			
+			}
+		}
+		
 		if (TableEmpty(DatabaseHelper.TABLE_V)) {
 			try {
 				URL sp_url=new URL(VEN_BASE_URL);
@@ -151,11 +153,8 @@ public class psUploadService extends IntentService {
 	
 	private void loadPromos(String st) throws JSONException {
 		JSONObject jso = new JSONObject(st);
-		JSONArray promoacts = jso.optJSONArray("promos");
-		Cursor c = getHomePromos(); 
-		int count = c.getCount();
-		c.close();
-		if (promoacts.length() > 0 && count==0) {
+		JSONArray promoacts = jso.optJSONArray("promos");		
+		if (promoacts.length() > 0) {
 			for (int i=0; i<promoacts.length(); i++) {
 				JSONObject promoact = promoacts.optJSONObject(i);
 				Promoact p = new Promoact(promoact);
@@ -173,10 +172,7 @@ public class psUploadService extends IntentService {
 			}			
 		}
 	}
-	private Cursor getHomePromos() {
-		String p_query = String.format("SELECT * FROM %s ", DatabaseHelper.TABLE_P);
-		return(dbh.getReadableDatabase().rawQuery(p_query, null));
-	}
+	
 	private boolean TableEmpty(String table) {
 		 String p_query = String.format("SELECT * FROM %s", table);
 		 if (dbh.getReadableDatabase().rawQuery(p_query, null).getCount() == 0) {

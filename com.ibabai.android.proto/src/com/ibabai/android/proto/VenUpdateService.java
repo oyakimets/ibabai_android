@@ -2,6 +2,7 @@ package com.ibabai.android.proto;
 
 import java.io.File;
 import java.util.ArrayList;
+
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -89,7 +90,7 @@ public class VenUpdateService extends com.commonsware.cwac.wakeful.WakefulIntent
 			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 			Editor editor = shared_prefs.edit();
 			editor.putString(LOAD_TOGGLE, "con");
-			editor.apply();
+			editor.apply();			
 			stopSelf();
 		}
 	}

@@ -29,7 +29,7 @@ import android.util.Log;
 
 public class StopListService extends IntentService {
 	public static final String PREFERENCES = "MyPrefs";	
-	private static final String STOPLIST_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/stoplists.json";
+	private static final String STOPLIST_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/stoplists.json";
 	private static final int NOTIFY_ID = 1020;
 	public static final String CL_ID = "client_id";	
 	private int client_id;
@@ -118,8 +118,7 @@ public class StopListService extends IntentService {
 			
 			try {
 				if (json.getBoolean("success")) {
-					Log.v("DEBIT", "Account deited");
-					dbh.updateStatusBlock(cl_id);
+					Log.v("DEBIT", "Account deited");					
 					File dir_src = new File(getPromoDir(this), pa_id);			
 					File src = new File(dir_src, "client.jpg");
 					Log.v("CLIENT", src.getAbsolutePath());

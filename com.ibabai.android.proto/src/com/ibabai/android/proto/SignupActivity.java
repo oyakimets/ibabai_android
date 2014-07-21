@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -13,8 +14,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -31,10 +33,11 @@ import android.widget.NumberPicker;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.savagelook.android.UrlJsonAsyncTask;
 
-public class SignupActivity extends Activity {
-	public final static String REGISTER_API_ENDPOINT_URL="http://192.168.1.102:3000/api/v1/registrations";
+public class SignupActivity extends FragmentActivity {
+	public final static String REGISTER_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/registrations";
 	public static final String PREFERENCES = "MyPrefs";	
 	public static final String email = "email";
 	public static final String phone = "phone";
@@ -81,6 +84,10 @@ public class SignupActivity extends Activity {
  		editor.apply();
         
         GPSTracker gps = new GPSTracker(this);
+        if(!gps.canGetLocation()) {
+        	LocDialogFragment ldf = new LocDialogFragment();
+        	ldf.show(getSupportFragmentManager(), "location");
+        }
         current_loc = gps.getLocation();             
         dbh = DatabaseHelper.getInstance(getApplicationContext());
         db_load=new DbLoadTask();
