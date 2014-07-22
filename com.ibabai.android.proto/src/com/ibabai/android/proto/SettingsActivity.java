@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -22,6 +23,7 @@ public class SettingsActivity extends Activity {
 	public static final String status = "SignedUp";
 	static final String TABLE="logbook";
 	public static final String city="city";	
+	private int del;
 	GPSTracker gps_t;
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;
@@ -53,13 +55,19 @@ public class SettingsActivity extends Activity {
 	}
 	@Override
 	protected void onResume() {
+		Cursor c = promoactCursor("7");
+		int count = c.getCount();
+		int ind = c.getColumnIndex("delivery");
+		if (c != null && c.moveToFirst()) {
+			del = c.getInt(ind);
+		}
 		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));        
         TextView tv2 = (TextView)findViewById(R.id.tv_2);
         tv2.setText(s_id);       
         
 		String last_s = Integer.toString(shared_prefs.getInt("last_store", 0));
 	    TextView tv3 = (TextView)findViewById(R.id.tv_3);
-	    tv3.setText(last_s);
+	    tv3.setText(Integer.toString(count));
 	     
 	     super.onResume();
 	}
@@ -108,5 +116,8 @@ public class SettingsActivity extends Activity {
 	static File getStopDir(Context ctxt) {
 		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
 	 }	
-	
+	private Cursor promoactCursor(String id) {
+		 String p_query = String.format("SELECT * FROM %s WHERE promoact_id="+id, DatabaseHelper.TABLE_P);
+		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
+	 }
 }

@@ -137,6 +137,7 @@
         <service android:name="ViewRegService"></service>
         <service android:name="TransacDebitService"></service>       
         <service android:name="ClientUnblockService"></service>
+        <service android:name="ViewRewardService"></service>
         <receiver android:name="DownloadCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />                    

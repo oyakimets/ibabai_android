@@ -1,21 +1,10 @@
 package com.ibabai.android.proto;
 
 import java.io.File;
-import java.io.IOException;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-import com.savagelook.android.UrlJsonAsyncTask;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -44,10 +33,7 @@ public class PresentationDisplayActivity extends FragmentActivity {
 	private String pa_folder_path=null;
 	private ViewPager pres_pager=null;
 	private PromoPresAdapter adapter=null;
-	private int view;
-	private int rew1;
-	private String c_name;
-	private int c_id;	
+	private int view;	
 	private String promoact_id;	
 	private String bal_value;
 	DatabaseHelper dbh;
@@ -105,17 +91,17 @@ public class PresentationDisplayActivity extends FragmentActivity {
 		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 		bal_value = shared_prefs.getString(balance, "0");		
 		if (CheckView()) {			
-			AddViewRew();
-			Intent i = new Intent(this, ViewRegService.class);
+			Intent i = new Intent(this, ViewRewardService.class);
 			i.putExtra(EXTRA_PA, promoact_id);
 			i.putExtra(ScanActivity.EXTRA_CODE, "v");
 			startService(i);
 		}
-		else {			
+		else {
 			Toast.makeText(this, "Reward was granted already. Check your logbook.", Toast.LENGTH_LONG).show();
-			tv_balance = (TextView) findViewById(R.id.balance);
-			tv_balance.setText("balance "+bal_value + " bais"); 
+			
 		}
+		tv_balance = (TextView) findViewById(R.id.balance);
+		tv_balance.setText("balance "+bal_value + " bais"); 
         super.onResume();		
 	}
 	void setupPager(PromoPresentation presentation) {		
@@ -167,124 +153,9 @@ public class PresentationDisplayActivity extends FragmentActivity {
 			return false;
 		}		
 	}
-	public void AddViewRew() {		
-		pa_cursor = getPromoCursor(promoact_id);
-		if (pa_cursor != null && pa_cursor.moveToFirst()) {
-			int view_ind = pa_cursor.getColumnIndex(DatabaseHelper.VIEW);
-			view = pa_cursor.getInt(view_ind);
-			if (view == 0) {
-				int rew1_ind = pa_cursor.getColumnIndex(DatabaseHelper.REW1);
-				int c_name_ind = pa_cursor.getColumnIndex(DatabaseHelper.CL_NAME);
-				int c_id_ind = pa_cursor.getColumnIndex(DatabaseHelper.CL_ID);
-				c_name = pa_cursor.getString(c_name_ind);
-				c_id = pa_cursor.getInt(c_id_ind);
-				rew1 = pa_cursor.getInt(rew1_ind);
-				pa_cursor.close();
-				creditFromApi();
-				
-			}
-			else {
-				pa_cursor.close();
-				dbh.close();
-			}
-		}
-	}
+	
 	private Cursor getPromoCursor(String id) {
 		 String p_query = String.format("SELECT * FROM %s WHERE promoact_id =" + id, DatabaseHelper.TABLE_P);
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
-	 }	
-	
-	private class CreditRegisterTask extends UrlJsonAsyncTask {
-		public CreditRegisterTask(Context ctxt) {
-			super(ctxt);
-		}
-		@Override
-	    protected JSONObject doInBackground(String... urls) {		
-		
-			DefaultHttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost(urls[0]);
-			JSONObject holder = new JSONObject();
-			JSONObject pay_json = new JSONObject();
-			String response = null;
-			JSONObject json = new JSONObject();	
-			shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-			
-		
-			try {
-				try {
-					json.put("success", false);
-					json.put("info", "Something went wrong. Try again!");					
-										
-					pay_json.put(AGENT_ID, c_id);
-					pay_json.put(AGENT_NAME, c_name);
-					pay_json.put(FLAG, "C");					
-					pay_json.put(AMOUNT, rew1);
-					holder.put("transaction", pay_json);
-					StringEntity se = new StringEntity(holder.toString());
-					post.setEntity(se);
-					
-					post.setHeader("Accept", "application/json");
-					post.addHeader("Content-Type", "application/json");
-					
-					ResponseHandler<String> r_handler = new BasicResponseHandler();
-					response = client.execute(post, r_handler);
-					json = new JSONObject(response);					
-				}
-				catch (HttpResponseException ex) {
-					ex.printStackTrace();
-					Log.e("ClientProtocol", ""+ex);
-					json.put("info", "Response Error");
-				}
-				catch (IOException ex) {
-					ex.printStackTrace();
-					Log.e("IO", ""+ex);
-				}
-			}
-			catch (JSONException ex) {
-				ex.printStackTrace();
-				Log.e("JSON", ""+ex);
-			}			
-			
-			return json;
-		}
-		@Override
-		protected void onPostExecute(JSONObject json) {
-			try {
-				if (json.getBoolean("success")) {
-					String new_balance = Integer.toString(json.getJSONObject("data").getInt("balance")); 
-					Editor e = shared_prefs.edit();					 
-					e.putString(balance, new_balance);
-					e.apply();
-					dbh.addLogEntry(c_name, Integer.toString(rew1), "C");
-					dbh.updateView(promoact_id);					
-					dbh.close();				
-					tv_balance = (TextView) findViewById(R.id.balance);
-			        tv_balance.setText("balance "+ new_balance + " bais"); 
-					
-					SoundEffects.playSound(PresentationDisplayActivity.this, SoundEffects.coin);
-					
-					Toast t = Toast.makeText(PresentationDisplayActivity.this, Integer.toString(rew1) + " bais were credited to your balance.", Toast.LENGTH_LONG );
-					t.show();
-					Log.v("CREDIT", "Account credited");
-					
-				}
-				else {
-					Log.e("CREDIT", json.getString("info"));
-					Toast.makeText(PresentationDisplayActivity.this, json.getString("info"), Toast.LENGTH_LONG).show();
-				}	
-			}
-			catch(Exception e) {
-				Toast.makeText(PresentationDisplayActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-			}
-			finally {
-				super.onPostExecute(json);
-			}
-		}
-	}
-	
-	private void creditFromApi() {
-		CreditRegisterTask payment_task = new CreditRegisterTask(this);
-		payment_task.setMessageLoading("Processing reward...");		
-		payment_task.execute(PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));	
-	}
+	}	
 }

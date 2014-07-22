@@ -32,7 +32,6 @@ public class ViewRegService extends IntentService {
 	private String promoact_id;
 	public static ArrayList<String> dbPromos;
 	public static ArrayList<String> storePromos;	
-	DatabaseHelper dbh;
 	public ViewRegService() {
 		super("ViewRegService");
 	}
