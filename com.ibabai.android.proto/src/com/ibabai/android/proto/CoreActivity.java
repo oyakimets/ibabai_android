@@ -46,7 +46,7 @@ public class CoreActivity extends FragmentActivity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String balance = "Balance";	
 	private ListView PromoList;
-	private PromoListAdapter pl_adapter;
+	private PromoListAdapter pl_adapter=null;
 	private ArrayList<Drawable> PromoListItems;	
 	public static ArrayList<String> allDirs;
 	public static ArrayList<String> dbPromos;
@@ -113,10 +113,7 @@ public class CoreActivity extends FragmentActivity {
         ab.setDisplayShowHomeEnabled(false);
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeButtonEnabled(true);
-                    
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        store_id=shared_prefs.getInt("store_id", 0);
+        ab.setHomeButtonEnabled(true);       
         
         DataUpdateReceiver.scheduleAlarm(this); 
         
@@ -228,7 +225,8 @@ public class CoreActivity extends FragmentActivity {
 					PromoListItems.add(d_promo);								
 				}							
 			 }
-			pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);			
+			pl_adapter = new PromoListAdapter(getApplicationContext(), PromoListItems);
+			pl_adapter.notifyDataSetChanged();
 		    PromoList.setAdapter(pl_adapter);
 		    PromoList.setOnItemClickListener(new PromoListClickListener());
 		}
@@ -240,10 +238,11 @@ public class CoreActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);       
-        TextView tv_balance = (TextView) findViewById(R.id.balance);
-        
-        bal_value = shared_prefs.getString(balance, "0");
+		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		store_id=shared_prefs.getInt("store_id", 0);
+		bal_value = shared_prefs.getString(balance, "0");
+		
+        TextView tv_balance = (TextView) findViewById(R.id.balance);        
         tv_balance.setText("balance "+ bal_value + " bais");
         
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
@@ -263,6 +262,7 @@ public class CoreActivity extends FragmentActivity {
         
         super.onResume();		
 	}
+	
 	@Override
 	protected void onDestroy() {
 		dbh.close();

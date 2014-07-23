@@ -60,7 +60,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 
 			Intent outbound=new Intent(ctxt, CoreActivity.class);			
 
-			b.setContentIntent(PendingIntent.getActivity(ctxt, 0, outbound, 0));
+			b.setContentIntent(PendingIntent.getActivity(ctxt, 0, outbound, Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
 		else {
 			b.setContentTitle("Sorry").setContentText(e.getMessage()).setSmallIcon(android.R.drawable.stat_notify_error).setTicker("ibabai");
