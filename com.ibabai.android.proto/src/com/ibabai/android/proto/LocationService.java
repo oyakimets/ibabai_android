@@ -14,15 +14,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 public class LocationService extends Service {
 	public static final String PREFERENCES = "MyPrefs";	
 	public static final String store_id = "store_id";
 	public static final String city = "city";
-	private LocationManager locationManager;
-	private static final long MIN_TIME = 1000*60*15;
-	private static final long MIN_DISTANCE = 10;
+	private LocationManager locationManager;	
 	private static final long POINT_RADIUS = 100;
 	private static final long PROX_ALERT_EXPIRATION = -1;	
 	private static final String PROX_ALERT_INTENT = "com.ibabai.android.proto.ProximityAlert";	
@@ -37,8 +34,7 @@ public class LocationService extends Service {
 		int c_id = shared_prefs.getInt(city, 0);
 		if (c_id != 0) {
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
-			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, new myLocationListener());
+			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);			
 			s_cursor=StoresCursor();
 			b_rec = new ProximityIntentReceiver();
 			if (s_cursor !=null && s_cursor.moveToFirst()) {
@@ -79,11 +75,7 @@ public class LocationService extends Service {
 	
 	public class myLocationListener implements LocationListener {
 		public void onLocationChanged(Location location) {
-			Location target = new Location("home");
-			target.setLatitude(50.437231);
-			target.setLongitude(30.465477);
-			float distance = location.distanceTo(target);
-			Toast.makeText(LocationService.this, "Distance: "+distance, Toast.LENGTH_LONG).show();
+			
 		}
 		public void onStatusChanged(String s, int i, Bundle b) {
 			

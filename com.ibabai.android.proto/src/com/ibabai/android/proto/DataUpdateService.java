@@ -53,8 +53,10 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 
 	@Override
 	protected void doWakefulWork(Intent intent) {
+		
 		Intent stop_i = new Intent(this, LocationService.class);
 		stopService(stop_i);
+		
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
 		GPSTracker gps = new GPSTracker(this);
 	    current_loc = gps.getLocation();
@@ -231,9 +233,11 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
 				}
 			}
-		}		
+		}
+		
 		Intent start_i = new Intent(this, LocationService.class);
 	    startService(start_i);
+	    
 		WakefulIntentService.sendWakefulWork(this, ConUpdateService.class);		
 	}
 

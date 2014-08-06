@@ -6,4 +6,4 @@
    android:layout_gravity="center"
    android:onClick = "ScanAction"
    android:contentDescription ="@string/desc_scan_icon"
-   android:src="@drawable/ic_action_scan1" />
+   android:src="@drawable/ic_action_scan_2" />
