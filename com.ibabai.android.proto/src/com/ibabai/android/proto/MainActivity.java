@@ -1,13 +1,18 @@
 package com.ibabai.android.proto;
 
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import android.app.ActionBar;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +57,20 @@ public class MainActivity extends FragmentActivity {
     		startActivity(launchIntent);
     		finish();
     	}
+    	else {
+    		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+    		if (ConnectionResult.SUCCESS == resultCode) {
+    			Log.d("GF Detection", "Google Play Service is available");    			
+    		}
+    		else {
+    			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0);
+    			if (dialog != null) {
+    				ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+    				errorFragment.setDialog(dialog);
+    				errorFragment.show(getFragmentManager(), "PlayService error");
+    			}    			
+    		}    		 
+    	}
     	super.onResume();
     }
     
@@ -82,5 +101,21 @@ public class MainActivity extends FragmentActivity {
         // as you specify a parent activity in AndroidManifest.xml.
        
         return super.onOptionsItemSelected(item);
-    }        
+    }
+    
+	public static class ErrorDialogFragment extends DialogFragment {
+		private Dialog m_dialog;
+		
+		public ErrorDialogFragment() {
+			super();
+			m_dialog = null;
+		}
+		public void setDialog(Dialog dialog) {
+			m_dialog = dialog;
+		}
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return m_dialog;
+		}
+	}	
 }

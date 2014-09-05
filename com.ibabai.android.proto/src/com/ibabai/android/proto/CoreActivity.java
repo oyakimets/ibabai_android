@@ -17,20 +17,20 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-
-
-
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
 
 public class CoreActivity extends FragmentActivity {
+	
 	public static final String EXTRA_NI="position";
 	private String sl_count = null;
 	private boolean bool=false;		
@@ -114,13 +114,20 @@ public class CoreActivity extends FragmentActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);       
-        
-        DataUpdateReceiver.scheduleAlarm(this); 
-        
-        Intent start_i = new Intent(this, LocationService.class);
-	    startService(start_i);
+                
+		if (servicesConnected()) {
+			Intent gf_intent = new Intent(this, gfService.class);
+        	startService(gf_intent);        	
+		}
+        else {
+        	Intent start_i = new Intent(this, LocationService.class);
+      	    startService(start_i);      	   
+        } 
+		
+		DataUpdateReceiver.scheduleAlarm(this);
        
 	}
+	
 	private class SlideMenuClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -258,8 +265,8 @@ public class CoreActivity extends FragmentActivity {
         	ldf.show(getSupportFragmentManager(), "location");
         }
        
-        updateStoplistCount();
-        
+        updateStoplistCount();        
+       
         super.onResume();		
 	}
 	
@@ -386,5 +393,16 @@ public class CoreActivity extends FragmentActivity {
 		else {
 			bool = true;
 		}		
-	}	
+	}
+	private boolean servicesConnected() {
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (ConnectionResult.SUCCESS == resultCode) {
+			Log.d(GeofenceUtils.APPTAG, "Google Play Service is available");
+			return true;
+		}
+		else {
+			Log.d(GeofenceUtils.APPTAG, "Google Play Service is not available");			
+			return false;
+		}
+	}
 }

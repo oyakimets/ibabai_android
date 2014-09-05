@@ -60,6 +60,36 @@
     <string name="dialog_loc_title">Location service is disabled. </string>
     <string name="dialog_loc">You are unable to use IBABAI without GPS. Turn on?</string>
     <string name="ab_password">Password Change</string>
+    <string name="add_geofences_result_succes">Add Geofences: Success GeofenceRequestIds=%1$s</string>
+    <string name="add_geofences_result_failure">Add Geofences: Failure, error code %1$d GeofenceRequestIds=%2$s</string>
+    <string name="connected">Client connected</string>
+    <string name="disconnected">Client disconnected</string>
+    <string name="remove_geofences_id_success">Removing geofences by request ids succeeded: request ids: %1$s</string>
+    <string name="remove_geofences_id_failure">Removing geofences by id failed: error code: %1$d GeofenceRequestIds = %2$s</string>
+    <string name="remove_geofences_intent_success">Removing all geofences succeeded</string>
+    <string name="remove_geofences_intent_failure">Removing all geofences failed: error code %1$d</string>
+    <string name="connection_error_misconfigured">The application is misconfigured</string>
+    <string name="connection_error_internal">An internal error occurred</string>
+    <string name="connection_error_invalid_account">The specified account name is invalid</string>
+    <string name="connection_error_license_check_failed">The app is not licensed for the user</string>
+    <string name="connection_error_network">A network error occurred</string>
+    <string name="connection_error_needs_resolution">Additional resolution is required</string>
+    <string name="connection_error_disabled">Google Play Service is disabled</string>
+    <string name="connection_error_invalid">The version of Google Play services on this device is not authentic</string>
+    <string name="connection_error_missing">Google Play Services is missing</string>
+    <string name="connection_error_outdated">Google Play Services is out of date</string>
+    <string name="connection_error_sign_in_required">The user is not signed in</string>
+    <string name="connection_error_unknown">An unknown error occurred</string>
+    <string name="geofence_transition_error_detail">Geofence transition error, code %1$d message %2$s</string>
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="geofence_transition_unknown">Transition unknown</string>
+    <string name="geofence_transition_invalid_type">Geofence transition error. Invalid type %1$d in geofence %2$s</string>
+    <string name="add_geofences_already_requested_error">Can\'t add geofences, previous request hasn\'t finished.</string>
+    <string name="invalid_action_detail">Invalid action %1$s received.</string>
+    <string name="remove_geofences_already_requested_error">Can\'t remove geofences, previous request hasn\'t finished.</string>
+    <string name="dialog_net_title">Warning! No internet connection!</string>
+    <string name="dialog_network">Sign-up is impossible without internet connection. Please connect to Internet.</string>
     
 
 </resources>

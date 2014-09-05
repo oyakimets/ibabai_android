@@ -21,7 +21,7 @@ import android.util.Log;
 import android.widget.Toast;
 public class ViewRewardService extends IntentService {
 	
-	public static final String PAYMENT_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/transactions.json";
+	public static final String PAYMENT_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"transactions.json";
 	public static final String EXTRA_POSITION="position";
 	public static final String FLAG="dc_flag";	
 	public static final String AGENT_ID="agent_id";
@@ -39,6 +39,9 @@ public class ViewRewardService extends IntentService {
 	DatabaseHelper dbh;
 	private Cursor pa_cursor = null;
 	Handler rewHandler;
+	private JSONObject json;
+	private String error_info;
+	private String e_info;
 	
 	public ViewRewardService() {
 		super("ViewRewardService");
@@ -82,7 +85,7 @@ public class ViewRewardService extends IntentService {
 		JSONObject holder = new JSONObject();
 		JSONObject pay_json = new JSONObject();
 		String response = null;
-		JSONObject json = new JSONObject();	
+		json = new JSONObject();	
 		shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);				
 			
 		try {
@@ -149,11 +152,22 @@ public class ViewRewardService extends IntentService {
 				}
 				else {
 					Log.e("CREDIT", json.getString("info"));
-					Toast.makeText(this, json.getString("info"), Toast.LENGTH_LONG).show();
+					error_info = json.getString("info");
+					rewHandler.post(new Runnable() {
+						public void run() {					
+							Toast.makeText(ViewRewardService.this, error_info, Toast.LENGTH_LONG).show();
+						}
+					});
 				}	
 			}
 			catch(Exception e) {
 				Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+				e_info =  e.getMessage(); 
+				rewHandler.post(new Runnable() {
+					public void run() {					
+						Toast.makeText(ViewRewardService.this, e_info, Toast.LENGTH_LONG).show();
+					}
+				});
 			}			
 		}
 	}

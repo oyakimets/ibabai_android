@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.commonsware.cwac.wakeful.WakefulIntentService;
-
 public class SettingsActivity extends Activity {
 	public static final String PREFERENCES = "MyPrefs";
 	public static final String status = "SignedUp";
@@ -54,13 +52,14 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		
-		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));        
+		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));		
         TextView tv2 = (TextView)findViewById(R.id.tv_2);
         tv2.setText(s_id);       
         
 		String last_s = Integer.toString(shared_prefs.getInt("last_store", 0));
+		String gf = shared_prefs.getString("geofence", "????");
 	    TextView tv3 = (TextView)findViewById(R.id.tv_3);
-	    tv3.setText(last_s);
+	    tv3.setText(gf);
 	     
 	     super.onResume();
 	}
@@ -93,14 +92,13 @@ public class SettingsActivity extends Activity {
 		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
 		t.show();
 	}
-	public void LoadData(View view) {
-		Intent i = new Intent(this, psUploadService.class);
-		startService(i);
-		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
-		t.show();		
+	public void startGF(View view) {
+		Intent start_i = new Intent(this, gfService.class);
+		startService(start_i);		
 	}
-	public void updateData(View view) {
-		WakefulIntentService.sendWakefulWork(this, DataUpdateService.class);
+	public void stopGF(View view) {
+		Intent stop_i = new Intent(this, gfService.class);
+		stopService(stop_i);
 		
 	}
 	static File getConDir(Context ctxt) {

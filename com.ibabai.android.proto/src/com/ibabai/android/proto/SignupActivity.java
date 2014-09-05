@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -14,7 +13,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.ActionBar;
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,6 +21,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -37,7 +37,8 @@ import android.widget.Toast;
 import com.savagelook.android.UrlJsonAsyncTask;
 
 public class SignupActivity extends FragmentActivity {
-	public final static String REGISTER_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/registrations";
+	public final static String BASE_API_ENDPOINT_URL="http://192.168.1.103:3000/api/v1/";
+	public final static String REGISTER_API_ENDPOINT_URL= BASE_API_ENDPOINT_URL+"registrations";
 	public static final String PREFERENCES = "MyPrefs";	
 	public static final String email = "email";
 	public static final String phone = "phone";
@@ -82,6 +83,11 @@ public class SignupActivity extends FragmentActivity {
  		editor.putInt(city, 0);
  		editor.putInt(store_id, 0);
  		editor.apply();
+ 		
+ 		if (!isNetworkAvailable(this)) {
+ 			NetworkDialogFragment ndf = new NetworkDialogFragment();
+        	ndf.show(getSupportFragmentManager(), "network");
+ 		}
         
         GPSTracker gps = new GPSTracker(this);
         if(!gps.canGetLocation()) {
@@ -312,5 +318,19 @@ public class SignupActivity extends FragmentActivity {
 				super.onPostExecute(json);
 			}
 		}
+	}
+	public static boolean isNetworkAvailable(Context ctxt) {
+		boolean outcome = false;
+		if (ctxt != null) {
+			ConnectivityManager cm = (ConnectivityManager) ctxt.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo[] network_info = cm.getAllNetworkInfo();
+			for (NetworkInfo ni:network_info) {
+				if (ni.isConnected()) {
+					outcome = true;
+					break;
+				}
+			}
+		}
+		return outcome;
 	}
 }

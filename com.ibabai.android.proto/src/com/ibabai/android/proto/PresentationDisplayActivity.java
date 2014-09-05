@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 public class PresentationDisplayActivity extends FragmentActivity {
 	private TextView tv_balance;
-	public static final String PAYMENT_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/transactions.json";
+	public static final String PAYMENT_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"transactions.json";
 	public static final String EXTRA_POSITION="position";
 	public static final String FLAG="dc_flag";	
 	public static final String AGENT_ID="agent_id";

@@ -17,9 +17,13 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 
 public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {
@@ -54,108 +58,177 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 	@Override
 	protected void doWakefulWork(Intent intent) {
 		
-		Intent stop_i = new Intent(this, LocationService.class);
-		stopService(stop_i);
+		if (isNetworkAvailable(this)) {
+			
+			Intent ls_i = new Intent(this, LocationService.class);
+			stopService(ls_i);
+			
+			Intent gf_i = new Intent(this, gfService.class);
+			stopService(gf_i);			
 		
-		dbh=DatabaseHelper.getInstance(getApplicationContext());
-		GPSTracker gps = new GPSTracker(this);
-	    current_loc = gps.getLocation();
-	    shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-	    c_id=shared_prefs.getInt(city, 0);
-	    u_id=shared_prefs.getString(user_id, null);
+			dbh=DatabaseHelper.getInstance(getApplicationContext());
+			GPSTracker gps = new GPSTracker(this);
+			current_loc = gps.getLocation();
+			shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			c_id=shared_prefs.getInt(city, 0);
+			u_id=shared_prefs.getString(user_id, null);
 	    
 		
-		Cursor new_city_c = cityCursor();
-		int city_id_ind=new_city_c.getColumnIndex(DatabaseHelper.C_ID);
-	 	int lat_ind=new_city_c.getColumnIndex(DatabaseHelper.LAT);
-	 	int lon_ind=new_city_c.getColumnIndex(DatabaseHelper.LON);
-	 	int rad_ind=new_city_c.getColumnIndex(DatabaseHelper.RAD);
-		if (new_city_c != null && new_city_c.moveToFirst()) {
-			while(new_city_c.isAfterLast()!=true) {					 
-			 	city_id=new_city_c.getInt(city_id_ind);
-			 	double latitude=new_city_c.getDouble(lat_ind);
-			 	double longitude=new_city_c.getDouble(lon_ind);
-			 	int radius=new_city_c.getInt(rad_ind);
-			 	Location location = new Location("city");
-			 	location.setLatitude(latitude);
-			 	location.setLongitude(longitude);
-			 	float distance=current_loc.distanceTo(location);
-			 	if (distance <= radius) {
-			 		if (c_id == city_id) {
-			 			/*scan stores and if any add/delete run update
-			 			 * for this functionality city folders are to be created under city_stores
-			 			 * on FTP server with two files "all_stores" and "update_stores". Update stores would 
-			 			 * contain two arrays "add" and "delete". "update_stores" would hold changes fore the last 24 hours.
-			 			 */
-			 			new_city_c.close();
-			 			break;
-			 		}
-			 		else {
-			 			if (StoresAvailability()) {
-			 				dbh.ClearStores();
-			 			}
-			 			String STORES_URL = STORE_BASE_URL + Integer.toString(city_id) +".txt";
-						try {
-							URL s_url=new URL(STORES_URL);
-							HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
-							con.setRequestMethod("GET");
-							con.setReadTimeout(15000);
-							con.connect();
-							
-							reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-							buf = new StringBuilder();
-							String line = null;
-							
-							while ((line=reader.readLine()) != null) {
-								buf.append(line+"\n");
-							}							
-							loadStores(buf.toString(), city_id);							
+			Cursor new_city_c = cityCursor();
+			int city_id_ind=new_city_c.getColumnIndex(DatabaseHelper.C_ID);
+			int lat_ind=new_city_c.getColumnIndex(DatabaseHelper.LAT);
+			int lon_ind=new_city_c.getColumnIndex(DatabaseHelper.LON);
+			int rad_ind=new_city_c.getColumnIndex(DatabaseHelper.RAD);
+			if (new_city_c != null && new_city_c.moveToFirst()) {
+				while(new_city_c.isAfterLast()!=true) {					 
+					city_id=new_city_c.getInt(city_id_ind);
+					double latitude=new_city_c.getDouble(lat_ind);
+					double longitude=new_city_c.getDouble(lon_ind);
+					int radius=new_city_c.getInt(rad_ind);
+					Location location = new Location("city");
+					location.setLatitude(latitude);
+					location.setLongitude(longitude);
+					float distance=current_loc.distanceTo(location);
+					if (distance <= radius) {
+						if (c_id == city_id) {
+							/*scan stores and if any add/delete run update
+							 * for this functionality city folders are to be created under city_stores
+							 * on FTP server with two files "all_stores" and "update_stores". Update stores would 
+							 * contain two arrays "add" and "delete". "update_stores" would hold changes fore the last 24 hours.
+							 */
+							new_city_c.close();
+							break;
 						}
-						catch (Exception e) {
-							Log.e(getClass().getSimpleName(), "Exception retrieving store data", e);
-						}
-						finally {
-							if (reader != null) {
-								try {
-									reader.close();
-								}
-								catch (IOException e) {
-									Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
-								}
+						else {
+							if (StoresAvailability()) {
+								dbh.ClearStores();
 							}
-						}			 			
-			 			Editor edit=shared_prefs.edit();
-			 			edit.putInt(city, city_id);
-			 			edit.apply();
-			 		break;
-			 		}
-			 	 }
-			 	 new_city_c.moveToNext();
-		 	}
-		}
-		if (c_id != 0) {
-			Cursor ps_cursor=promostoreCursor();
-			if (ps_cursor != null && ps_cursor.getCount() != 0) {
-				dbh.ClearPromoStores();
-				ps_cursor.close();
+							String STORES_URL = STORE_BASE_URL + Integer.toString(city_id) +".txt";
+							try {
+								URL s_url=new URL(STORES_URL);
+								HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
+								con.setRequestMethod("GET");
+								con.setReadTimeout(15000);
+								con.connect();
+							
+								reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+								buf = new StringBuilder();
+								String line = null;
+							
+								while ((line=reader.readLine()) != null) {
+									buf.append(line+"\n");
+								}							
+								loadStores(buf.toString(), city_id);							
+							}
+							catch (Exception e) {
+								Log.e(getClass().getSimpleName(), "Exception retrieving store data", e);
+							}
+							finally {
+								if (reader != null) {
+									try {
+										reader.close();
+									}
+									catch (IOException e) {
+										Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+									}
+								}
+							}			 			
+							Editor edit=shared_prefs.edit();
+							edit.putInt(city, city_id);
+							edit.apply();
+							break;
+						}
+					}
+					new_city_c.moveToNext();
+				}
 			}
+			if (c_id != 0) {
+				Cursor ps_cursor=promostoreCursor();
+				if (ps_cursor != null && ps_cursor.getCount() != 0) {
+					dbh.ClearPromoStores();
+					ps_cursor.close();
+				}
 		
-			String SP_URL= SP_BASE_URL + Integer.toString(c_id) +".txt";
+				String SP_URL= SP_BASE_URL + Integer.toString(c_id) +".txt";
+				try {
+					URL sp_url=new URL(SP_URL);
+					HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
+					con.setRequestMethod("GET");
+					con.setReadTimeout(15000);
+					con.connect();
+				
+					reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+					StringBuilder buf = new StringBuilder();
+					String line = null;
+				
+					while ((line=reader.readLine()) != null) {
+						buf.append(line+"\n");
+					}
+					loadPromoStores(buf.toString());
+				}
+				catch (Exception e) {
+					Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
+				}
+				finally {
+					if (reader != null) {
+						try {
+							reader.close();
+						}
+						catch (IOException e) {
+							Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+						}
+					}
+				}				
+			}		
+		
+			PROMO_URL = PROMO_BASE_URL+u_id+".txt";
 			try {
-				URL sp_url=new URL(SP_URL);
-				HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
+				URL p_url=new URL(PROMO_URL);
+				HttpURLConnection con=(HttpURLConnection)p_url.openConnection();
 				con.setRequestMethod("GET");
 				con.setReadTimeout(15000);
 				con.connect();
-				
+					
 				reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-				StringBuilder buf = new StringBuilder();
+				buf = new StringBuilder();
 				String line = null;
-				
+					
 				while ((line=reader.readLine()) != null) {
 					buf.append(line+"\n");
 				}
-				loadPromoStores(buf.toString());
+				loadPromos(buf.toString(), u_id);
+				killPromos(buf.toString(), u_id);	
+			}
+			catch (Exception e) {
+				Log.e(getClass().getSimpleName(), "Exception retrieving promo data", e);
+			}
+			finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					}
+					catch (IOException e) {
+						Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+					}
+				}
+			}
+		
+			dbh.ClearVendors();		
+			try {
+				URL ven_url=new URL(VEN_BASE_URL);
+				HttpURLConnection con=(HttpURLConnection)ven_url.openConnection();
+				con.setRequestMethod("GET");
+				con.setReadTimeout(15000);
+				con.connect();
+			
+				reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+				StringBuilder buf = new StringBuilder();
+				String line = null;
+			
+				while ((line=reader.readLine()) != null) {
+					buf.append(line+"\n");
+				}
+				loadVendors(buf.toString());
 			}
 			catch (Exception e) {
 				Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
@@ -169,76 +242,23 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 						Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
 					}
 				}
-			}				
-		}		
-		
-		PROMO_URL = PROMO_BASE_URL+u_id+".txt";
-		try {
-			URL p_url=new URL(PROMO_URL);
-			HttpURLConnection con=(HttpURLConnection)p_url.openConnection();
-			con.setRequestMethod("GET");
-			con.setReadTimeout(15000);
-			con.connect();
-					
-			reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-			buf = new StringBuilder();
-			String line = null;
-					
-			while ((line=reader.readLine()) != null) {
-				buf.append(line+"\n");
-			}
-			loadPromos(buf.toString(), u_id);
-			killPromos(buf.toString(), u_id);	
-		}
-		catch (Exception e) {
-			Log.e(getClass().getSimpleName(), "Exception retrieving promo data", e);
-		}
-		finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				}
-				catch (IOException e) {
-					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
-				}
-			}
-		}
-		
-		dbh.ClearVendors();		
-		try {
-			URL ven_url=new URL(VEN_BASE_URL);
-			HttpURLConnection con=(HttpURLConnection)ven_url.openConnection();
-			con.setRequestMethod("GET");
-			con.setReadTimeout(15000);
-			con.connect();
-			
-			reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-			StringBuilder buf = new StringBuilder();
-			String line = null;
-			
-			while ((line=reader.readLine()) != null) {
-				buf.append(line+"\n");
-			}
-			loadVendors(buf.toString());
-		}
-		catch (Exception e) {
-			Log.e(getClass().getSimpleName(), "Exception retrieving promo_store data", e);
-		}
-		finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				}
-				catch (IOException e) {
-					Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
-				}
-			}
-		}
-		
-		Intent start_i = new Intent(this, LocationService.class);
-	    startService(start_i);
+			}		
 	    
-		WakefulIntentService.sendWakefulWork(this, ConUpdateService.class);		
+			WakefulIntentService.sendWakefulWork(this, ConUpdateService.class);		
+		
+			if (servicesConnected()) {
+			
+				Intent gf_intent = new Intent(this, gfService.class);
+				startService(gf_intent);
+			}
+			else {
+				Intent start_i = new Intent(this, LocationService.class);
+				startService(start_i);
+			}
+		}
+		else {
+			stopSelf();
+		}
 	}
 
 	private boolean StoresAvailability() {		
@@ -358,5 +378,30 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 				dbh.AddVendor(v);				
 			}			
 		}
+	}
+	private boolean servicesConnected() {
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (ConnectionResult.SUCCESS == resultCode) {
+			Log.d(GeofenceUtils.APPTAG, "Google Play Service is available");
+			return true;
+		}
+		else {
+			Log.d(GeofenceUtils.APPTAG, "Google Play Service is not available");
+			return false;
+		}
+	}
+	public static boolean isNetworkAvailable(Context ctxt) {
+		boolean outcome = false;
+		if (ctxt != null) {
+			ConnectivityManager cm = (ConnectivityManager) ctxt.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo[] network_info = cm.getAllNetworkInfo();
+			for (NetworkInfo ni:network_info) {
+				if (ni.isConnected()) {
+					outcome = true;
+					break;
+				}
+			}
+		}
+		return outcome;
 	}
 }

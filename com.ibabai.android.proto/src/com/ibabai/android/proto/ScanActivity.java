@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 public class ScanActivity extends Activity implements OnClickListener {
 	
-	public static final String PAYMENT_API_ENDPOINT_URL="http://192.168.1.100:3000/api/v1/transactions.json";
+	public static final String PAYMENT_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"transactions.json";
 	private TextView tv_balance;
 	public static final String EXTRA_CODE = "code";
 	public static final String EXTRA_PA = "pa_id";
