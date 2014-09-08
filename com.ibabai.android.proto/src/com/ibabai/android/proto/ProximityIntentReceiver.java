@@ -26,7 +26,9 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 	public static ArrayList<String> storePromos;
 	SharedPreferences shared_prefs;	
 	DatabaseHelper dbh;
-	private static final int NOTIFY_ID = 1000;	
+	private static final int NOTIFY_ID = 1000;
+	private int offers = 0;
+	private String str;
 
 	@Override
 	public void onReceive(Context ctxt, Intent intent) {
@@ -61,8 +63,15 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 
 		b.setAutoCancel(true).setDefaults(Notification.DEFAULT_ALL).setWhen(System.currentTimeMillis());
 		Bitmap bm = BitmapFactory.decodeResource(ctxt.getResources(), R.drawable.ic_launcher);
+		
 		if (e == null) {
-			b.setContentTitle("Hello!").setContentText("You have offers from IBABAI!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
+			if (offers == 1) {
+				str = offers + " offer";
+			}
+			else {
+				str = offers + " offers";
+			}
+			b.setContentTitle("Hello!").setContentText("You have " +str+ " from IBABAI!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
 
 			Intent outbound=new Intent(ctxt, CoreActivity.class);			
 
@@ -88,23 +97,32 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 				pa_cursor.moveToNext();
 			}
 			pa_cursor.close();
-			Cursor ps_cursor = storePromosCursor(store_id);
-			if(ps_cursor != null && ps_cursor.moveToFirst()) {
-				int paid_ind = ps_cursor.getColumnIndex("promoact_id");
-				while (!ps_cursor.isAfterLast()) {
-					String promoact_id=Integer.toString(ps_cursor.getInt(paid_ind));
-					storePromos.add(promoact_id);				
-					ps_cursor.moveToNext();
-				}
-				ps_cursor.close();						 						
-				for (int i=0; i<storePromos.size(); i++) {
-					if (userPromos.contains(storePromos.get(i))) {
-						return true;					
-					}
-				}
+		}
+			
+		Cursor ps_cursor = storePromosCursor(store_id);
+		if(ps_cursor != null && ps_cursor.moveToFirst()) {
+			int paid_ind = ps_cursor.getColumnIndex("promoact_id");
+			while (!ps_cursor.isAfterLast()) {
+				String promoact_id=Integer.toString(ps_cursor.getInt(paid_ind));
+				storePromos.add(promoact_id);				
+				ps_cursor.moveToNext();
 			}
-		}		
-		return false;		
+			ps_cursor.close();
+		}
+		if (userPromos != null && storePromos != null) {
+			for (int i=0; i<storePromos.size(); i++) {
+				if (userPromos.contains(storePromos.get(i))) {
+					offers++;						
+				}				
+			}
+		}
+		if (offers > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+			
 	}
 	private Cursor promoactCursor() {
 		 String p_query = String.format("SELECT * FROM %s WHERE stopped=0", DatabaseHelper.TABLE_P);

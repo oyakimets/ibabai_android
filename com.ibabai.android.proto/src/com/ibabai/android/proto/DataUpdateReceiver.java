@@ -27,7 +27,7 @@ public class DataUpdateReceiver extends BroadcastReceiver {
 		PendingIntent pi=PendingIntent.getBroadcast(ctxt, 0, i, 0);
 		Calendar cal=Calendar.getInstance();
 		
-		cal.set(Calendar.HOUR_OF_DAY, 21);
+		cal.set(Calendar.HOUR_OF_DAY, 15);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);

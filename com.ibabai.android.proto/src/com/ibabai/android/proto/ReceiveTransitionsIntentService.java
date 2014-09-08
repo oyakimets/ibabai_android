@@ -29,6 +29,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 	private static final int NOTIFY_ID = 1000;
 	private int offers = 0;
 	DatabaseHelper dbh;
+	private String str;
 	
 	public ReceiveTransitionsIntentService() {
 		super("ReceiveTransitionsIntentService");
@@ -153,7 +154,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
 		b.setAutoCancel(true).setDefaults(Notification.DEFAULT_ALL).setWhen(System.currentTimeMillis());
 		Bitmap bm = BitmapFactory.decodeResource(ctxt.getResources(), R.drawable.ic_launcher);
 		if (e == null) {
-			b.setContentTitle("Hello!").setContentText("You have "+offers+" offers from IBABAI!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
+			if (offers == 1) {
+				str = offers + " offer";
+			}
+			else {
+				str = offers + " offers";
+			}
+			b.setContentTitle("Hello!").setContentText("You have "+str+" from IBABAI!").setSmallIcon(android.R.drawable.ic_menu_info_details).setTicker("ibabai").setLargeIcon(bm);
 
 			Intent outbound=new Intent(ctxt, CoreActivity.class);			
 

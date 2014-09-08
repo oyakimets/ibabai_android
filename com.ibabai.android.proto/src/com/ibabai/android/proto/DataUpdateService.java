@@ -6,11 +6,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +18,6 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -69,10 +66,8 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
 			GPSTracker gps = new GPSTracker(this);
 			current_loc = gps.getLocation();
-			shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-			c_id=shared_prefs.getInt(city, 0);
-			u_id=shared_prefs.getString(user_id, null);
-	    
+			shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);			
+			u_id=shared_prefs.getString(user_id, null);	    
 		
 			Cursor new_city_c = cityCursor();
 			int city_id_ind=new_city_c.getColumnIndex(DatabaseHelper.C_ID);
@@ -90,65 +85,60 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 					location.setLongitude(longitude);
 					float distance=current_loc.distanceTo(location);
 					if (distance <= radius) {
-						if (c_id == city_id) {
-							/*scan stores and if any add/delete run update
-							 * for this functionality city folders are to be created under city_stores
-							 * on FTP server with two files "all_stores" and "update_stores". Update stores would 
-							 * contain two arrays "add" and "delete". "update_stores" would hold changes fore the last 24 hours.
-							 */
-							new_city_c.close();
-							break;
-						}
-						else {
-							if (StoresAvailability()) {
-								dbh.ClearStores();
-							}
-							String STORES_URL = STORE_BASE_URL + Integer.toString(city_id) +".txt";
-							try {
-								URL s_url=new URL(STORES_URL);
-								HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
-								con.setRequestMethod("GET");
-								con.setReadTimeout(15000);
-								con.connect();
-							
-								reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
-								buf = new StringBuilder();
-								String line = null;
-							
-								while ((line=reader.readLine()) != null) {
-									buf.append(line+"\n");
-								}							
-								loadStores(buf.toString(), city_id);							
-							}
-							catch (Exception e) {
-								Log.e(getClass().getSimpleName(), "Exception retrieving store data", e);
-							}
-							finally {
-								if (reader != null) {
-									try {
-										reader.close();
-									}
-									catch (IOException e) {
-										Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
-									}
-								}
-							}			 			
-							Editor edit=shared_prefs.edit();
-							edit.putInt(city, city_id);
-							edit.apply();
-							break;
-						}
+						Editor edit=shared_prefs.edit();
+						edit.putInt(city, city_id);
+						edit.apply();
+						break;
 					}
 					new_city_c.moveToNext();
 				}
 			}
+			
+			c_id=shared_prefs.getInt(city, 0);
+				
+			if (StoresAvailability()) {
+				dbh.ClearStores();
+			}
 			if (c_id != 0) {
-				Cursor ps_cursor=promostoreCursor();
-				if (ps_cursor != null && ps_cursor.getCount() != 0) {
-					dbh.ClearPromoStores();
-					ps_cursor.close();
+				
+				String STORES_URL = STORE_BASE_URL + Integer.toString(c_id) +".txt";
+				try {
+					URL s_url=new URL(STORES_URL);
+					HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
+					con.setRequestMethod("GET");
+					con.setReadTimeout(15000);
+					con.connect();
+							
+					reader=new BufferedReader(new InputStreamReader(con.getInputStream()));
+					buf = new StringBuilder();
+					String line = null;
+							
+					while ((line=reader.readLine()) != null) {
+						buf.append(line+"\n");
+					}							
+					loadStores(buf.toString(), city_id);							
 				}
-		
+				catch (Exception e) {
+					Log.e(getClass().getSimpleName(), "Exception retrieving store data", e);
+				}
+				finally {
+					if (reader != null) {
+						try {
+							reader.close();
+						}
+						catch (IOException e) {
+							Log.e(getClass().getSimpleName(), "Exception closing HUC reader", e);
+						}
+					}
+				}			 			
+			}
+			
+			if (psAvailability()) {
+				dbh.ClearPromoStores();
+			}
+			
+			if (c_id != 0) {
+						
 				String SP_URL= SP_BASE_URL + Integer.toString(c_id) +".txt";
 				try {
 					URL sp_url=new URL(SP_URL);
@@ -273,6 +263,18 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			return (false);
 		}
 	}
+	private boolean psAvailability() {		
+		String s_query = String.format("SELECT * FROM %s", DatabaseHelper.TABLE_SP);
+		Cursor c = dbh.getWritableDatabase().rawQuery(s_query, null);
+		if (c.getCount() != 0) {
+			c.close();
+			return (true);
+		}
+		else {
+			c.close();
+			return (false);
+		}
+	}
 	
 	 private Cursor cityCursor() {
 		 String c_query = String.format("SELECT * FROM %s", DatabaseHelper.TABLE_C);
@@ -282,10 +284,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 		 String p_query = String.format("SELECT * FROM %s WHERE promoact_id != 7", DatabaseHelper.TABLE_P);
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
-	 private Cursor promostoreCursor() {
-		 String p_query = String.format("SELECT * FROM %s", DatabaseHelper.TABLE_SP);
-		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
-	 }
+	 
 	 private void loadStores(String st, int id) throws JSONException {
 		JSONObject jso = new JSONObject(st);
 		int c_id = jso.optInt("city_id");
