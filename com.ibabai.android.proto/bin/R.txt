@@ -742,6 +742,8 @@ int string add_geofences_result_failure 0x7f0b00c8
 int string add_geofences_result_succes 0x7f0b00c7
 int string app_name 0x7f0b0000
 int string app_picker_name 0x7f0b0001
+int string ar_connected 0x7f0b00e6
+int string ar_disconnected 0x7f0b00e5
 int string bookmark_picker_name 0x7f0b0002
 int string button_add_calendar 0x7f0b0003
 int string button_add_contact 0x7f0b0004
@@ -916,6 +918,7 @@ int string preferences_try_bsplus_summary 0x7f0b006a
 int string preferences_vibrate_title 0x7f0b006d
 int string promo_rules 0x7f0b00bc
 int string reject 0x7f0b00a8
+int string remove_ar_already_requested_error 0x7f0b00e7
 int string remove_geofences_already_requested_error 0x7f0b00e2
 int string remove_geofences_id_failure 0x7f0b00cc
 int string remove_geofences_id_success 0x7f0b00cb

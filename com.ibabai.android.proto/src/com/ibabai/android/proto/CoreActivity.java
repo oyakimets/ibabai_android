@@ -116,8 +116,8 @@ public class CoreActivity extends FragmentActivity {
         ab.setHomeButtonEnabled(true);       
                 
 		if (servicesConnected()) {
-			Intent gf_intent = new Intent(this, gfService.class);
-        	startService(gf_intent);        	
+			Intent ar_intent = new Intent(this, ARService.class);
+        	startService(ar_intent);        	
 		}
         else {
         	Intent start_i = new Intent(this, LocationService.class);

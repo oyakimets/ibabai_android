@@ -90,6 +90,9 @@
     <string name="remove_geofences_already_requested_error">Can\'t remove geofences, previous request hasn\'t finished.</string>
     <string name="dialog_net_title">Warning! No internet connection!</string>
     <string name="dialog_network">Sign-up is impossible without internet connection. Please connect to Internet.</string>
+    <string name="ar_disconnected">ARClient disconnected</string>
+    <string name="ar_connected">ARClient connected</string>
+    <string name="remove_ar_already_requested_error">Can\'t remove ar, previous request has\'t finished.</string>
     
 
 </resources>

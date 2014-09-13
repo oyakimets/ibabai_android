@@ -60,8 +60,8 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			Intent ls_i = new Intent(this, LocationService.class);
 			stopService(ls_i);
 			
-			Intent gf_i = new Intent(this, gfService.class);
-			stopService(gf_i);			
+			Intent ar_i = new Intent(this, ARService.class);
+			stopService(ar_i);			
 		
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
 			GPSTracker gps = new GPSTracker(this);
@@ -238,8 +238,8 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 		
 			if (servicesConnected()) {
 			
-				Intent gf_intent = new Intent(this, gfService.class);
-				startService(gf_intent);
+				Intent ar_intent = new Intent(this, ARService.class);
+				startService(ar_intent);
 			}
 			else {
 				Intent start_i = new Intent(this, LocationService.class);

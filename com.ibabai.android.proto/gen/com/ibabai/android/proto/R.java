@@ -2135,6 +2135,8 @@ containing a value of this type.
         public static final int add_geofences_result_succes=0x7f0b00c7;
         public static final int app_name=0x7f0b0000;
         public static final int app_picker_name=0x7f0b0001;
+        public static final int ar_connected=0x7f0b00e6;
+        public static final int ar_disconnected=0x7f0b00e5;
         public static final int bookmark_picker_name=0x7f0b0002;
         public static final int button_add_calendar=0x7f0b0003;
         public static final int button_add_contact=0x7f0b0004;
@@ -2373,6 +2375,7 @@ containing a value of this type.
         public static final int preferences_vibrate_title=0x7f0b006d;
         public static final int promo_rules=0x7f0b00bc;
         public static final int reject=0x7f0b00a8;
+        public static final int remove_ar_already_requested_error=0x7f0b00e7;
         public static final int remove_geofences_already_requested_error=0x7f0b00e2;
         public static final int remove_geofences_id_failure=0x7f0b00cc;
         public static final int remove_geofences_id_success=0x7f0b00cb;

@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.android.gms.location.Geofence;
 
 public class gfService extends Service {
@@ -141,7 +142,8 @@ public class gfService extends Service {
 				Log.e(GeofenceUtils.APPTAG, ctxt.getString(R.string.invalid_action_detail, action));
 			}
 		}
-	}	
+	}
+	
 }
 
 
