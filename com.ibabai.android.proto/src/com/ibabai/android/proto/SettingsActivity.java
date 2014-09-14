@@ -2,6 +2,8 @@ package com.ibabai.android.proto;
 
 import java.io.File;
 
+import com.google.android.gms.location.DetectedActivity;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -52,9 +54,10 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		
-		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));		
+		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));
+		int activity_code = shared_prefs.getInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, DetectedActivity.UNKNOWN);
         TextView tv2 = (TextView)findViewById(R.id.tv_2);
-        tv2.setText(s_id);       
+        tv2.setText(getNameFromType(activity_code));       
         
 		String last_s = Integer.toString(shared_prefs.getInt("last_store", 0));
 		String gf = shared_prefs.getString("geofence", "????");
@@ -91,20 +94,29 @@ public class SettingsActivity extends Activity {
 		startService(i);
 		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
 		t.show();
-	}
-	public void startGF(View view) {
-		Intent start_i = new Intent(this, gfService.class);
-		startService(start_i);		
-	}
-	public void stopGF(View view) {
-		Intent stop_i = new Intent(this, gfService.class);
-		stopService(stop_i);
-		
-	}
+	}	
+	
 	static File getConDir(Context ctxt) {
 		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
 	 }
 	static File getStopDir(Context ctxt) {
 		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
-	 }		
+	 }
+	private String getNameFromType(int activity) {
+		switch (activity) {
+		 case DetectedActivity.IN_VEHICLE :
+			 return "CAR";
+		 case DetectedActivity.ON_BICYCLE :
+			 return "BIKE";
+		 case DetectedActivity.ON_FOOT :
+			 return "ON FOOT";
+		 case DetectedActivity.STILL :
+			 return "STILL";
+		 case DetectedActivity.UNKNOWN :
+			 return "UNKNOWN";
+		 case DetectedActivity.TILTING :
+			 return "TILTING";
+		}
+		return "UNKNOWN";
+	}
 }

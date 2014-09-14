@@ -31,7 +31,7 @@ public class ARRequester implements ConnectionCallbacks, OnConnectionFailedListe
 		requestConnection();
 	}
 	public void continueRequestActivityUpdates() {
-		getActivityRecognitionClient().requestActivityUpdates(ARUtils.DETECTION_INTERVAL_MILLISECONDS, createRequestPendingIntent());
+		getActivityRecognitionClient().requestActivityUpdates(GeofenceUtils.DETECTION_INTERVAL_MILLISECONDS, createRequestPendingIntent());
 		requestDisconnection();
 	}
 	private void requestConnection() {
@@ -48,12 +48,12 @@ public class ARRequester implements ConnectionCallbacks, OnConnectionFailedListe
 	}
 	@Override
 	public void onConnected(Bundle arg) {
-		Log.d(ARUtils.APPTAG, ctxt.getString(R.string.ar_connected));
+		Log.d(GeofenceUtils.APPTAG, ctxt.getString(R.string.ar_connected));
 		continueRequestActivityUpdates();
 	}
 	@Override
 	public void onDisconnected() {
-		Log.d(ARUtils.APPTAG, ctxt.getString(R.string.ar_disconnected));
+		Log.d(GeofenceUtils.APPTAG, ctxt.getString(R.string.ar_disconnected));
 		ar_client = null;
 	}
 	private PendingIntent createRequestPendingIntent() {
@@ -69,8 +69,8 @@ public class ARRequester implements ConnectionCallbacks, OnConnectionFailedListe
 	}
 	@Override
 	public void onConnectionFailed(ConnectionResult connection_result) {
-		Intent errorBroadcastIntent = new Intent(ARUtils.ACTION_CONNECTION_ERROR);
-		errorBroadcastIntent.addCategory(ARUtils.CATEGORY_AR_SERVICES).putExtra(ARUtils.EXTRA_CONNECTION_ERROR_CODE, connection_result.getErrorCode()).putExtra(ARUtils.EXTRA_CONNECTION_REQUEST_TYPE, "ADD");
+		Intent errorBroadcastIntent = new Intent(GeofenceUtils.AR_CONNECTION_ERROR);
+		errorBroadcastIntent.addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES).putExtra(GeofenceUtils.EXTRA_CONNECTION_ERROR_CODE, connection_result.getErrorCode()).putExtra(GeofenceUtils.EXTRA_CONNECTION_REQUEST_TYPE, "ADD");
 		LocalBroadcastManager.getInstance(ctxt).sendBroadcast(errorBroadcastIntent);
 	}
 }

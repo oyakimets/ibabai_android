@@ -26,21 +26,24 @@ public class GeofenceUtils {
     public static final String ACTION_RECEIVE_GEOFENCE = "com.ibabai.android.proto.ACTION_RECEIVE_GEOFENCE";
     
     public static final String KEY_PREFIX = "com.example.android.geofence.KEY";
-
-    
-    public static final long INVALID_LONG_VALUE = -999l;
-    public static final float INVALID_FLOAT_VALUE = -999.0f;
-    public static final int INVALID_INT_VALUE = -999;
-
-    
-    public static final double MAX_LATITUDE = 90.d;
-    public static final double MIN_LATITUDE = -90.d;
-    public static final double MAX_LONGITUDE = 180.d;
-    public static final double MIN_LONGITUDE = -180.d;
-    public static final float MIN_RADIUS = 1f;
-    
+        
     public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     
     public static final String EMPTY_STRING = new String();
     public static final CharSequence GEOFENCE_ID_DELIMITER = ",";
+    
+    public static final int MILLISECONDS_PER_SECOND = 1000;
+    public static final int SECONDS_PER_MINUTE = 60;
+    public static final int DETECTION_INTERVAL_MINUTES = 2;
+    public static final int DETECTION_INTERVAL_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * DETECTION_INTERVAL_MINUTES;
+    
+    public static final String ACTION_ACTIVITY_RECOGNITION =
+            "com.example.android.activityrecognition.ACTION_ACTIVITY_RECOGNITION";
+    public static final String KEY_PREVIOUS_ACTIVITY_TYPE =
+            "com.example.android.activityrecognition.KEY_PREVIOUS_ACTIVITY_TYPE";
+    public static final String AR_CONNECTION_ERROR =
+            "com.example.android.activityrecognition.ACTION_CONNECTION_ERROR";
+    public static final String EXTRA_CONNECTION_REQUEST_TYPE =
+            "com.example.android.activityrecognition.EXTRA_CONNECTION_REQUEST_TYPE";
 }

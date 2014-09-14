@@ -32,15 +32,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:textSize="30sp"
-        android:onClick="startGF"
+        android:textSize="30sp"        
         android:text="Start GF"/>
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:textSize="30sp"
-        android:onClick="stopGF"
+        android:textSize="30sp"       
         android:text="Stop GF"/>
 
 </LinearLayout>

@@ -141,8 +141,7 @@
         <service android:name="ViewRegService"></service>
         <service android:name="TransacDebitService"></service>       
         <service android:name="ClientUnblockService"></service>
-        <service android:name="ViewRewardService"></service>
-        <service android:name="gfService"></service>
+        <service android:name="ViewRewardService"></service>    
         <service android:name="ARService"></service>
         <service android:name="ReceiveTransitionsIntentService"
             android:exported="true"></service>

@@ -38,9 +38,8 @@ public class GeofenceRemover implements ConnectionCallbacks, OnConnectionFailedL
 	public boolean getInProgressFlag() {
 		return in_progress;
 	}
-	
 	public void removeGeofencesById(List<String> geofenceIds) throws IllegalArgumentException, UnsupportedOperationException {
-		if ((null != geofenceIds) || (geofenceIds.size() == 0)) {
+		if ((null == geofenceIds) || (geofenceIds.size() == 0)) {
 			throw new IllegalArgumentException();
 		}
 		else {
@@ -92,12 +91,14 @@ public class GeofenceRemover implements ConnectionCallbacks, OnConnectionFailedL
 			           
             Log.d(GeofenceUtils.APPTAG, ctxt.getString(R.string.remove_geofences_intent_success));
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCES_REMOVED);
+            broadcastIntent.addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES);
             broadcastIntent.putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, ctxt.getString(R.string.remove_geofences_intent_success));
                     
         } else {
         	String msg = ctxt.getString(R.string.remove_geofences_intent_failure, statusCode);            
             Log.e(GeofenceUtils.APPTAG, msg);
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_ERROR);
+            broadcastIntent.addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES);
             broadcastIntent.putExtra(GeofenceUtils.EXTRA_GEOFENCE_TYPE, "REMOVE").putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, msg);
         }
 

@@ -42,7 +42,7 @@ public class ARRemover implements ConnectionCallbacks, OnConnectionFailedListene
 	}
 	@Override
 	public void onConnected(Bundle connectionData) {
-		Log.d(ARUtils.APPTAG, ctxt.getString(R.string.ar_connected));
+		Log.d(GeofenceUtils.APPTAG, ctxt.getString(R.string.ar_connected));
 		continueRemoveUpdates();
 	}
 	private void continueRemoveUpdates() {
@@ -52,13 +52,13 @@ public class ARRemover implements ConnectionCallbacks, OnConnectionFailedListene
 	}
 	@Override
 	public void onDisconnected() {
-		Log.d(ARUtils.APPTAG, ctxt.getString(R.string.ar_disconnected));
+		Log.d(GeofenceUtils.APPTAG, ctxt.getString(R.string.ar_disconnected));
 		ar_client = null;
 	}
 	@Override
 	public void onConnectionFailed(ConnectionResult connection_result) {
-		Intent errorBroadcastIntent = new Intent(ARUtils.ACTION_CONNECTION_ERROR);
-		errorBroadcastIntent.addCategory(ARUtils.CATEGORY_AR_SERVICES).putExtra(ARUtils.EXTRA_CONNECTION_ERROR_CODE, connection_result.getErrorCode()).putExtra(ARUtils.EXTRA_CONNECTION_REQUEST_TYPE, "REMOVE");
+		Intent errorBroadcastIntent = new Intent(GeofenceUtils.AR_CONNECTION_ERROR);
+		errorBroadcastIntent.addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES).putExtra(GeofenceUtils.EXTRA_CONNECTION_ERROR_CODE, connection_result.getErrorCode()).putExtra(GeofenceUtils.EXTRA_CONNECTION_REQUEST_TYPE, "REMOVE");
 		LocalBroadcastManager.getInstance(ctxt).sendBroadcast(errorBroadcastIntent);
 	}
 }
