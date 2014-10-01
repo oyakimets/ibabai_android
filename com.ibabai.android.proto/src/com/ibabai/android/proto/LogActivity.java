@@ -13,8 +13,7 @@ import android.widget.TextView;
 
 public class LogActivity extends FragmentActivity {
 	SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +27,8 @@ public class LogActivity extends FragmentActivity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
         
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String b = shared_prefs.getString(balance, "0");
+        shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+        String b = shared_prefs.getString(IbabaiUtils.BALANCE, "0");
         TextView tv_balance = (TextView) findViewById(R.id.lb_balance);
         tv_balance.setText(b + " bais");
         

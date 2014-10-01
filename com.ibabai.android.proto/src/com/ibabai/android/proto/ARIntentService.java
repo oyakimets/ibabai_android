@@ -15,21 +15,15 @@ import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.Geofence;
 
 public class ARIntentService extends IntentService {
-	private SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String city = "city";
-	private static final long SECONDS_PER_HOUR = 3600;
-	private static final long MILLISECONDS_PER_SECOND = 1000;
-	private static final long GEOFENCE_EXPIRATION_IN_HOURS = 24;
-	private static final long GEOFENCE_EXPIRATION_TIME  = SECONDS_PER_HOUR * MILLISECONDS_PER_SECOND * GEOFENCE_EXPIRATION_IN_HOURS;  
+	private SharedPreferences shared_prefs;	
+	private static final long GEOFENCE_EXPIRATION_TIME  = Geofence.NEVER_EXPIRE;  
 	private static final float RADIUS = 100;
 	private int previous_type;
 	private SimpleGeofence sgf;
 	private GeofenceRequester gfr;
 	private GeofenceRemover gf_remover;
 	ArrayList<Geofence> gf_list;
-	DatabaseHelper dbh;
-		
+	DatabaseHelper dbh;		
 	
 	public ARIntentService() {
 		super("ARIntentService");
@@ -37,7 +31,7 @@ public class ARIntentService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		shared_prefs = getApplicationContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		shared_prefs = getApplicationContext().getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 		gfr = new GeofenceRequester(this);
 		if (ActivityRecognitionResult.hasResult(intent)) {
 			ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
@@ -45,8 +39,9 @@ public class ARIntentService extends IntentService {
 			int confidence = most_probable_activity.getConfidence();
 			int activity_type = most_probable_activity.getType();
 			Editor editor = shared_prefs.edit();
+			int store = shared_prefs.getInt(IbabaiUtils.STORE_ID, 0);
 			if (!shared_prefs.contains(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE)) {
-				if (isOnFoot(activity_type) && (confidence >= 50)) {
+				if (!isInCarOrStill(activity_type)) {
 					addGeofences();
 				}
 				editor.putInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activity_type);
@@ -54,19 +49,23 @@ public class ARIntentService extends IntentService {
 			}
 			else {
 				previous_type = shared_prefs.getInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, DetectedActivity.UNKNOWN);
-				if (isOnFoot(activity_type) && !isOnFoot(previous_type) && (confidence >= 50)) {
+				
+				if (!isInCarOrStill(activity_type) && isInCarOrStill(previous_type) && (confidence >= 50)) {
 					addGeofences();
+					editor.putInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activity_type);
+					editor.apply();
 				}
-				else if (!isOnFoot(activity_type) && isOnFoot(previous_type) && (confidence >= 50)) {
+				else if (isInCarOrStill(activity_type) && !isInCarOrStill(previous_type) && (confidence >= 50) && (store == 0)) {
 					removeGeofences();
-				}
-				editor.putInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activity_type);
-				editor.apply();
+					editor.putInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activity_type);					
+					editor.apply();
+				}				
 			}
 		}
 	}
-	private boolean isOnFoot(int type) {
-		if (type == DetectedActivity.ON_FOOT) {
+	
+	private boolean isInCarOrStill(int type) {
+		if (type == DetectedActivity.IN_VEHICLE || type == DetectedActivity.STILL) {
 			return true;
 		}
 		else {
@@ -74,7 +73,7 @@ public class ARIntentService extends IntentService {
 		}
 	}
 	public void addGeofences() {		
-		int c_id = shared_prefs.getInt(city, 0);
+		int c_id = shared_prefs.getInt(IbabaiUtils.CITY, 0);
 		if (c_id != 0) {
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
 			gf_list = new ArrayList<Geofence>();

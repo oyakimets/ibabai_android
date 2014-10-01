@@ -25,15 +25,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:onClick="RegisterDelivery"
-        android:text="Register Delivery"/>
+        android:onClick="ResetStore"
+        android:text="Reset store"/>
     
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:textSize="30sp"        
-        android:text="Start GF"/>
+        android:textSize="30sp"                
+        android:text="Add GF"/>
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

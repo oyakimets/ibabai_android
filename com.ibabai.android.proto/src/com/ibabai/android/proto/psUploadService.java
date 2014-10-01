@@ -22,8 +22,6 @@ public class psUploadService extends IntentService {
 	private static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
 	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
 	private static final String PA_URL = "http://ibabai.picrunner.net/promo_users/ibabai_promoacts.txt";
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String city="city";
 	private int city_id;	
 	BufferedReader reader=null;
 	DatabaseHelper dbh;
@@ -35,8 +33,8 @@ public class psUploadService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent arg0) {
 		dbh=DatabaseHelper.getInstance(getApplicationContext());
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		city_id = shared_prefs.getInt(city, 0);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		city_id = shared_prefs.getInt(IbabaiUtils.CITY, 0);
 		
 		if (city_id != 0 && TableEmpty(DatabaseHelper.TABLE_SP)) {
 			String SP_URL= SP_BASE_URL + Integer.toString(city_id) +".txt";

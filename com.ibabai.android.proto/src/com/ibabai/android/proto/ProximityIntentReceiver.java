@@ -16,12 +16,8 @@ import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-public class ProximityIntentReceiver extends BroadcastReceiver {
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String store_id = "store_id";
-	public static final String LAST_STORE = "last_store";
+public class ProximityIntentReceiver extends BroadcastReceiver {	
 	public static ArrayList<String> userPromos;
 	public static ArrayList<String> storePromos;
 	SharedPreferences shared_prefs;	
@@ -36,22 +32,20 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 		String key = LocationManager.KEY_PROXIMITY_ENTERING;
 		int st_id = (Integer)intent.getExtras().get("st_id");
 		Boolean entering = intent.getBooleanExtra(key, false);
-		shared_prefs = ctxt.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		shared_prefs = ctxt.getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 		Editor editor = shared_prefs.edit();
 		if (entering && hasPromos(st_id)) {			
-			editor.putInt(store_id, st_id);
-			editor.putInt(LAST_STORE, st_id);
-			editor.apply();
-			Toast.makeText(ctxt, "Entering: "+Integer.toString(st_id), Toast.LENGTH_LONG).show();
+			editor.putInt(IbabaiUtils.STORE_ID, st_id);
+			editor.putInt(IbabaiUtils.LAST_STORE, st_id);
+			editor.apply();			
 			Log.d(getClass().getSimpleName(), "entering");			
 			raiseNotification(ctxt, null);	
 			Intent i = new Intent(ctxt, DelRegService.class);
 			ctxt.startService(i);
 		}
 		else {
-				if (st_id == shared_prefs.getInt(LAST_STORE, 0)) {
-					Toast.makeText(ctxt, "Exiting: "+Integer.toString(st_id), Toast.LENGTH_LONG).show();
-					editor.putInt(store_id, 0);
+				if (st_id == shared_prefs.getInt(IbabaiUtils.LAST_STORE, 0)) {					
+					editor.putInt(IbabaiUtils.STORE_ID, 0);
 					editor.apply();			
 					Log.d(getClass().getSimpleName(), "exiting");
 			}

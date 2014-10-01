@@ -19,15 +19,9 @@ import android.widget.ListView;
 import com.ibabai.android.proto.UnblockDialogFragment.ReloadDataListener;
 
 
-public class stopListActivity extends FragmentActivity implements ReloadDataListener  {	
-		
+public class stopListActivity extends FragmentActivity implements ReloadDataListener  {		
 	private Bundle bundle;
 	public static int sl_size=0;	
-	public static final String EXTRA_POS="position";
-	public static final String EXTRA_CL="client_id";
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";	
-	public static final String SL_BASEDIR="stop_list";
 	private ListView StopList;
 	private StopListAdapter sl_adapter;
 	public static ArrayList<Drawable> StopListItems;	
@@ -126,6 +120,6 @@ public class stopListActivity extends FragmentActivity implements ReloadDataList
         }
 	}
 	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), SL_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.SL_BASEDIR));
 	 }	
 }

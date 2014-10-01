@@ -22,11 +22,9 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-public class ClientUnblockService extends IntentService {
-	public static final String PREFERENCES = "MyPrefs";	
-	private static final String STOPLIST_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"stoplists.json";
-	private static final int NOTIFY_ID = 1030;
-	public static final String CL_ID = "client_id";		
+public class ClientUnblockService extends IntentService {	
+	private static final String STOPLIST_API_ENDPOINT_URL=IbabaiUtils.BASE_API_ENDPOINT_URL+"stoplists.json";
+	private static final int NOTIFY_ID = 1030;		
 	private int position;
 	private File sl_f;
 	private String client_id;
@@ -40,7 +38,7 @@ public class ClientUnblockService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		dbh=DatabaseHelper.getInstance(this.getApplicationContext());
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE); 
+		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE); 
 		position = (Integer) intent.getExtras().get("position");
 		
 		File sl_dir = getStopDir(this); 
@@ -69,7 +67,7 @@ public class ClientUnblockService extends IntentService {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");					
 										
-				pay_json.put(CL_ID, cl_id);				
+				pay_json.put(DatabaseHelper.CL_ID, cl_id);				
 				holder.put("stoplist", pay_json);
 				StringEntity se = new StringEntity(holder.toString());
 				delete.setEntity(se);
@@ -141,6 +139,6 @@ public class ClientUnblockService extends IntentService {
 		mgr.notify(NOTIFY_ID, b.build());
 	}
 	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.SL_BASEDIR));
 	 }	
 }

@@ -13,13 +13,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-public class VenUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String LOAD_TOGGLE = "load_toggle";
-	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/";
-	public static final String VEN_EXT="ven_ext.jpg";
-	public static final String VEN_BASEDIR="vendors";
-	public static final String PREF_VEN_DIR="pendingConDir";	
+public class VenUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {	
+	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/";	
 	private Cursor ven_cursor;
 	private File ven_dir;
 	private ArrayList<String> tag_lst;
@@ -87,9 +82,9 @@ public class VenUpdateService extends com.commonsware.cwac.wakeful.WakefulIntent
 			}
 		}
 		else {
-			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 			Editor editor = shared_prefs.edit();
-			editor.putString(LOAD_TOGGLE, "con");
+			editor.putString(IbabaiUtils.LOAD_TOGGLE, "con");
 			editor.apply();			
 			stopSelf();
 		}
@@ -99,14 +94,14 @@ public class VenUpdateService extends com.commonsware.cwac.wakeful.WakefulIntent
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
 	static File getVenDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), VEN_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.VEN_BASEDIR));
 	 }
 	private void venDownloadInfo(String url, String path) {	
-		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PREF_VEN_DIR, path).commit();
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(IbabaiUtils.PREF_VEN_DIR, path).commit();
 		DownloadManager mgr=(DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 		DownloadManager.Request req= new DownloadManager.Request(Uri.parse(url));
 		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-		req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE).setAllowedOverRoaming(false).setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, VEN_EXT);
+		req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE).setAllowedOverRoaming(false).setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, IbabaiUtils.VEN_EXT);
 		mgr.enqueue(req);
 		 
 	}

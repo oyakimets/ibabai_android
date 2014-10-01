@@ -26,22 +26,18 @@ import android.widget.Toast;
 import com.savagelook.android.UrlJsonAsyncTask;
 
 public class ProfileDialogFragment extends DialogFragment {
-	public final static String VALID_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"validations.json";
-	public static final String C_ID = "customer_id";
+	private final static String VALID_API_ENDPOINT_URL=IbabaiUtils.BASE_API_ENDPOINT_URL+"validations.json";
 	private View form=null;
-	private AlertDialog profile_dialog=null;
-	public static final String EMAIL = "email";
-	private static final String PASS = "password";
+	private AlertDialog profile_dialog=null;	
 	private String email;
 	private String pass="";
 	private String u_id;	
-	SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";
+	SharedPreferences shared_prefs;	
 	
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		shared_prefs = getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);		
+		shared_prefs = getActivity().getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);		
 		form = getActivity().getLayoutInflater().inflate(R.layout.profile_dialog, null);
 		
 		OnClickListener neutralClick = new OnClickListener() {
@@ -113,16 +109,16 @@ public class ProfileDialogFragment extends DialogFragment {
 			JSONObject val_json = new JSONObject();
 			String response = null;
 			JSONObject json = new JSONObject();		
-			email = shared_prefs.getString("email", null);			
+			email = shared_prefs.getString(IbabaiUtils.EMAIL, null);			
 		
 			try {
 				try {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Try again!");
 					
-					val_json.put(C_ID, u_id);				
-					val_json.put(EMAIL, email);
-					val_json.put(PASS, pass);
+					val_json.put(IbabaiUtils.C_ID, u_id);				
+					val_json.put(IbabaiUtils.EMAIL, email);
+					val_json.put(IbabaiUtils.PASS, pass);
 					holder.put("credentials", val_json);
 					StringEntity se = new StringEntity(holder.toString());
 					post.setEntity(se);
@@ -177,6 +173,6 @@ public class ProfileDialogFragment extends DialogFragment {
 	private void validFromApi() {
 		PassValidTask pass_validation = new PassValidTask(getActivity());
 		pass_validation.setMessageLoading("Just a moment...");		
-		pass_validation.execute(VALID_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));	
+		pass_validation.execute(VALID_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));	
 	}
 }

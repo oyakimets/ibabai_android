@@ -28,12 +28,6 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 	private static final String PROMO_BASE_URL = "http://ibabai.picrunner.net/promo_users/";
 	private static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
 	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String city="city";
-	public static final String user_id="user_id";
-	public static final String PS_BASEDIR="promo_stores";	
-	public static final String PS_EXT="ps_ext.zip";	
-	public static final String PREF_PS_DIR="pendingPsDir";
 	private ArrayList<Integer> current_pa;
 	private ArrayList<Integer> update_pa;
 	private JSONArray promoacts = null;
@@ -66,8 +60,8 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
 			GPSTracker gps = new GPSTracker(this);
 			current_loc = gps.getLocation();
-			shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);			
-			u_id=shared_prefs.getString(user_id, null);	    
+			shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);			
+			u_id=shared_prefs.getString(IbabaiUtils.USER_ID, null);	    
 		
 			Cursor new_city_c = cityCursor();
 			int city_id_ind=new_city_c.getColumnIndex(DatabaseHelper.C_ID);
@@ -86,7 +80,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 					float distance=current_loc.distanceTo(location);
 					if (distance <= radius) {
 						Editor edit=shared_prefs.edit();
-						edit.putInt(city, city_id);
+						edit.putInt(IbabaiUtils.CITY, city_id);
 						edit.apply();
 						break;
 					}
@@ -94,7 +88,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 				}
 			}
 			
-			c_id=shared_prefs.getInt(city, 0);
+			c_id=shared_prefs.getInt(IbabaiUtils.CITY, 0);
 				
 			if (StoresAvailability()) {
 				dbh.ClearStores();
@@ -235,9 +229,9 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			}		
 	    
 			WakefulIntentService.sendWakefulWork(this, ConUpdateService.class);		
-		
+			ResetStore();
 			if (servicesConnected()) {
-			
+				
 				Intent ar_intent = new Intent(this, ARService.class);
 				startService(ar_intent);
 			}
@@ -402,5 +396,11 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			}
 		}
 		return outcome;
+	}
+	private void ResetStore() {
+		Editor editor = shared_prefs.edit();
+		editor.putInt(IbabaiUtils.STORE_ID, 0);
+		editor.remove(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE);
+		editor.apply();
 	}
 }

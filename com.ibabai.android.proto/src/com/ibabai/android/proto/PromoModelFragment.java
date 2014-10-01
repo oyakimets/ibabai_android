@@ -47,7 +47,7 @@ public class PromoModelFragment extends Fragment {
 		
 		@Override 
 		protected Void doInBackground(Context... ctxt) {			
-			pa_id=getActivity().getIntent().getStringExtra(PresentationDisplayActivity.EXTRA_PA);			
+			pa_id=getActivity().getIntent().getStringExtra(IbabaiUtils.EXTRA_PA);			
 			pa_dir = new File(getConDir(getActivity()), pa_id);			
 			if (pa_dir.exists()) {
 				map = new File(pa_dir, "promoact_map.txt");
@@ -83,6 +83,6 @@ public class PromoModelFragment extends Fragment {
 		}		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 }

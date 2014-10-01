@@ -16,12 +16,6 @@ import android.preference.PreferenceManager;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 public class ConUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String LOAD_TOGGLE = "load_toggle";
-	private static final String CON_BASE_URL = "http://ibabai.picrunner.net/promo_content/";
-	public static final String CON_EXT="con_ext.zip";
-	public static final String CON_BASEDIR="promo_content";
-	public static final String PREF_CON_DIR="pendingConDir";	
 	private Cursor pa_cursor;
 	private ArrayList<Integer> dir_lst;
 	private ArrayList<Integer> promo_lst;
@@ -85,7 +79,7 @@ public class ConUpdateService extends com.commonsware.cwac.wakeful.WakefulIntent
 		}
 		if (con_to_load.size() > 0) {
 			String dir_name=Integer.toString(con_to_load.get(0));
-			String pa_url = CON_BASE_URL+dir_name+".zip";
+			String pa_url = IbabaiUtils.CON_BASE_URL+dir_name+".zip";
 			File localCopy=new File(promos_folder, dir_name);
 			if (!localCopy.exists()) {
 				String local_path = localCopy.getAbsolutePath();
@@ -93,9 +87,9 @@ public class ConUpdateService extends com.commonsware.cwac.wakeful.WakefulIntent
 			}
 		}
 		else {
-			shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 			Editor editor = shared_prefs.edit();
-			editor.putString(LOAD_TOGGLE, "ven");
+			editor.putString(IbabaiUtils.LOAD_TOGGLE, "ven");
 			editor.apply();
 			WakefulIntentService.sendWakefulWork(this, VenUpdateService.class);			
 			stopSelf();
@@ -106,14 +100,14 @@ public class ConUpdateService extends com.commonsware.cwac.wakeful.WakefulIntent
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 	private void psDownloadInfo(String url, String path) {	
-		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PREF_CON_DIR, path).commit();
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(IbabaiUtils.PREF_CON_DIR, path).commit();
 		DownloadManager mgr=(DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 		DownloadManager.Request req= new DownloadManager.Request(Uri.parse(url));
 		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-		req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE).setAllowedOverRoaming(false).setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, CON_EXT);
+		req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE).setAllowedOverRoaming(false).setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, IbabaiUtils.CON_EXT);
 		mgr.enqueue(req);
 		 
 	}

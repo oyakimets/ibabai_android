@@ -18,18 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PresentationDisplayActivity extends FragmentActivity {
-	private TextView tv_balance;
-	public static final String PAYMENT_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"transactions.json";
-	public static final String EXTRA_POSITION="position";
-	public static final String FLAG="dc_flag";	
-	public static final String AGENT_ID="agent_id";
-	public static final String AGENT_NAME="agent_name";
-	public static final String AMOUNT="amount";
-	public static final String EXTRA_PA="pa_id";	
-	SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
-	public static final String MODEL="promo_model";
+	private TextView tv_balance;	
+	SharedPreferences shared_prefs;		
 	private String pa_folder_path=null;
 	private ViewPager pres_pager=null;
 	private PromoPresAdapter adapter=null;
@@ -43,8 +33,8 @@ public class PresentationDisplayActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        if(getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
-        	getSupportFragmentManager().beginTransaction().add(new PromoModelFragment(), MODEL).commit();
+        if(getSupportFragmentManager().findFragmentByTag(IbabaiUtils.MODEL) == null) {
+        	getSupportFragmentManager().beginTransaction().add(new PromoModelFragment(), IbabaiUtils.MODEL).commit();
         	
         }
         
@@ -61,7 +51,7 @@ public class PresentationDisplayActivity extends FragmentActivity {
         
         dbh = DatabaseHelper.getInstance(this);       
         
-        promoact_id=getIntent().getStringExtra(EXTRA_PA);        
+        promoact_id=getIntent().getStringExtra(IbabaiUtils.EXTRA_PA);        
                 
 	}
 	@Override
@@ -88,12 +78,12 @@ public class PresentationDisplayActivity extends FragmentActivity {
 	}
 	@Override
 	protected void onResume() {
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		bal_value = shared_prefs.getString(balance, "0");		
+		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		bal_value = shared_prefs.getString(IbabaiUtils.BALANCE, "0");		
 		if (CheckView()) {			
 			Intent i = new Intent(this, ViewRewardService.class);
-			i.putExtra(EXTRA_PA, promoact_id);
-			i.putExtra(ScanActivity.EXTRA_CODE, "v");
+			i.putExtra(IbabaiUtils.EXTRA_PA, promoact_id);
+			i.putExtra(IbabaiUtils.EXTRA_CODE, "v");
 			startService(i);
 		}
 		else {
@@ -118,7 +108,7 @@ public class PresentationDisplayActivity extends FragmentActivity {
 	}
 	public void showPromoRules(View v) {				
 		Intent promo_rules_intent=new Intent(this, PromoRulesActivity.class);
-		promo_rules_intent.putExtra(PromoRulesActivity.EXTRA_DIR, promoact_id);
+		promo_rules_intent.putExtra(IbabaiUtils.EXTRA_DIR, promoact_id);
 		startActivity(promo_rules_intent); 
 	}
 	public void notInterested(View v) {		
@@ -136,7 +126,7 @@ public class PresentationDisplayActivity extends FragmentActivity {
     	nidf.show(getSupportFragmentManager(), "sl");		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 	private boolean CheckView() {		
 		Log.v("PA INT", promoact_id);

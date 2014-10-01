@@ -18,10 +18,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
-public class DelRegService extends IntentService {
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String store_id = "store_id";
-	public static final String LAST_STORE = "last_store";
+public class DelRegService extends IntentService {	
 	SharedPreferences shared_prefs;
 	private static final String P_CODE = "fc_1";	
 	private int s_id;
@@ -41,9 +38,9 @@ public class DelRegService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent i) {
 		dbh = DatabaseHelper.getInstance(getApplicationContext());
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		if (shared_prefs.contains("AuthToken")) {			
-			s_id = shared_prefs.getInt(LAST_STORE, 0);			
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		if (shared_prefs.contains(IbabaiUtils.AUTH_TOKEN)) {			
+			s_id = shared_prefs.getInt(IbabaiUtils.LAST_STORE, 0);			
 			updateDelivery(s_id);
 		}
 		else {
@@ -88,7 +85,7 @@ public class DelRegService extends IntentService {
 				pa_update_cursor.close();
 				count = delivery+1;				
 			}
-			RegisterDelivery(ViewRegService.LOGS_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""), promoact_id, count, multiple);
+			RegisterDelivery(IbabaiUtils.LOGS_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""), promoact_id, count, multiple);
 		}
 		dbh.close();
 	}
@@ -117,8 +114,8 @@ public class DelRegService extends IntentService {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");
 								
-				cust_log_json.put(ScanActivity.P_ID, pa_id);
-				cust_log_json.put(ViewRegService.S_ID, s_id);
+				cust_log_json.put(IbabaiUtils.P_ID, pa_id);
+				cust_log_json.put(IbabaiUtils.STORE_ID, s_id);
 				cust_log_json.put(P_CODE, true);					
 				holder.put("cust_log", cust_log_json);
 				StringEntity se = new StringEntity(holder.toString());

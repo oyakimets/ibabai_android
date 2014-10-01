@@ -15,10 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-public class LocationService extends Service {
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String store_id = "store_id";
-	public static final String city = "city";
+public class LocationService extends Service {	
 	private LocationManager locationManager;	
 	private static final long POINT_RADIUS = 100;
 	private static final long PROX_ALERT_EXPIRATION = -1;	
@@ -30,8 +27,8 @@ public class LocationService extends Service {
 	private int n = 0;
 	@Override
 	public void onCreate() {
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		int c_id = shared_prefs.getInt(city, 0);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		int c_id = shared_prefs.getInt(IbabaiUtils.CITY, 0);
 		if (c_id != 0) {
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);			

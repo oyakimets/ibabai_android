@@ -13,10 +13,10 @@ import android.view.View;
 import android.widget.Button;
 
 public class UnblockDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
-	
 	private View form=null;
 	private AlertDialog ub_dialog=null;
 	DatabaseHelper dbh;
+	
 	public interface ReloadDataListener {
 		public void ReloadData();
 	}
@@ -67,6 +67,6 @@ public class UnblockDialogFragment extends DialogFragment implements DialogInter
 			
 	}
 	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.SL_BASEDIR));
 	 }	
 }

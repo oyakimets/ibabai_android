@@ -136,6 +136,6 @@ public class MarketActivity extends Activity {
 		super.onDestroy();
 	}
 	static File getVenDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), VenUpdateService.VEN_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.VEN_BASEDIR));
 	 }
 }

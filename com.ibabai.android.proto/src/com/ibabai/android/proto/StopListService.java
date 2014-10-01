@@ -27,31 +27,30 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-public class StopListService extends IntentService {
-	public static final String PREFERENCES = "MyPrefs";	
-	private static final String STOPLIST_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"stoplists.json";
-	private static final int NOTIFY_ID = 1020;
-	public static final String CL_ID = "client_id";	
+public class StopListService extends IntentService {	
+	private static final String STOPLIST_API_ENDPOINT_URL=IbabaiUtils.BASE_API_ENDPOINT_URL+"stoplists.json";
+	private static final int NOTIFY_ID = 1020;	
 	private int client_id;
 	private String cl_id;
 	private String pa_id;
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;	
+	
 	public StopListService() {
 		super("StopListService");
 	}
 	@Override
 	protected void onHandleIntent(Intent i) {
 		dbh=DatabaseHelper.getInstance(this.getApplicationContext());
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE); 
-		pa_id = (String) i.getExtras().get(CoreActivity.EXTRA_NI);
-		cl_id = (String) i.getExtras().get(stopListActivity.EXTRA_CL);
+		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE); 
+		pa_id = (String) i.getExtras().get(IbabaiUtils.EXTRA_NI);
+		cl_id = (String) i.getExtras().get(DatabaseHelper.CL_ID);
 		client_id = Integer.parseInt(cl_id);
 		File dir_src = new File(getPromoDir(this), pa_id);			
 		File src = new File(dir_src, "client.jpg");
 		Log.v("CLIENT", src.getAbsolutePath());
 		
-		ClientBlockAction(STOPLIST_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
+		ClientBlockAction(STOPLIST_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));
 
 	}
 	public void CopyClient(File src, File dst) throws IOException {
@@ -69,11 +68,11 @@ public class StopListService extends IntentService {
 	}
 	
 	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.SL_BASEDIR));
 	 }
 	
 	static File getPromoDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 	private void ClientBlockAction(String url) {
 		
@@ -88,7 +87,7 @@ public class StopListService extends IntentService {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");					
 										
-				pay_json.put(CL_ID, client_id);				
+				pay_json.put(DatabaseHelper.CL_ID, client_id);				
 				holder.put("stoplist", pay_json);
 				StringEntity se = new StringEntity(holder.toString());
 				post.setEntity(se);

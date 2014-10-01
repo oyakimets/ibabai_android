@@ -27,12 +27,8 @@ import android.widget.TextView;
 
 
 public class TransacDebitService extends IntentService {
-	private static final int NOTIFY_ID = 1010;
-	public static final String PREFERENCES = "MyPrefs";
-	private static final String EXTRA_CODE = "dc_flag";
-	private static final String PHONE = "phone";
-	private static final String ACCOUNT = "account";
-	private static final String balance = "Balance";	
+	private static final int NOTIFY_ID = 1010;	
+	private static final String EXTRA_DC_FLAG = "dc_flag";			
 	private String c_name;
 	private int c_id;	
 	private int amount;
@@ -52,8 +48,8 @@ public class TransacDebitService extends IntentService {
 		account = (String)intent.getExtras().get("acc");
 		c_id = (Integer)intent.getExtras().get("v_id");
 		amount = Integer.parseInt((String)intent.getExtras().get("amnt"));
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		DebitRegisterAction(ScanActivity.PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
+		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		DebitRegisterAction(IbabaiUtils.PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));
 	}
 	private void DebitRegisterAction(String url) {
 			
@@ -68,12 +64,12 @@ public class TransacDebitService extends IntentService {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");					
 										
-				pay_json.put(ScanActivity.AGENT_ID, c_id);
-				pay_json.put(ScanActivity.AGENT_NAME, c_name);
-				pay_json.put(EXTRA_CODE, "D");					
-				pay_json.put(ScanActivity.AMOUNT, amount);
-				pay_json.put(PHONE, phone);
-				pay_json.put(ACCOUNT, account);
+				pay_json.put(IbabaiUtils.AGENT_ID, c_id);
+				pay_json.put(IbabaiUtils.AGENT_NAME, c_name);
+				pay_json.put(EXTRA_DC_FLAG, "D");					
+				pay_json.put(IbabaiUtils.AMOUNT, amount);
+				pay_json.put(IbabaiUtils.PHONE, phone);
+				pay_json.put(IbabaiUtils.ACCOUNT, account);
 				holder.put("transaction", pay_json);
 				StringEntity se = new StringEntity(holder.toString());
 				post.setEntity(se);
@@ -105,7 +101,7 @@ public class TransacDebitService extends IntentService {
 				if (json.getBoolean("success")) {
 					String new_balance = Integer.toString(json.getJSONObject("data").getInt("balance")); 
 					Editor e = shared_prefs.edit();					 
-					e.putString(balance, new_balance);
+					e.putString(IbabaiUtils.BALANCE, new_balance);
 					e.apply();
 					dbh.addLogEntry(c_name, Integer.toString(amount), "D");					
 					Log.v("DEBIT", "Account deited");

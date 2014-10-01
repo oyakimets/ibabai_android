@@ -20,10 +20,7 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 
 public class ReceiveTransitionsIntentService extends IntentService {
-	private SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String store_id = "store_id";
-	public static final String LAST_STORE = "last_store";
+	private SharedPreferences shared_prefs;	
 	public static ArrayList<String> userPromos;
 	public static ArrayList<String> storePromos;
 	private static final int NOTIFY_ID = 1000;
@@ -60,11 +57,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
 				int s_id = Integer.parseInt(geofenceId);
 				String transitionType = getTransitionString(transition);
 				dbh = DatabaseHelper.getInstance(getApplicationContext());
-				shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+				shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 				Editor editor = shared_prefs.edit();
 				if (transitionType.equals(getString(R.string.geofence_transition_entered)) && hasPromos(s_id)) {
-					editor.putInt(store_id, s_id);
-					editor.putInt(LAST_STORE, s_id);
+					editor.putInt(IbabaiUtils.STORE_ID, s_id);
+					editor.putInt(IbabaiUtils.LAST_STORE, s_id);
 					editor.apply();					
 					Log.d(getClass().getSimpleName(), "entering");			
 					raiseNotification(this, null);	
@@ -73,8 +70,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
 					
 				}
 				else if (transitionType.equals(getString(R.string.geofence_transition_exited))) {
-					if (s_id == shared_prefs.getInt(LAST_STORE, 0)) {						
-						editor.putInt(store_id, 0);
+					if (s_id == shared_prefs.getInt(IbabaiUtils.LAST_STORE, 0)) {						
+						editor.putInt(IbabaiUtils.STORE_ID, 0);
 						editor.apply();			
 						Log.d(getClass().getSimpleName(), "exiting");
 					}

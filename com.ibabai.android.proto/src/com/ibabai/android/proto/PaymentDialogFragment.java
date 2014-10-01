@@ -32,20 +32,11 @@ import com.savagelook.android.UrlJsonAsyncTask;
 
 
 public class PaymentDialogFragment extends DialogFragment {	
-	public final static String VALID_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"debits.json";
+	private final static String VALID_API_ENDPOINT_URL=IbabaiUtils.BASE_API_ENDPOINT_URL+"debits.json";
 	private View form=null;
-	private AlertDialog payment_dialog=null;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
-	public static final String AGENT_ID = "agent_id";
-	public static final String TYPE = "type";
-	public static final String AGENT_NAME = "agent_name";
-	public static final String AMOUNT = "amount";
-	public static final String ACCOUNT = "account";
-	public static final String PHONE = "phone";
+	private AlertDialog payment_dialog=null;		
 	private String pass;	
 	private String vendor_name;	
-	public static final String PASS = "password";
 	private String st_acc;
 	private String st_phn;
 	private String st_amount;
@@ -63,7 +54,7 @@ public class PaymentDialogFragment extends DialogFragment {
 		st_amount = getArguments().getString("dialog_amnt");
 		_id = getArguments().getInt("dialog_id");
 		vendor_name = getArguments().getString("dialog_agent");
-		shared_prefs = getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);		
+		shared_prefs = getActivity().getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);		
 		OnClickListener negativeClick = new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -126,8 +117,8 @@ public class PaymentDialogFragment extends DialogFragment {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Try again!");					
 								
-					val_json.put(AMOUNT, Integer.parseInt(st_amount));
-					val_json.put(PASS, pass);					
+					val_json.put(IbabaiUtils.AMOUNT, Integer.parseInt(st_amount));
+					val_json.put(IbabaiUtils.PASS, pass);					
 					holder.put("credentials", val_json);
 					StringEntity se = new StringEntity(holder.toString());
 					post.setEntity(se);
@@ -190,6 +181,6 @@ public class PaymentDialogFragment extends DialogFragment {
 	private void validFromApi() {
 		PassValidTask pass_validation = new PassValidTask(getActivity());
 		pass_validation.setMessageLoading("Just a moment...");		
-		pass_validation.execute(VALID_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));	
+		pass_validation.execute(VALID_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));	
 	}	
 }

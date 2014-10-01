@@ -2,13 +2,12 @@ package com.ibabai.android.proto;
 
 import java.io.File;
 
-import com.google.android.gms.location.DetectedActivity;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -17,14 +16,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SettingsActivity extends Activity {
-	public static final String PREFERENCES = "MyPrefs";
+import com.google.android.gms.location.DetectedActivity;
+
+public class SettingsActivity extends Activity {	
 	public static final String status = "SignedUp";
-	static final String TABLE="logbook";
-	public static final String city="city";		
+	static final String TABLE="logbook";	
 	GPSTracker gps_t;
 	SharedPreferences shared_prefs;
 	DatabaseHelper dbh;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +46,7 @@ public class SettingsActivity extends Activity {
         
      
         
-        shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        shared_prefs= getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
         
         
        
@@ -54,12 +54,12 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		
-		String s_id = Integer.toString(shared_prefs.getInt("store_id", 0));
+		String s_id = Integer.toString(shared_prefs.getInt(IbabaiUtils.STORE_ID, 0));
 		int activity_code = shared_prefs.getInt(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE, DetectedActivity.UNKNOWN);
         TextView tv2 = (TextView)findViewById(R.id.tv_2);
         tv2.setText(getNameFromType(activity_code));       
         
-		String last_s = Integer.toString(shared_prefs.getInt("last_store", 0));
+		String last_s = Integer.toString(shared_prefs.getInt(IbabaiUtils.LAST_STORE, 0));
 		String gf = shared_prefs.getString("geofence", "????");
 	    TextView tv3 = (TextView)findViewById(R.id.tv_3);
 	    tv3.setText(gf);
@@ -89,18 +89,20 @@ public class SettingsActivity extends Activity {
 		}		
 		
 	}
-	public void RegisterDelivery(View view) {
-		Intent i = new Intent(this, DelRegService.class);
-		startService(i);
-		Toast t = Toast.makeText(this, "Done", Toast.LENGTH_SHORT );
+	public void ResetStore(View view) {
+		Editor editor = shared_prefs.edit();
+		editor.putInt(IbabaiUtils.STORE_ID, 0);
+		editor.remove(GeofenceUtils.KEY_PREVIOUS_ACTIVITY_TYPE);
+		editor.apply();
+		Toast t = Toast.makeText(this, "Store ID = 0", Toast.LENGTH_SHORT );
 		t.show();
 	}	
 	
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.SL_BASEDIR));
 	 }
 	private String getNameFromType(int activity) {
 		switch (activity) {

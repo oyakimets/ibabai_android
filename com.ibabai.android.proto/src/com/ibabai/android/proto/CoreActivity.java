@@ -29,9 +29,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.ibabai.slidemenu.adapter.NavDrawerListAdapter;
 import com.ibabai.slidemenu.model.NavDrawerItem;
 
-public class CoreActivity extends FragmentActivity {
-	
-	public static final String EXTRA_NI="position";
+public class CoreActivity extends FragmentActivity {	
 	private String sl_count = null;
 	private boolean bool=false;		
 	private DrawerLayout mDrawerLayout;
@@ -42,9 +40,7 @@ public class CoreActivity extends FragmentActivity {
 	private String[] navMenuTitles;
 	private TypedArray navMenuIcons;
 	private ArrayList<NavDrawerItem> navDrawerItems;
-	private NavDrawerListAdapter adapter;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";	
+	private NavDrawerListAdapter adapter;	
 	private ListView PromoList;
 	private PromoListAdapter pl_adapter=null;
 	private ArrayList<Drawable> PromoListItems;	
@@ -245,9 +241,9 @@ public class CoreActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		store_id=shared_prefs.getInt("store_id", 0);
-		bal_value = shared_prefs.getString(balance, "0");
+		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		store_id=shared_prefs.getInt(IbabaiUtils.STORE_ID, 0);
+		bal_value = shared_prefs.getString(IbabaiUtils.BALANCE, "0");
 		
         TextView tv_balance = (TextView) findViewById(R.id.balance);        
         tv_balance.setText("balance "+ bal_value + " bais");
@@ -283,9 +279,9 @@ public class CoreActivity extends FragmentActivity {
 	}
 	private void displayPromoAction(int position) {
 		Intent promo_intent=new Intent(this, PresentationDisplayActivity.class);
-		promo_intent.putExtra(PresentationDisplayActivity.EXTRA_POSITION, position);
+		promo_intent.putExtra(IbabaiUtils.EXTRA_POSITION, position);
 		String pa_id = allDirs.get(position);
-		promo_intent.putExtra(PresentationDisplayActivity.EXTRA_PA, pa_id);
+		promo_intent.putExtra(IbabaiUtils.EXTRA_PA, pa_id);
 		startActivity(promo_intent);		
 	}	
 	
@@ -346,7 +342,7 @@ public class CoreActivity extends FragmentActivity {
 		 return(dbh.getReadableDatabase().rawQuery(p_query, null));
 	 }
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 	private Cursor storePromosCursor(int store_id) {		
 		String ps_query= "SELECT * FROM promo_stores WHERE store_id="+Integer.toString(store_id);
@@ -383,7 +379,7 @@ public class CoreActivity extends FragmentActivity {
 		return sl;		
 	}
 	static File getStopDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), stopListActivity.SL_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.SL_BASEDIR));
 	 }
 	private void updateStoplistCount() {
 		sl_count = getStoplistCount();

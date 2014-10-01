@@ -29,13 +29,6 @@ import android.widget.Toast;
 import com.savagelook.android.UrlJsonAsyncTask;
 
 public class PasswordActivity extends Activity {	
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String PASS = "password";
-	public static final String PASS_CONF = "password_confirmation";
-	public static final String email = "email";
-	public static final String phone = "phone";
-	public static final String age = "age";
-	public static final String gender="gender";	
 	private String pass;
 	private String pass_conf;
 	private String s_email;
@@ -56,7 +49,7 @@ public class PasswordActivity extends Activity {
 		ab.setDisplayShowHomeEnabled(true);
 		ab.setDisplayShowTitleEnabled(false);
 		
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 	}
 	
 	@Override
@@ -86,10 +79,10 @@ public class PasswordActivity extends Activity {
 		EditText conf_et = (EditText)findViewById(R.id.pass_confirmation);
 		pass = pass_et.getText().toString();
 		pass_conf = conf_et.getText().toString();
-		s_age = shared_prefs.getString(age, "");
-		s_phone = shared_prefs.getString(phone, "");
-		s_email = shared_prefs.getString(email, "");
-		s_gender = shared_prefs.getString(gender, "");
+		s_age = shared_prefs.getString(IbabaiUtils.AGE, "");
+		s_phone = shared_prefs.getString(IbabaiUtils.PHONE, "");
+		s_email = shared_prefs.getString(IbabaiUtils.EMAIL, "");
+		s_gender = shared_prefs.getString(IbabaiUtils.GENDER, "");
 		
 		
 		if (pass.length() >= 6 && pass.equals(pass_conf)) {
@@ -125,12 +118,12 @@ public class PasswordActivity extends Activity {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Try again!");									
 					
-					pass_json.put(PASS, pass);
-					pass_json.put(PASS_CONF, pass_conf);
-					pass_json.put(email, s_email);
-					pass_json.put(age, s_age);
-					pass_json.put(phone, s_phone);
-					pass_json.put(gender, s_gender);
+					pass_json.put(IbabaiUtils.PASS, pass);
+					pass_json.put(IbabaiUtils.PASS_CONF, pass_conf);
+					pass_json.put(IbabaiUtils.EMAIL, s_email);
+					pass_json.put(IbabaiUtils.AGE, s_age);
+					pass_json.put(IbabaiUtils.PHONE, s_phone);
+					pass_json.put(IbabaiUtils.GENDER, s_gender);
 					holder.put("customer", pass_json);
 					StringEntity se = new StringEntity(holder.toString());
 					put.setEntity(se);
@@ -164,7 +157,7 @@ public class PasswordActivity extends Activity {
 			try {
 				if (json.getBoolean("success")) {					
 					Editor e = shared_prefs.edit();
-					e.putString("AuthToken", json.getJSONObject("data").getString("auth_token"));
+					e.putString(IbabaiUtils.AUTH_TOKEN, json.getJSONObject("data").getString("auth_token"));
 					e.apply();
 					Toast.makeText(PasswordActivity.this, "Password saved!", Toast.LENGTH_LONG).show();
 					Intent i = new Intent(PasswordActivity.this, CoreActivity.class);
@@ -188,6 +181,6 @@ public class PasswordActivity extends Activity {
 	private void passChangeFromApi() {
 		PassChangeTask pass_update = new PassChangeTask(this);
 		pass_update.setMessageLoading("Saving password...");		
-		pass_update.execute(SignupActivity.REGISTER_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));	
+		pass_update.execute(IbabaiUtils.REGISTER_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));	
 	}
 }

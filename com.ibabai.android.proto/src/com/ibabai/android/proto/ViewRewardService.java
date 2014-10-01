@@ -19,18 +19,8 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
-public class ViewRewardService extends IntentService {
-	
-	public static final String PAYMENT_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"transactions.json";
-	public static final String EXTRA_POSITION="position";
-	public static final String FLAG="dc_flag";	
-	public static final String AGENT_ID="agent_id";
-	public static final String AGENT_NAME="agent_name";
-	public static final String AMOUNT="amount";	
-	SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
-	public static final String MODEL="promo_model";	
+public class ViewRewardService extends IntentService {	
+	SharedPreferences shared_prefs;	
 	private int view;
 	private int rew1;
 	private String c_name;
@@ -55,8 +45,8 @@ public class ViewRewardService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		dbh = DatabaseHelper.getInstance(this.getApplicationContext()); 
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		promoact_id = (String) intent.getExtras().get(ScanActivity.EXTRA_PA);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		promoact_id = (String) intent.getExtras().get(IbabaiUtils.EXTRA_PA);
 		pa_cursor = getPromoCursor(promoact_id);
 		if (pa_cursor != null && pa_cursor.moveToFirst()) {
 			int view_ind = pa_cursor.getColumnIndex(DatabaseHelper.VIEW);
@@ -69,7 +59,7 @@ public class ViewRewardService extends IntentService {
 				c_id = pa_cursor.getInt(c_id_ind);
 				rew1 = pa_cursor.getInt(rew1_ind);
 				pa_cursor.close();
-				RegisterReward(PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
+				RegisterReward(IbabaiUtils.PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));
 				
 			}
 			else {
@@ -86,17 +76,17 @@ public class ViewRewardService extends IntentService {
 		JSONObject pay_json = new JSONObject();
 		String response = null;
 		json = new JSONObject();	
-		shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);				
+		shared_prefs= getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);				
 			
 		try {
 			try {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");					
 											
-				pay_json.put(AGENT_ID, c_id);
-				pay_json.put(AGENT_NAME, c_name);
-				pay_json.put(FLAG, "C");					
-				pay_json.put(AMOUNT, rew1);
+				pay_json.put(IbabaiUtils.AGENT_ID, c_id);
+				pay_json.put(IbabaiUtils.AGENT_NAME, c_name);
+				pay_json.put(IbabaiUtils.FLAG, "C");					
+				pay_json.put(IbabaiUtils.AMOUNT, rew1);
 				holder.put("transaction", pay_json);
 				StringEntity se = new StringEntity(holder.toString());
 				post.setEntity(se);
@@ -128,7 +118,7 @@ public class ViewRewardService extends IntentService {
 				if (json.getBoolean("success")) {
 					String new_balance = Integer.toString(json.getJSONObject("data").getInt("balance")); 
 					Editor e = shared_prefs.edit();					 
-					e.putString(balance, new_balance);
+					e.putString(IbabaiUtils.BALANCE, new_balance);
 					e.apply();
 					dbh.addLogEntry(c_name, Integer.toString(rew1), "C");
 					dbh.updateView(promoact_id);					
@@ -146,8 +136,8 @@ public class ViewRewardService extends IntentService {
 					
 					Log.v("CREDIT", "Account credited");
 					Intent i = new Intent(this, ViewRegService.class);
-					i.putExtra(ScanActivity.EXTRA_PA, promoact_id);
-					i.putExtra(ScanActivity.EXTRA_CODE, "v");
+					i.putExtra(IbabaiUtils.EXTRA_PA, promoact_id);
+					i.putExtra(IbabaiUtils.EXTRA_CODE, "v");
 					startService(i);						
 				}
 				else {

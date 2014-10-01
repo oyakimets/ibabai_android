@@ -36,17 +36,8 @@ import android.widget.Toast;
 
 import com.savagelook.android.UrlJsonAsyncTask;
 
-public class SignupActivity extends FragmentActivity {
-	public final static String BASE_API_ENDPOINT_URL="http://192.168.1.103:3000/api/v1/";
-	public final static String REGISTER_API_ENDPOINT_URL= BASE_API_ENDPOINT_URL+"registrations";
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String email = "email";
-	public static final String phone = "phone";
-	public static final String age = "age";
-	public static final String gender="gender";
-	public static final String city="city";
-	public static final String store_id="store_id";
-	public static final String user_id="user_id";	
+public class SignupActivity extends FragmentActivity {	
+	private final static String REGISTER_API_ENDPOINT_URL= IbabaiUtils.BASE_API_ENDPOINT_URL+"registrations";
 	private DbLoadTask db_load = null;	
 	Location current_loc;
 	private String s_email;
@@ -78,10 +69,10 @@ public class SignupActivity extends FragmentActivity {
         agePicker.setDisplayedValues(ap_str);
         agePicker.setWrapSelectorWheel(false);
         
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
  		Editor editor=shared_prefs.edit();
- 		editor.putInt(city, 0);
- 		editor.putInt(store_id, 0);
+ 		editor.putInt(IbabaiUtils.CITY, 0);
+ 		editor.putInt(IbabaiUtils.STORE_ID, 0);
  		editor.apply();
  		
  		if (!isNetworkAvailable(this)) {
@@ -223,9 +214,9 @@ public class SignupActivity extends FragmentActivity {
 				 	 location.setLongitude(longitude);
 				 	 float distance=current_loc.distanceTo(location);
 				 	 if (distance <= radius) {
-				 		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+				 		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 				  		Editor edit=shared_prefs.edit();
-				 		edit.putInt(city, city_id);
+				 		edit.putInt(IbabaiUtils.CITY, city_id);
 				 		edit.apply();
 				 		break;
 				 	 }
@@ -259,12 +250,12 @@ public class SignupActivity extends FragmentActivity {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Try again!");
 					
-					cust_json.put(email, s_email);
-					cust_json.put(phone, s_phone);
-					cust_json.put("password", s_password);
-					cust_json.put("password_confirmation", s_confirmation);
-					cust_json.put(age, s_age);
-					cust_json.put(gender, s_gender);
+					cust_json.put(IbabaiUtils.EMAIL, s_email);
+					cust_json.put(IbabaiUtils.PHONE, s_phone);
+					cust_json.put(IbabaiUtils.PASS, s_password);
+					cust_json.put(IbabaiUtils.PASS_CONF, s_confirmation);
+					cust_json.put(IbabaiUtils.AGE, s_age);
+					cust_json.put(IbabaiUtils.GENDER, s_gender);
 					holder.put("customer", cust_json);
 					StringEntity se = new StringEntity(holder.toString());
 					post.setEntity(se);
@@ -295,14 +286,14 @@ public class SignupActivity extends FragmentActivity {
 		protected void onPostExecute(JSONObject json) {
 			try {
 				if (json.getBoolean("success")) {
-					shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+					shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 					Editor e = shared_prefs.edit();
-					e.putString("AuthToken", json.getJSONObject("data").getString("auth_token"));
-					e.putString(user_id, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("id")));
-					e.putString("email", json.getJSONObject("data").getJSONObject("customer").getString("email"));
-					e.putString("phone", json.getJSONObject("data").getJSONObject("customer").getString("phone"));
-					e.putString("gender", json.getJSONObject("data").getJSONObject("customer").getString("gender"));
-					e.putString("age", Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("age")));
+					e.putString(IbabaiUtils.AUTH_TOKEN, json.getJSONObject("data").getString("auth_token"));
+					e.putString(IbabaiUtils.USER_ID, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("id")));
+					e.putString(IbabaiUtils.EMAIL, json.getJSONObject("data").getJSONObject("customer").getString("email"));
+					e.putString(IbabaiUtils.PHONE, json.getJSONObject("data").getJSONObject("customer").getString("phone"));
+					e.putString(IbabaiUtils.GENDER, json.getJSONObject("data").getJSONObject("customer").getString("gender"));
+					e.putString(IbabaiUtils.AGE, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("age")));
 					e.apply();
 					
 					Intent i=new Intent(getApplicationContext(), CoreActivity.class);

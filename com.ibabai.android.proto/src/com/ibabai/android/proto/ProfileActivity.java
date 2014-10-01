@@ -12,13 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-public class ProfileActivity extends Activity {
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String username = "email";
-	public static final String telephone = "phone";
-	public static final String age = "age";
-	public static final String gender="gender";	
+public class ProfileActivity extends Activity {	
 	SharedPreferences shared_prefs;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,18 +28,18 @@ public class ProfileActivity extends Activity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
         
-        shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
         TextView tv_mail = (TextView)findViewById(R.id.pr_email);
-        String st_mail = shared_prefs.getString(username, "");
+        String st_mail = shared_prefs.getString(IbabaiUtils.EMAIL, "");
         tv_mail.setText(st_mail);
         TextView tv_phone = (TextView)findViewById(R.id.pr_phone);
-        String st_phone = shared_prefs.getString(telephone, "");
+        String st_phone = shared_prefs.getString(IbabaiUtils.PHONE, "");
         tv_phone.setText(st_phone);
         TextView tv_age = (TextView)findViewById(R.id.pr_age);
-        String in_age = shared_prefs.getString(age, "");
+        String in_age = shared_prefs.getString(IbabaiUtils.AGE, "");
         tv_age.setText(in_age);
         TextView tv_gender = (TextView)findViewById(R.id.pr_gender);
-        String st_gender = shared_prefs.getString(gender, "");
+        String st_gender = shared_prefs.getString(IbabaiUtils.GENDER, "");
         tv_gender.setText(st_gender);
         
         

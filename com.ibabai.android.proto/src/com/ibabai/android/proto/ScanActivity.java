@@ -30,22 +30,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ScanActivity extends Activity implements OnClickListener {
-	
-	public static final String PAYMENT_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"transactions.json";
-	private TextView tv_balance;
-	public static final String EXTRA_CODE = "code";
-	public static final String EXTRA_PA = "pa_id";
-	public static final String AGENT_ID = "agent_id";
-	public static final String AGENT_NAME = "agent_name";
-	public static final String FLAG = "dc_flag";
-	public static final String AMOUNT = "amount";
-	public static final String P_ID = "promoact_id";
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String store_id = "store_id";
-	public static final String last_store = "last_store";
-	public static final String user_id = "user_id";
-	public static final String balance = "Balance";
+public class ScanActivity extends Activity implements OnClickListener {		
+	private TextView tv_balance;			
 	public static final String HP_ID = "7";
 	private String bal_value;
 	private String scanContent;	
@@ -81,15 +67,14 @@ public class ScanActivity extends Activity implements OnClickListener {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
         
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);       
+        shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);       
         tv_balance = (TextView) findViewById(R.id.balance);        
-        bal_value = shared_prefs.getString(balance, "0");
+        bal_value = shared_prefs.getString(IbabaiUtils.BALANCE, "0");
         tv_balance.setText("balance "+ bal_value + " bais");
         
-        dbh=DatabaseHelper.getInstance(this);
-        
-        shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        store_prox = shared_prefs.getInt(store_id, 0);       
+        dbh=DatabaseHelper.getInstance(this);        
+       
+        store_prox = shared_prefs.getInt(IbabaiUtils.STORE_ID, 0);       
         if (store_prox != 0) {
         	scanTitle.setText("Test scanning mode");
             scanDesc.setText("For product identification purposes only. You can register purchase only outside of the store.");
@@ -116,8 +101,8 @@ public class ScanActivity extends Activity implements OnClickListener {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        store_prox = shared_prefs.getInt(store_id, 0);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+        store_prox = shared_prefs.getInt(IbabaiUtils.STORE_ID, 0);
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
 				scanResult=(TextView)findViewById(R.id.scan_result);
@@ -212,7 +197,7 @@ public class ScanActivity extends Activity implements OnClickListener {
 		}
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 	private class CreditRegisterTask extends UrlJsonAsyncTask {
 		public CreditRegisterTask(Context ctxt) {
@@ -227,7 +212,7 @@ public class ScanActivity extends Activity implements OnClickListener {
 			JSONObject pay_json = new JSONObject();
 			String response = null;
 			JSONObject json = new JSONObject();	
-			shared_prefs= getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+			shared_prefs= getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 			
 		
 			try {
@@ -235,10 +220,10 @@ public class ScanActivity extends Activity implements OnClickListener {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Try again!");					
 										
-					pay_json.put(AGENT_ID, c_id);
-					pay_json.put(AGENT_NAME, c_name);
-					pay_json.put(FLAG, "C");					
-					pay_json.put(AMOUNT, rew2);
+					pay_json.put(IbabaiUtils.AGENT_ID, c_id);
+					pay_json.put(IbabaiUtils.AGENT_NAME, c_name);
+					pay_json.put(IbabaiUtils.FLAG, "C");					
+					pay_json.put(IbabaiUtils.AMOUNT, rew2);
 					holder.put("transaction", pay_json);
 					StringEntity se = new StringEntity(holder.toString());
 					post.setEntity(se);
@@ -273,7 +258,7 @@ public class ScanActivity extends Activity implements OnClickListener {
 				if (json.getBoolean("success")) {
 					String new_balance = Integer.toString(json.getJSONObject("data").getInt("balance")); 
 					Editor e = shared_prefs.edit();					 
-					e.putString(balance, new_balance);
+					e.putString(IbabaiUtils.BALANCE, new_balance);
 					e.apply();
 					dbh.addLogEntry(c_name, Integer.toString(rew2), "C");
 					dbh.updatePurch(pact_id);									
@@ -295,8 +280,8 @@ public class ScanActivity extends Activity implements OnClickListener {
 					}
 					
 					Intent i = new Intent(ScanActivity.this, ViewRegService.class);
-					i.putExtra(EXTRA_PA, Integer.toString(pact_id));
-					i.putExtra(EXTRA_CODE, "s");
+					i.putExtra(IbabaiUtils.EXTRA_PA, Integer.toString(pact_id));
+					i.putExtra(IbabaiUtils.EXTRA_CODE, "s");
 					startService(i);
 					
 				}
@@ -317,6 +302,6 @@ public class ScanActivity extends Activity implements OnClickListener {
 	private void creditFromApi() {
 		CreditRegisterTask payment_task = new CreditRegisterTask(this);
 		payment_task.setMessageLoading("Processing reward...");		
-		payment_task.execute(PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));	
+		payment_task.execute(IbabaiUtils.PAYMENT_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));	
 	}
 }

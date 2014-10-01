@@ -18,14 +18,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-public class ViewRegService extends IntentService {
-	public static final String LOGS_API_ENDPOINT_URL=SignupActivity.BASE_API_ENDPOINT_URL+"cust_logs.json";
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String PASS = "password";
-	public static final String LAST_STORE = "last_store";
+public class ViewRegService extends IntentService {	
 	SharedPreferences shared_prefs;
-	private String P_CODE; 
-	public static final String S_ID = "store_id";
+	private String P_CODE;	
 	private int s_id;
 	private int pa_id;
 	private String code;
@@ -38,10 +33,10 @@ public class ViewRegService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {		
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-		s_id = shared_prefs.getInt(LAST_STORE, 0);
-		promoact_id = (String) intent.getExtras().get(ScanActivity.EXTRA_PA);
-		code = (String) intent.getExtras().get(ScanActivity.EXTRA_CODE);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+		s_id = shared_prefs.getInt(IbabaiUtils.LAST_STORE, 0);
+		promoact_id = (String) intent.getExtras().get(IbabaiUtils.EXTRA_PA);
+		code = (String) intent.getExtras().get(IbabaiUtils.EXTRA_CODE);
 		if (code.equals("s")) {
 			P_CODE = "fc_3";
 		}
@@ -49,7 +44,7 @@ public class ViewRegService extends IntentService {
 			P_CODE = "fc_2";
 		}
 		pa_id = Integer.parseInt(promoact_id);
-		RegisterView(LOGS_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));
+		RegisterView(IbabaiUtils.LOGS_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));
 		
 	}
 		
@@ -66,8 +61,8 @@ public class ViewRegService extends IntentService {
 				json.put("success", false);
 				json.put("info", "Something went wrong. Try again!");
 												
-				cust_log_json.put(ScanActivity.P_ID, pa_id);
-				cust_log_json.put(S_ID, s_id);
+				cust_log_json.put(IbabaiUtils.P_ID, pa_id);
+				cust_log_json.put(IbabaiUtils.STORE_ID, s_id);
 				cust_log_json.put(P_CODE, true);					
 				holder.put("cust_log", cust_log_json);
 				StringEntity se = new StringEntity(holder.toString());

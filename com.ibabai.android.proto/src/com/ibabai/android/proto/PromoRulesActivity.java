@@ -14,15 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class PromoRulesActivity extends FragmentActivity {
-	public static final String EXTRA_DIR="directory";
+public class PromoRulesActivity extends FragmentActivity {	
 	SharedPreferences shared_prefs;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String dir = getIntent().getStringExtra(EXTRA_DIR); 
+        String dir = getIntent().getStringExtra(IbabaiUtils.EXTRA_DIR); 
         File pa_folder = new File(getConDir(this), dir);
         if (getSupportFragmentManager().findFragmentById(R.id.promo_rules)==null) {
         	if (pa_folder.exists()) {
@@ -41,8 +39,8 @@ public class PromoRulesActivity extends FragmentActivity {
         ab.setDisplayShowHomeEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
         
-        shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String b = shared_prefs.getString(balance, "0");
+        shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+        String b = shared_prefs.getString(IbabaiUtils.BALANCE, "0");
         TextView tv_balance = (TextView) findViewById(R.id.balance);
         tv_balance.setText(b + " bais"); 
                 
@@ -69,6 +67,6 @@ public class PromoRulesActivity extends FragmentActivity {
 		}		
 	}
 	static File getConDir(Context ctxt) {
-		 return(new File(ctxt.getFilesDir(), ConUpdateService.CON_BASEDIR));
+		 return(new File(ctxt.getFilesDir(), IbabaiUtils.CON_BASEDIR));
 	 }
 }

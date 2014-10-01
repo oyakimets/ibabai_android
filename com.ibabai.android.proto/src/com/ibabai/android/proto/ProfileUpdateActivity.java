@@ -32,13 +32,7 @@ import android.widget.Toast;
 
 import com.savagelook.android.UrlJsonAsyncTask;
 
-public class ProfileUpdateActivity extends Activity {
-	public static final String PREFERENCES = "MyPrefs";	
-	public static final String email = "email";
-	public static final String phone = "phone";
-	public static final String age = "age";
-	public static final String gender="gender";	
-	public static final String balance = "Balance";	
+public class ProfileUpdateActivity extends Activity {	
 	private static final String pass = "";
 	private static final String pass_conf="";
 	private String s_email;
@@ -46,6 +40,7 @@ public class ProfileUpdateActivity extends Activity {
 	private String s_age;
 	private String s_gender;
 	SharedPreferences shared_prefs;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,19 +54,19 @@ public class ProfileUpdateActivity extends Activity {
 		ab.setDisplayShowHomeEnabled(true);
 		ab.setDisplayShowTitleEnabled(false);
 		
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 		
         EditText te_mail = (EditText)findViewById(R.id.email_update);
-        String st_mail = shared_prefs.getString(email, "");
+        String st_mail = shared_prefs.getString(IbabaiUtils.EMAIL, "");
         te_mail.setText(st_mail);
         
         EditText te_phone = (EditText)findViewById(R.id.phone_update);
-        String st_phone = shared_prefs.getString(phone, "");
+        String st_phone = shared_prefs.getString(IbabaiUtils.PHONE, "");
         te_phone.setText(st_phone);
         
         NumberPicker agePicker=(NumberPicker) findViewById(R.id.age_picker_update);
         String[] ap_str = this.setNumPick();
-        String in_age = shared_prefs.getString("age", "");
+        String in_age = shared_prefs.getString(IbabaiUtils.AGE, "");
         int ind = Arrays.asList(ap_str).indexOf(in_age);
         agePicker.setMaxValue(ap_str.length-1);
         agePicker.setMinValue(0);
@@ -81,7 +76,7 @@ public class ProfileUpdateActivity extends Activity {
         
         
         RadioGroup rg = (RadioGroup) findViewById(R.id.radioGender_update);
-        String st_gender = shared_prefs.getString(gender, "");
+        String st_gender = shared_prefs.getString(IbabaiUtils.GENDER, "");
         if(st_gender.equals("male")) {
         	rg.check(R.id.radioMale_update);
         }
@@ -178,12 +173,12 @@ public class ProfileUpdateActivity extends Activity {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Try again!");									
 					
-					profile_json.put(PasswordActivity.PASS, pass);
-					profile_json.put(PasswordActivity.PASS_CONF, pass_conf);
-					profile_json.put(email, s_email);
-					profile_json.put(phone, s_phone);
-					profile_json.put(age, s_age);
-					profile_json.put(gender, s_gender);
+					profile_json.put(IbabaiUtils.PASS, pass);
+					profile_json.put(IbabaiUtils.PASS_CONF, pass_conf);
+					profile_json.put(IbabaiUtils.EMAIL, s_email);
+					profile_json.put(IbabaiUtils.PHONE, s_phone);
+					profile_json.put(IbabaiUtils.AGE, s_age);
+					profile_json.put(IbabaiUtils.GENDER, s_gender);
 					
 					holder.put("customer", profile_json);
 					StringEntity se = new StringEntity(holder.toString());
@@ -218,11 +213,11 @@ public class ProfileUpdateActivity extends Activity {
 			try {
 				if (json.getBoolean("success")) {					
 					Editor e = shared_prefs.edit();				
-					e.putString("AuthToken", json.getJSONObject("data").getString("auth_token"));					
-					e.putString(email, json.getJSONObject("data").getJSONObject("customer").getString("email"));
-					e.putString(phone, json.getJSONObject("data").getJSONObject("customer").getString("phone"));
-					e.putString(gender, json.getJSONObject("data").getJSONObject("customer").getString("gender"));
-					e.putString(age, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("age")));
+					e.putString(IbabaiUtils.AUTH_TOKEN, json.getJSONObject("data").getString("auth_token"));					
+					e.putString(IbabaiUtils.EMAIL, json.getJSONObject("data").getJSONObject("customer").getString("email"));
+					e.putString(IbabaiUtils.PHONE, json.getJSONObject("data").getJSONObject("customer").getString("phone"));
+					e.putString(IbabaiUtils.GENDER, json.getJSONObject("data").getJSONObject("customer").getString("gender"));
+					e.putString(IbabaiUtils.AGE, Integer.toString(json.getJSONObject("data").getJSONObject("customer").getInt("age")));
 					e.apply();
 					Toast.makeText(ProfileUpdateActivity.this, "Profile updated!", Toast.LENGTH_LONG).show();
 					Intent i = new Intent(ProfileUpdateActivity.this, ProfileActivity.class);
@@ -247,6 +242,6 @@ public class ProfileUpdateActivity extends Activity {
 	private void ProfileUpdateFromApi() {
 		ProfileUpdateTask profile_update = new ProfileUpdateTask(this);	
 		profile_update.setMessageLoading("Updating profile....");
-		profile_update.execute(SignupActivity.REGISTER_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString("AuthToken", ""));	
+		profile_update.execute(IbabaiUtils.REGISTER_API_ENDPOINT_URL+"?auth_token="+shared_prefs.getString(IbabaiUtils.AUTH_TOKEN, ""));	
 	}
 }

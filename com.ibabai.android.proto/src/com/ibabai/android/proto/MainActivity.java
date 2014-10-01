@@ -19,9 +19,7 @@ import android.view.View;
 
 public class MainActivity extends FragmentActivity {
 	private ViewPager pager=null;
-	private PresentationAdapter adapter=null;
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String auth_token = "AuthToken";	
+	private PresentationAdapter adapter=null;	
 	SharedPreferences shared_prefs;
 	
     @Override
@@ -48,11 +46,11 @@ public class MainActivity extends FragmentActivity {
     }
     @Override
     protected void onResume() {
-    	shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+    	shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
     	if( getIntent().getBooleanExtra("EXIT", false)) {
     		finish();
     	}
-    	if(shared_prefs.contains(auth_token)) {
+    	if(shared_prefs.contains(IbabaiUtils.AUTH_TOKEN)) {
     		Intent launchIntent = new Intent(this, CoreActivity.class);
     		startActivity(launchIntent);
     		finish();

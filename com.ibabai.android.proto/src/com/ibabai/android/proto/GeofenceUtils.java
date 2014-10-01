@@ -34,7 +34,7 @@ public class GeofenceUtils {
     
     public static final int MILLISECONDS_PER_SECOND = 1000;
     public static final int SECONDS_PER_MINUTE = 60;
-    public static final int DETECTION_INTERVAL_MINUTES = 2;
+    public static final int DETECTION_INTERVAL_MINUTES = 1;
     public static final int DETECTION_INTERVAL_MILLISECONDS =
             MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * DETECTION_INTERVAL_MINUTES;
     

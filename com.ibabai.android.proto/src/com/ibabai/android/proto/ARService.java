@@ -17,9 +17,8 @@ public class ARService extends Service {
 	private LocalBroadcastManager broadcast_manager;
 	private ARRequester ar_requester;
 	private ARRemover ar_remover;
-	private ARReceiver ar_receiver;	
-	public static final String PREFERENCES = "MyPrefs";
-	private SharedPreferences shared_prefs; 
+	private ARReceiver ar_receiver;		
+	private SharedPreferences shared_prefs;	
 	
 	@Override
 	public void onCreate() {
@@ -38,7 +37,7 @@ public class ARService extends Service {
 		ar_requester = new ARRequester(this);
 		ar_remover = new ARRemover(this);		
 		ar_requester.requestUpdates();
-		shared_prefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 	}
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {		

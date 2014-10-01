@@ -14,9 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class PaymentActivity extends FragmentActivity {
-	public static final String PREFERENCES = "MyPrefs";
-	public static final String balance = "Balance";
+public class PaymentActivity extends FragmentActivity {	
 	private String account_input = "";
 	private String phone_input = "";
 	SharedPreferences shared_prefs;
@@ -43,8 +41,8 @@ public class PaymentActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.core, menu);
 		
-		shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String b = shared_prefs.getString(balance, "0");
+		shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+        String b = shared_prefs.getString(IbabaiUtils.BALANCE, "0");
         TextView tv_balance = (TextView) findViewById(R.id.balance);
         tv_balance.setText("balance "+ b + " b");
 		return true;
@@ -85,8 +83,8 @@ public class PaymentActivity extends FragmentActivity {
 		}
 		else {
 			int int_amount = Integer.parseInt(amount_input);
-			shared_prefs=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-			String b = shared_prefs.getString(balance, "0");
+			shared_prefs=getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
+			String b = shared_prefs.getString(IbabaiUtils.BALANCE, "0");
 			int int_b = Integer.parseInt(b);
 			
 			if ((phone_input.length()==10 || account_input.length() >=6) && int_amount != 0 && int_amount<=int_b) { 

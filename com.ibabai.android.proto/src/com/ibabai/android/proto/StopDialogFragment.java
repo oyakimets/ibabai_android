@@ -16,6 +16,7 @@ public class StopDialogFragment extends DialogFragment implements DialogInterfac
 	private String client_id;
 	private AlertDialog sl_dialog=null;
 	DatabaseHelper dbh;
+	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		dbh=DatabaseHelper.getInstance(getActivity().getApplicationContext());
@@ -50,11 +51,11 @@ public class StopDialogFragment extends DialogFragment implements DialogInterfac
 			to_sl_cursor.close();
 			dbh.updateStatusBlock(client_id);
 			Intent ser_int=new Intent(getActivity(), StopListService.class);
-			ser_int.putExtra(CoreActivity.EXTRA_NI, pa_id);
-			ser_int.putExtra(stopListActivity.EXTRA_CL, client_id);
+			ser_int.putExtra(IbabaiUtils.EXTRA_NI, pa_id);
+			ser_int.putExtra(DatabaseHelper.CL_ID, client_id);
 			getActivity().startService(ser_int);
 			Intent sl_yes=new Intent(getActivity(), CoreActivity.class);
-			sl_yes.putExtra(CoreActivity.EXTRA_NI, pa_id);
+			sl_yes.putExtra(IbabaiUtils.EXTRA_NI, pa_id);
 			startActivity(sl_yes);
 			Toast.makeText(getActivity().getBaseContext(), "All promos of the company are blocked", Toast.LENGTH_LONG).show();
 			
