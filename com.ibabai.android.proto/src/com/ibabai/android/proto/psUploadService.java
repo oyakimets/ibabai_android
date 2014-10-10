@@ -18,10 +18,7 @@ import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
-public class psUploadService extends IntentService {
-	private static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
-	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
-	private static final String PA_URL = "http://ibabai.picrunner.net/promo_users/ibabai_promoacts.txt";
+public class psUploadService extends IntentService {	
 	private int city_id;	
 	BufferedReader reader=null;
 	DatabaseHelper dbh;
@@ -37,7 +34,7 @@ public class psUploadService extends IntentService {
 		city_id = shared_prefs.getInt(IbabaiUtils.CITY, 0);
 		
 		if (city_id != 0 && TableEmpty(DatabaseHelper.TABLE_SP)) {
-			String SP_URL= SP_BASE_URL + Integer.toString(city_id) +".txt";
+			String SP_URL= IbabaiUtils.SP_BASE_URL + Integer.toString(city_id) +".txt";
 			try {
 				URL sp_url=new URL(SP_URL);
 				HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
@@ -70,7 +67,7 @@ public class psUploadService extends IntentService {
 		}
 		if (TableEmpty(DatabaseHelper.TABLE_P)) {
 			try {
-				URL pa_url=new URL(PA_URL);
+				URL pa_url=new URL(IbabaiUtils.PA_URL);
 				HttpURLConnection con=(HttpURLConnection)pa_url.openConnection();
 				con.setRequestMethod("GET");
 				con.setReadTimeout(15000);
@@ -103,7 +100,7 @@ public class psUploadService extends IntentService {
 		
 		if (TableEmpty(DatabaseHelper.TABLE_V)) {
 			try {
-				URL sp_url=new URL(VEN_BASE_URL);
+				URL sp_url=new URL(IbabaiUtils.VEN_BASE_URL);
 				HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
 				con.setRequestMethod("GET");
 				con.setReadTimeout(15000);

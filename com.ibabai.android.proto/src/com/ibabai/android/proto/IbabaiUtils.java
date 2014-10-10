@@ -40,6 +40,12 @@ public class IbabaiUtils {
 	public final static String REGISTER_API_ENDPOINT_URL= BASE_API_ENDPOINT_URL+"registrations";
 	public static final String CON_EXT="con_ext.zip";
 	public static final String CON_BASEDIR="promo_content";
-	public static final String PREF_CON_DIR="pendingConDir";	
+	public static final String PREF_CON_DIR="pendingConDir";
+	
+	public static final String STORE_BASE_URL = "http://ibabai.picrunner.net/city_stores/";
+	public static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
+	public static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
+	public static final String PA_URL = "http://ibabai.picrunner.net/promo_users/ibabai_promoacts.txt";
+	public static final String PROMO_BASE_URL = "http://ibabai.picrunner.net/promo_users/";
 	
 }

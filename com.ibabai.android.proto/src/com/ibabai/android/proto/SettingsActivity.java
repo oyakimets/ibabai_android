@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -41,8 +42,10 @@ public class SettingsActivity extends Activity {
         gps_t = new GPSTracker(this);
         String lat = Double.toString(gps_t.getLatitude());
         String lon = Double.toString(gps_t.getLongitude());
+        Cursor s_cursor = StoresCursor();
+        int c_count = s_cursor.getCount();
         TextView tv1 = (TextView)findViewById(R.id.tv_1);
-        tv1.setText( lat+"/"+lon);
+        tv1.setText( Integer.toString(c_count));
         
      
         
@@ -120,5 +123,9 @@ public class SettingsActivity extends Activity {
 			 return "TILTING";
 		}
 		return "UNKNOWN";
+	}
+	private Cursor StoresCursor() {		
+		String s_query = String.format("SELECT * FROM %s", DatabaseHelper.TABLE_S);
+		return (dbh.getReadableDatabase().rawQuery(s_query, null));
 	}
 }

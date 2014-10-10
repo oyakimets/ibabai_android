@@ -16,8 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-public class StoresUploadService extends IntentService {	
-	private static final String STORE_BASE_URL = "http://ibabai.picrunner.net/city_stores/";	
+public class StoresUploadService extends IntentService {		
 	private int city_id;
 	BufferedReader reader=null;
 	DatabaseHelper dbh;
@@ -32,7 +31,7 @@ public class StoresUploadService extends IntentService {
 		shared_prefs = getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 		city_id = shared_prefs.getInt(IbabaiUtils.CITY, 0);		
 		if (city_id != 0 && StoresEmpty()) {
-			String STORES_URL = STORE_BASE_URL + Integer.toString(city_id) +".txt";
+			String STORES_URL = IbabaiUtils.STORE_BASE_URL + Integer.toString(city_id) +".txt";
 			try {
 				URL s_url=new URL(STORES_URL);
 				HttpURLConnection con=(HttpURLConnection)s_url.openConnection();

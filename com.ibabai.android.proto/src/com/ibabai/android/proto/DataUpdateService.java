@@ -23,11 +23,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 
-public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {
-	private static final String STORE_BASE_URL = "http://ibabai.picrunner.net/city_stores/";
-	private static final String PROMO_BASE_URL = "http://ibabai.picrunner.net/promo_users/";
-	private static final String SP_BASE_URL = "http://ibabai.picrunner.net/promo_stores/";
-	private static final String VEN_BASE_URL = "http://ibabai.picrunner.net/vendors/active_vendors.txt";
+public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulIntentService {	
 	private ArrayList<Integer> current_pa;
 	private ArrayList<Integer> update_pa;
 	private JSONArray promoacts = null;
@@ -95,7 +91,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			}
 			if (c_id != 0) {
 				
-				String STORES_URL = STORE_BASE_URL + Integer.toString(c_id) +".txt";
+				String STORES_URL = IbabaiUtils.STORE_BASE_URL + Integer.toString(c_id) +".txt";
 				try {
 					URL s_url=new URL(STORES_URL);
 					HttpURLConnection con=(HttpURLConnection)s_url.openConnection();
@@ -133,7 +129,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 			
 			if (c_id != 0) {
 						
-				String SP_URL= SP_BASE_URL + Integer.toString(c_id) +".txt";
+				String SP_URL= IbabaiUtils.SP_BASE_URL + Integer.toString(c_id) +".txt";
 				try {
 					URL sp_url=new URL(SP_URL);
 					HttpURLConnection con=(HttpURLConnection)sp_url.openConnection();
@@ -165,7 +161,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 				}				
 			}		
 		
-			PROMO_URL = PROMO_BASE_URL+u_id+".txt";
+			PROMO_URL = IbabaiUtils.PROMO_BASE_URL+u_id+".txt";
 			try {
 				URL p_url=new URL(PROMO_URL);
 				HttpURLConnection con=(HttpURLConnection)p_url.openConnection();
@@ -199,7 +195,7 @@ public class DataUpdateService extends com.commonsware.cwac.wakeful.WakefulInten
 		
 			dbh.ClearVendors();		
 			try {
-				URL ven_url=new URL(VEN_BASE_URL);
+				URL ven_url=new URL(IbabaiUtils.VEN_BASE_URL);
 				HttpURLConnection con=(HttpURLConnection)ven_url.openConnection();
 				con.setRequestMethod("GET");
 				con.setReadTimeout(15000);

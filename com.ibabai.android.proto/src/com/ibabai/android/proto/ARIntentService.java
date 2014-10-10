@@ -22,6 +22,7 @@ public class ARIntentService extends IntentService {
 	private SimpleGeofence sgf;
 	private GeofenceRequester gfr;
 	private GeofenceRemover gf_remover;
+	private Cursor s_cursor;
 	ArrayList<Geofence> gf_list;
 	DatabaseHelper dbh;		
 	
@@ -33,7 +34,8 @@ public class ARIntentService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		shared_prefs = getApplicationContext().getSharedPreferences(IbabaiUtils.PREFERENCES, Context.MODE_PRIVATE);
 		gfr = new GeofenceRequester(this);
-		if (ActivityRecognitionResult.hasResult(intent)) {
+		s_cursor = StoresCursor();
+		if (ActivityRecognitionResult.hasResult(intent) && s_cursor.getCount() > 0) {
 			ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 			DetectedActivity most_probable_activity = result.getMostProbableActivity();
 			int confidence = most_probable_activity.getConfidence();
@@ -77,7 +79,6 @@ public class ARIntentService extends IntentService {
 		if (c_id != 0) {
 			dbh=DatabaseHelper.getInstance(getApplicationContext());
 			gf_list = new ArrayList<Geofence>();
-			Cursor s_cursor=StoresCursor();			
 			if (s_cursor !=null && s_cursor.moveToFirst()) {
 				while (s_cursor.isAfterLast()!=true) {
 					int id_ind = s_cursor.getColumnIndex("store_id");
